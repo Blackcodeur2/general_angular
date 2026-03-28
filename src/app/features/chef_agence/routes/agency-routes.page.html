@@ -1,0 +1,89 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Gestion des Lignes</h1>
+            <p class="page-subtitle">Définissez vos trajets et les prix associés.</p>
+        </div>
+        <button class="btn-primary" (click)="toggleForm()">
+            <mat-icon>{{ showForm() ? 'close' : 'add_road' }}</mat-icon>
+            <span>{{ showForm() ? 'Annuler' : 'Nouvelle Ligne' }}</span>
+        </button>
+    </div>
+
+    @if (showForm()) {
+    <div class="card form-card animate-fade-in">
+        <form [formGroup]="routeForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Ville de départ</label>
+                    <input type="text" formControlName="depart" class="form-control" placeholder="Ex: Yaoundé" />
+                </div>
+                <div class="form-group">
+                    <label>Ville d'arrivée</label>
+                    <input type="text" formControlName="arrivee" class="form-control" placeholder="Ex: Douala" />
+                </div>
+                <div class="form-group">
+                    <label>Prix (XAF)</label>
+                    <input type="number" formControlName="prix" class="form-control" placeholder="Ex: 5000" />
+                </div>
+                <div class="form-group">
+                    <label>Type de Trajet</label>
+                    <select formControlName="type_trajet" class="form-control">
+                        <option value="vip">VIP</option>
+                        <option value="classique">Classique</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <gev-button type="submit" [disabled]="routeForm.invalid" [loading]="isSubmitting()">
+                    Créer la ligne
+                </gev-button>
+            </div>
+        </form>
+    </div>
+    }
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Ligne</th>
+                        <th>Prix</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (route of paginatedRoutes(); track route.id) {
+                    <tr>
+                        <td>
+                            <div class="route-cell">
+                                <div class="icon-circle"><mat-icon>map</mat-icon></div>
+                                <div class="path">
+                                    <span class="from">{{ route.depart }}</span>
+                                    <mat-icon class="arrow">arrow_forward</mat-icon>
+                                    <span class="to">{{ route.arrivee }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="price">{{ route.prix | number }} XAF</span></td>
+                        <td><span>{{ route.type_trajet }}</span></td>
+                        <td>
+                            <button class="action-btn"><mat-icon>edit</mat-icon></button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="4" class="text-center py-8">Aucune ligne définie.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+            <gev-pagination [totalItems]="routesList().length" [pageSize]="pageSize()" [currentPage]="currentPage()"
+                (pageChange)="currentPage.set($any($event))">
+            </gev-pagination>
+        </div>
+    </div>
+</div>

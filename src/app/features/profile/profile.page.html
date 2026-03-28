@@ -1,0 +1,99 @@
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="cover-gradient"></div>
+        <div class="header-content">
+            <div class="avatar-wrapper">
+                <div class="avatar-large">
+                    @if (user()) {
+                    {{ getInitials(user()?.nom, user()?.prenom) }}
+                    } @else {
+                    <mat-icon>person</mat-icon>
+                    }
+                </div>
+            </div>
+            <div class="user-info">
+                <h1>{{ user()?.prenom }} {{ user()?.nom }}</h1>
+                <div class="badge-row">
+                    <span class="role-badge" [class]="user()?.role_user?.toLowerCase()">
+                        <mat-icon>verified_user</mat-icon>
+                        {{ user()?.role_user | titlecase }}
+                    </span>
+                    <span class="status-badge active">Compte Actif</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+        <div class="info-card personal-info">
+            <div class="card-header">
+                <mat-icon>person_outline</mat-icon>
+                <h2>Informations Personnelles</h2>
+            </div>
+            <div class="info-list">
+                <div class="info-item">
+                    <div class="label">Nom complet</div>
+                    <div class="value">{{ user()?.prenom }} {{ user()?.nom }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Date de naissance</div>
+                    <div class="value">
+                        <mat-icon>cake</mat-icon>
+                        {{ (user()?.date_naissance | date:'fullDate') || 'Non renseigné' }}
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Numéro CNI</div>
+                    <div class="value">
+                        <mat-icon>badge</mat-icon>
+                        {{ user()?.num_cni || 'Non renseigné' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card contact-info">
+            <div class="card-header">
+                <mat-icon>contact_mail</mat-icon>
+                <h2>Contact & Sécurité</h2>
+            </div>
+            <div class="info-list">
+                <div class="info-item">
+                    <div class="label">Adresse Email</div>
+                    <div class="value">
+                        <mat-icon>mail_outline</mat-icon>
+                        {{ user()?.email || 'Non renseigné' }}
+                    </div>
+                    @if (user()?.email) {
+                    <span class="verified-tag">Vérifié</span>
+                    }
+                </div>
+                <div class="info-item">
+                    <div class="label">Téléphone</div>
+                    <div class="value">
+                        <mat-icon>phone</mat-icon>
+                        {{ user()?.telephone || 'Non renseigné' }}
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Dernière mise à jour</div>
+                    <div class="value">
+                        <mat-icon>history</mat-icon>
+                        {{ (user()?.updated_at | date:'dd/MM/yyyy HH:mm') || '--' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-footer">
+        <gev-button variant="auth__secondary" size="large">
+            <mat-icon>lock_reset</mat-icon>
+            Changer le mot de passe
+        </gev-button>
+        <gev-button variant="auth__primary" size="large">
+            <mat-icon>edit_note</mat-icon>
+            Modifier le profil
+        </gev-button>
+    </div>
+</div>

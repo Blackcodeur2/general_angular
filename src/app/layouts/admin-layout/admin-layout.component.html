@@ -1,0 +1,47 @@
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="logo-icon">🚍</span>
+            <div class="brand-text">
+                <span class="app-name">ExpressAdmin</span>
+                <span class="role-badge">{{ currentUserRole() | titlecase }}</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            @for (item of menuItems; track item.route) {
+            <a [routerLink]="item.route" routerLinkActive="active" class="nav-item">
+                <mat-icon>{{item.icon}}</mat-icon>
+                <span>{{ item.label }}</span>
+            </a>
+            }
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="nav-item logout" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>Déconnexion</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <header class="top-header">
+            <div class="breadcrumb">
+                <span>Portail</span> / <span>{{ currentUserRole() | titlecase }}</span>
+            </div>
+
+            <div class="user-menu">
+                <div class="avatar">
+                    {{ userInitials() }}
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</div>

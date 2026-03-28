@@ -1,0 +1,116 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Gestion du Personnel</h1>
+            <p class="page-subtitle">Gérez les agents et chauffeurs de votre agence.</p>
+        </div>
+        <button class="btn-primary" (click)="toggleForm()">
+            <mat-icon>{{ showForm() ? 'close' : 'person_add' }}</mat-icon>
+            <span>{{ showForm() ? 'Annuler' : 'Ajouter Membre' }}</span>
+        </button>
+    </div>
+
+    @if (showForm()) {
+    <div class="card form-card animate-fade-in">
+        <div class="form-header">
+            <h2>Nouvel Employe</h2>
+        </div>
+        <form [formGroup]="staffForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Prénom</label>
+                    <input type="text" formControlName="prenom" class="form-control" placeholder="Ex: Jean" />
+                </div>
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" formControlName="nom" class="form-control" placeholder="Ex: Dupont" />
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" formControlName="email" class="form-control"
+                        placeholder="Ex: contact@email.com" />
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" formControlName="telephone" class="form-control" placeholder="Ex: 699000000" />
+                </div>
+                <div class="form-group">
+                    <label>Date de Naissance</label>
+                    <input type="date" formControlName="date_naissance" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>N° CNI / ID</label>
+                    <input type="text" formControlName="num_cni" class="form-control" placeholder="Ex: CNI..." />
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe initial</label>
+                    <input type="text" formControlName="password" class="form-control" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Rôle du profil</label>
+                    <select formControlName="role_user" class="form-control">
+                        <option value="">Sélectionnez un rôle</option>
+                        @for (r of roles; track r) {
+                        <option [value]="r">{{ r }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <gev-button type="submit" variant="primary" [disabled]="staffForm.invalid" [loading]="isSubmitting()"
+                    loadingText="Enregistrement...">
+                    Enregistrer l'utilisateur
+                </gev-button>
+            </div>
+        </form>
+    </div>
+    }
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Membre</th>
+                        <th>Poste</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (member of paginatedStaff(); track member.id) {
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <div class="avatar">{{ member?.nom?.substring(0,2) || 'S' }}</div>
+                                <div>
+                                    <div class="name">{{ member?.nom }} {{ member?.prenom }}</div>
+                                    <div class="email">{{ member?.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-badge" [class]="member?.role_user?.toLowerCase()">
+                                {{ member?.role_user }}
+                            </span>
+                        </td>
+                        <td>{{ member?.telephone || '--' }}</td>
+                        <td>
+                            <button class="action-btn"><mat-icon>edit</mat-icon></button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="4" class="text-center py-8">Aucun membre enregistré.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+            <gev-pagination [totalItems]="staffMembers().length" [pageSize]="pageSize()" [currentPage]="currentPage()"
+                (pageChange)="currentPage.set($any($event))">
+            </gev-pagination>
+        </div>
+    </div>
+</div>

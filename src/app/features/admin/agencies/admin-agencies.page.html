@@ -1,0 +1,171 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Agences et Gares</h1>
+            <p class="page-subtitle">Gérez les agences de transport et leurs gares affiliées.</p>
+        </div>
+        <div class="actions">
+            <button class="btn-secondary" (click)="setActiveForm('AGENCE')">
+                <mat-icon>business</mat-icon>
+                <span>Nouvelle Agence</span>
+            </button>
+            <button class="btn-primary" (click)="setActiveForm('GARE')">
+                <mat-icon>add_location</mat-icon>
+                <span>Nouvelle Gare</span>
+            </button>
+        </div>
+    </div>
+
+    @if (showCreateForm()) {
+    <div class="card form-card">
+        <div class="form-header">
+            <div class="form-tabs">
+                <button [class.active]="activeForm() === 'AGENCE'" (click)="activeForm.set('AGENCE')">Gestion Agence</button>
+                <button [class.active]="activeForm() === 'GARE'" (click)="activeForm.set('GARE')">Gestion Gare</button>
+            </div>
+            <h2>{{ activeForm() === 'AGENCE' ? 'Nouvelle Agence' : 'Nouvelle Gare' }}</h2>
+            <p>{{ activeForm() === 'AGENCE' ? 'Créez une nouvelle agence de transport.' : 'Renseignez les informations de la nouvelle gare.' }}</p>
+        </div>
+
+        @if (activeForm() === 'AGENCE') {
+        <form [formGroup]="agenceForm" (ngSubmit)="onSubmitAgence()">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Nom de l'agence</label>
+                    <input type="text" formControlName="nom_agence" class="form-control" placeholder="Ex: General Express" />
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="toggleForm()">Annuler</button>
+                <gev-button type="submit" variant="primary" [disabled]="agenceForm.invalid" [loading]="isCreating()"
+                    loadingText="Création...">
+                    Enregistrer l'agence
+                </gev-button>
+            </div>
+        </form>
+        } @else {
+        <form [formGroup]="gareForm" (ngSubmit)="onSubmitGare()">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Agence</label>
+                    <select formControlName="agence_id" class="form-control">
+                        <option value="">Sélectionnez une agence</option>
+                        @for (agence of agences(); track agence.id) {
+                        <option [value]="agence.id">{{ agence.nom_agence }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ville</label>
+                    <input type="text" formControlName="ville" class="form-control" placeholder="Ex: Yaoundé" />
+                </div>
+                <div class="form-group">
+                    <label>Quartier</label>
+                    <input type="text" formControlName="quartier" class="form-control" placeholder="Ex: Mvan" />
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" formControlName="telephone" class="form-control" placeholder="Ex: 699000000" />
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="toggleForm()">Annuler</button>
+                <gev-button type="submit" variant="primary" [disabled]="gareForm.invalid" [loading]="isCreating()"
+                    loadingText="Création...">
+                    Enregistrer la gare
+                </gev-button>
+            </div>
+        </form>
+        }
+    </div>
+    }
+
+    <div class="card">
+        @if (isLoading()) {
+        <div class="state-container">
+            <div class="spinner"></div>
+            <p>Chargement des agences en cours...</p>
+        </div>
+        } @else if (error()) {
+        <div class="state-container error-state">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+            <p>{{ error() }}</p>
+            <button class="btn-retry" (click)="loadAgences()">Réessayer</button>
+        </div>
+        } @else {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Agence</th>
+                        <th>BP</th>
+                        <th>Email</th>
+                        <th>Telephone</th>
+                        <th>Gares Associées</th>
+                        <th>Statut</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (agence of paginatedAgences(); track agence.id) {
+                    <tr>
+                        <td>
+                            <div class="agence-cell">
+                                <div class="agence-icon">
+                                    <mat-icon>business</mat-icon>
+                                </div>
+                                <div>
+                                    <div class="agence-name">{{ agence.nom_agence }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ agence.bp }}</td>
+                        <td>{{ agence.email_agence }}</td>
+                        <td>{{ agence.telephone }}</td>
+                        <td>
+                            @if (agence.gares && agence.gares.length > 0) {
+                            <div class="gares-list">
+                                @for (gare of agence.gares; track gare.id) {
+                                <div class="gare-badge" [title]="'Tél: ' + gare.telephone">
+                                    <mat-icon>location_on</mat-icon>
+                                    <span>{{ gare.ville }} ({{ gare.quartier }})</span>
+                                </div>
+                                }
+                            </div>
+                            } @else {
+                            <span class="text-gray italic">Aucune gare</span>
+                            }
+                        </td>
+                        <td>{{ agence.statut }}</td>
+                        <td class="text-right d-flex">
+                            <button class="action-btn" title="Voir détails">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                            <button class="action-btn" title="Modifier">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="4">
+                            <div class="state-container empty-state">
+                                <mat-icon class="empty-icon">business</mat-icon>
+                                <p>Aucune agence n'est enregistrée pour le moment.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            
+            <gev-pagination 
+                [totalItems]="agences().length" 
+                [pageSize]="pageSize()" 
+                [currentPage]="currentPage()"
+                (pageChange)="currentPage.set($event)">
+            </gev-pagination>
+        </div>
+        }
+    </div>
+</div>

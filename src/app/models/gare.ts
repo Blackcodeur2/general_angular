@@ -1,0 +1,9 @@
+export interface Gare {
+    id: number;
+    ville: string;
+    quartier: string;
+    telephone: string;
+    agence_id: number;
+    created_at?: string;
+    updated_at?: string;
+}

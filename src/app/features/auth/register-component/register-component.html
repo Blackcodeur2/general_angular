@@ -1,0 +1,91 @@
+<main class="auth">
+  <section class="auth__card" aria-label="Inscription">
+    <header class="auth__header">
+      <h1 class="auth__title">Inscription</h1>
+      <p class="auth__subtitle">Rejoignez <strong>{{ 'appName' }}</strong> pour vos voyages</p>
+    </header>
+
+    <form class="auth__form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <div class="field">
+        <label class="field__label" for="prenom">Numero de CNI</label>
+        <div class="input-container">
+          <span class="input-icon">👤</span>
+          <input id="prenom" class="field__control" type="text" formControlName="num_cni" placeholder="Ex: cni_cl_00" />
+        </div>
+        @if (shouldShowError('num_cni')) {
+        <div class="field__error">{{ errorMessage('num_cni') }}</div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="nom">Date de naissance</label>
+        <div class="input-container">
+          <span class="input-icon">👥</span>
+          <input id="nom" class="field__control" type="date" formControlName="date_naissance" />
+        </div>
+        @if (shouldShowError('date_naissance')) {
+        <div class="field__error">{{ errorMessage('date_naissance') }}</div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="email">Email</label>
+        <div class="input-container">
+          <span class="input-icon">✉️</span>
+          <input id="email" class="field__control" type="email" formControlName="email" inputmode="email"
+            autocomplete="email" placeholder="votre@email.com" />
+        </div>
+        @if (shouldShowError('email')) {
+        <div class="field__error">{{ errorMessage('email') }}</div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="telephone">Téléphone</label>
+        <div class="input-container">
+          <span class="input-icon">📞</span>
+          <input id="telephone" class="field__control" type="tel" formControlName="telephone" placeholder="6xx xxx xxx" />
+        </div>
+        @if (shouldShowError('telephone')) {
+        <div class="field__error">{{ errorMessage('telephone') }}</div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="password">Mot de passe</label>
+        <div class="input-container">
+          <span class="input-icon">🔒</span>
+          <input id="password" class="field__control" type="password" formControlName="password"
+            autocomplete="new-password" placeholder="••••••••" />
+        </div>
+        @if (shouldShowError('password')) {
+        <div class="field__error">{{ errorMessage('password') }}</div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="password_confirmation">Confirmation</label>
+        <div class="input-container">
+          <span class="input-icon">✅</span>
+          <input id="password_confirmation" class="field__control" type="password" formControlName="password_confirmation"
+            autocomplete="new-password" placeholder="••••••••" />
+        </div>
+        @if (shouldShowError('password_confirmation')) {
+        <div class="field__error">{{ errorMessage('password_confirmation') }}</div>
+        }
+      </div>
+
+      <div class="auth__actions">
+        <gev-button type="submit" variant="auth__primary" [loading]="isLoading()" loadingText="Inscription en cours...">
+          S'inscrire
+        </gev-button>
+
+        <div class="auth__footer">
+          Vous avez déjà un compte ? <a routerLink="/auth/login">Se connecter</a>
+        </div>
+      </div>
+
+    </form>
+  </section>
+</main>

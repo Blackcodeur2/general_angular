@@ -1,0 +1,113 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Planification des Voyages</h1>
+            <p class="page-subtitle">Programmez et surveillez les départs de bus.</p>
+        </div>
+        <button class="btn-primary" (click)="toggleForm()">
+            <mat-icon>{{ showForm() ? 'close' : 'event_available' }}</mat-icon>
+            <span>{{ showForm() ? 'Annuler' : 'Nouveau Voyage' }}</span>
+        </button>
+    </div>
+
+    @if (showForm()) {
+    <div class="card form-card animate-fade-in">
+        <form [formGroup]="voyageForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Numero de Voyage</label>
+                    <input type="text" formControlName="num_voyage" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Trajet</label>
+                    <select formControlName="trajet_id" class="form-control">
+                        <option value=""> -- Sélectionnez un Trajet --</option>
+                        @for (trajet of routesList(); track trajet.id) {
+                        <option [value]="trajet.id">{{ trajet.depart }} -> {{ trajet.arrivee }} ({{ trajet.type_trajet
+                            }})</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Bus</label>
+                    <select formControlName="bus_id" class="form-control">
+                        <option value=""> -- Selectionnez un Bus --</option>
+                        @for (bus of buses(); track bus.id) {
+                        <option [value]="bus.id">{{ bus.code_bus }} {{ bus.nb_places }} Places ({{ bus.classe_bus }})
+                        </option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chauffeur</label>
+                    <select formControlName="chauffeur_id" class="form-control">
+                        <option value=""> -- Selectionnez un Chauffeur --</option>
+                        @for (ch of chauffeurs(); track ch.id) {
+                        <option [value]="ch.id">{{ ch.nom }} {{ ch.prenom }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date de depart</label>
+                    <input type="datetime-local" formControlName="date_depart" class="form-control" />
+                </div>
+            </div>
+            <div class="form-actions">
+                <gev-button type="submit" [disabled]="voyageForm.invalid" [loading]="isSubmitting()">
+                    Programmer le voyage
+                </gev-button>
+            </div>
+        </form>
+    </div>
+    }
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date / Heure</th>
+                        <th>Trajet</th>
+                        <th>Bus</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (v of voyages(); track v.id) {
+                    <tr>
+                        <td>
+                            <div class="date-cell">
+                                <div class="day">{{ v.date_depart | date:'dd/MM' }}</div>
+                                <div class="time">{{ v.heure_depart }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="path">
+                                {{ v.ville_depart }} <mat-icon>arrow_forward</mat-icon> {{ v.ville_arrivee }}
+                            </div>
+                        </td>
+                        <td>{{ v.vehicule_immatriculation }}</td>
+                        <td>
+                            <span class="status-badge" [class]="v.statut.toLowerCase()">
+                                {{ v.statut }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn"><mat-icon>visibility</mat-icon></button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="5" class="text-center py-8">Aucun voyage programmé.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+            <gev-pagination [totalItems]="voyages().length" [pageSize]="pageSize()" [currentPage]="currentPage()"
+                (pageChange)="currentPage.set($any($event))">
+            </gev-pagination>
+        </div>
+    </div>
+</div>

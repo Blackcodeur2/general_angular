@@ -1,0 +1,92 @@
+<div class="dashboard-page">
+    <div class="header-row">
+        <h1>Aperçu Global</h1>
+        <div class="date-filter">Toutes les données ▼</div>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Chargement des statistiques...</p>
+    </div>
+    } @else {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="icon bg-blue">🏢</div>
+            <div class="stat-info">
+                <span class="label">Agences</span>
+                <span class="value">{{ totalAgencies() }}</span>
+                <span class="trend">Agences de transport</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="icon bg-green">💰</div>
+            <div class="stat-info">
+                <span class="label">Revenu Estimé</span>
+                <span class="value">{{ totalRevenue() | number }} FCFA</span>
+                <span class="trend up">Basé sur {{ totalTrips() }} voyages</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="icon bg-purple">👥</div>
+            <div class="stat-info">
+                <span class="label">Utilisateurs</span>
+                <span class="value">{{ totalUsers() | number }}</span>
+                <span class="trend">Tous les rôles confondus</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="icon bg-orange">📍</div>
+            <div class="stat-info">
+                <span class="label">Gares</span>
+                <span class="value">{{ totalGares() }}</span>
+                <span class="trend">Stations du réseau</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity / Charts Placeholder -->
+    <div class="dashboard-content">
+        <div class="chart-card">
+            <h3>Aperçu des Revenus</h3>
+            <div class="chart-placeholder">
+                [Graphique: Revenu vs Temps]
+            </div>
+        </div>
+
+        <div class="activity-card">
+            <h3>Activités Récentes</h3>
+            <ul class="activity-list">
+                <li>
+                    <span class="dot green"></span>
+                    <div>
+                        <strong>Nouvelle Agence Créée</strong><br>
+                        <small>General Express ajoutée par Admin</small>
+                    </div>
+                    <span class="time">2h ago</span>
+                </li>
+                <li>
+                    <span class="dot blue"></span>
+                    <div>
+                        <strong>Abonnement Renouvelé</strong><br>
+                        <small>Touristique Express a renouvelé son plan</small>
+                    </div>
+                    <span class="time">5h ago</span>
+                </li>
+                <li>
+                    <span class="dot red"></span>
+                    <div>
+                        <strong>Alerte Urgente</strong><br>
+                        <small>Charge serveur élevée pendant les heures de pointe</small>
+                    </div>
+                    <span class="time">1d ago</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    }
+</div>

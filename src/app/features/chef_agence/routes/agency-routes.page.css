@@ -1,0 +1,152 @@
+.page-container {
+    padding: 10px;
+    animation: fadeIn 0.4s ease-out;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.625rem;
+    border-radius: 8px;
+    border: 1px solid #D1D5DB;
+    font-size: 0.9rem;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.data-table td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.route-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-circle {
+    width: 32px;
+    height: 32px;
+    background: #F0FDF4;
+    color: #16A34A;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.path {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.arrow {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #9CA3AF;
+}
+
+.price {
+    font-weight: 800;
+    color: #16A34A;
+}
+
+.btn-primary {
+    background: #3B82F6;
+    color: white;
+    border: none;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
