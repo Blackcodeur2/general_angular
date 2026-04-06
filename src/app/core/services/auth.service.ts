@@ -32,7 +32,8 @@ export class AuthService {
   }
 
   register(data: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/register/client`, data).pipe(
+    const role = data.role_user?.toLowerCase() || 'client';
+    return this.http.post<AuthResponse>(`${this.API}/register/${role}`, data).pipe(
       tap(response => {
         const token = response.token || response.access_token;
         if (token && response.user) {

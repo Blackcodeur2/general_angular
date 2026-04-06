@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../services/auth/auth-service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-chauffeur-layout',

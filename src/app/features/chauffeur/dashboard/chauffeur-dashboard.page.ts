@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { VoyageService } from '../../../services/voyage/voyage.service';
+import { VoyageService } from '../../../services/chauffeur/voyage.service';
 import { Voyage } from '../../../models/voyage';
 
 @Component({

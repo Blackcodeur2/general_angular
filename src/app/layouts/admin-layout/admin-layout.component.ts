@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../services/auth/auth-service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-admin-layout',
@@ -20,6 +20,7 @@ export class AdminLayoutComponent implements OnInit {
 
     menuItems = [
         { label: 'Tableau de bord', icon: 'dashboard', route: '/admin/dashboard' },
+        { label: 'Vérifications KWC', icon: 'verified_user', route: '/admin/kyc' },
         { label: 'Agences', icon: 'business', route: '/admin/agencies' },
         { label: 'Utilisateurs', icon: 'people', route: '/admin/users' },
         { label: 'Mon profil', icon: 'person', route: '/admin/profile' },

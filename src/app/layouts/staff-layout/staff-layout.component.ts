@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 //import { NotificationService } from '../../services/notification.service';
-import { AuthService } from '../../services/auth/auth-service';
+import { AuthService } from '../../core/services/auth.service';
 //import { LanguageSwitcherComponent } from '../../../shared/components/language-switcher/language-switcher.component';
 
 

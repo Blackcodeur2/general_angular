@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, TitleCasePipe, DatePipe } from '@angular/common';
-import { AuthService } from '../../services/auth/auth-service';
+import { AuthService } from '../../core/services/auth.service';
 import { MatIconModule } from '@angular/material/icon';
-import { ButtonComponent } from '../../shared/button/button.component';
+import { ButtonComponent } from '../../shared/components/button/button.component';
 
 @Component({
     selector: 'app-profile-page',

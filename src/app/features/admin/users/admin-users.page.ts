@@ -2,13 +2,13 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { UserService } from '../../../services/user/user.service';
-import { AgenceService } from '../../../services/agence/agence.service';
+import { UserService } from '../../../services/admin/user.service';
+import { AgenceService } from '../../../services/admin/agence.service';
 import { User } from '../../../models/user';
 import { Agence } from '../../../models/agence';
 import { Gare } from '../../../models/gare';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import Swal from 'sweetalert2';
 
 @Component({

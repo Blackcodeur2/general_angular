@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Bus } from '../../models/bus';
 import { Route } from '../../models/route';
 import { Voyage } from '../../models/voyage';
-import { AuthService } from '../auth/auth-service';
+import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../models/user';
 
 @Injectable({

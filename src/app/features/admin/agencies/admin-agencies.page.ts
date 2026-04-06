@@ -1,17 +1,17 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { AgenceService } from '../../../services/agence/agence.service';
+import { AgenceService } from '../../../services/admin/agence.service';
 import { Agence } from '../../../models/agence';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-admin-agencies',
     standalone: true,
-    imports: [CommonModule, MatIconModule, DatePipe, ReactiveFormsModule, ButtonComponent, PaginationComponent],
+    imports: [CommonModule, MatIconModule, ReactiveFormsModule, ButtonComponent, PaginationComponent],
     templateUrl: './admin-agencies.page.html',
     styleUrls: ['./admin-agencies.page.css']
 })

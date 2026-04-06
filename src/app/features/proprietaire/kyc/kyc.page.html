@@ -1,0 +1,268 @@
+<div class="kyc-container">
+
+  <!-- HEADER -->
+  <header class="kyc-header">
+    <div class="kyc-header__icon">🛡️</div>
+    <h1>Vérification KWC</h1>
+    <p>Soumettez vos documents d'identité pour activer votre compte Propriétaire. Traitement sous 24 à 48h.</p>
+  </header>
+
+  <!-- STEPPER -->
+  <div class="stepper">
+    <div class="stepper-step" [class.active]="step() >= 1" [class.done]="step() > 1">
+      <div class="stepper-step__circle">
+        @if (step() > 1) { <mat-icon>check</mat-icon> } @else { 1 }
+      </div>
+      <span>Informations</span>
+    </div>
+    <div class="stepper-line" [class.done]="step() > 1"></div>
+    <div class="stepper-step" [class.active]="step() >= 2" [class.done]="step() > 2">
+      <div class="stepper-step__circle">
+        @if (step() > 2) { <mat-icon>check</mat-icon> } @else { 2 }
+      </div>
+      <span>Documents</span>
+    </div>
+    <div class="stepper-line" [class.done]="step() > 2"></div>
+    <div class="stepper-step" [class.active]="step() >= 3">
+      <div class="stepper-step__circle">3</div>
+      <span>Confirmation</span>
+    </div>
+  </div>
+
+  <!-- ─── STEP 1 : INFORMATIONS DU DOCUMENT ─── -->
+  @if (step() === 1) {
+    <div class="kyc-card animate-in">
+      <h2 class="card-title">
+        <mat-icon>badge</mat-icon>
+        Informations du document
+      </h2>
+
+      <form [formGroup]="infoForm" class="info-form" (ngSubmit)="nextStep()">
+        <div class="field">
+          <label for="doc-type">Type de document *</label>
+          <div class="select-wrapper">
+            <select id="doc-type" formControlName="document_type">
+              <option value="CNI">Carte Nationale d'Identité (CNI)</option>
+              <option value="PASSPORT">Passeport</option>
+              <option value="RESIDENCE_PERMIT">Permis de séjour</option>
+            </select>
+            <mat-icon class="select-arrow">expand_more</mat-icon>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="doc-number">Numéro du document *</label>
+          <input id="doc-number" type="text" formControlName="document_number"
+            placeholder="Ex: 20240001234">
+          @if (shouldShowError('document_number')) {
+            <span class="field-error">Ce champ est obligatoire.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="expiry">Date d'expiration *</label>
+          <input id="expiry" type="date" formControlName="expiry_date">
+          @if (shouldShowError('expiry_date')) {
+            <span class="field-error">Ce champ est obligatoire.</span>
+          }
+        </div>
+
+        <div class="info-notice">
+          <mat-icon>info_outline</mat-icon>
+          <p>Assurez-vous que les informations correspondent exactement à votre document officiel.</p>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          Continuer <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </form>
+    </div>
+  }
+
+  <!-- ─── STEP 2 : UPLOAD DES FICHIERS ─── -->
+  @if (step() === 2) {
+    <div class="kyc-card animate-in">
+      <h2 class="card-title">
+        <mat-icon>upload_file</mat-icon>
+        Upload des documents
+      </h2>
+
+      <div class="upload-hint">
+        <mat-icon>photo_camera</mat-icon>
+        <p>Chargez des photos nettes de votre document. Formats acceptés : <strong>JPG, PNG, WEBP, PDF</strong>. Taille max : <strong>5 Mo</strong> par fichier.</p>
+      </div>
+
+      <div class="upload-grid">
+
+        <!-- Recto -->
+        <div class="upload-slot">
+          <div class="upload-label">
+            <span class="required-badge">Requis</span>
+            <span>Recto du document</span>
+          </div>
+          @if (fileFront()) {
+            <div class="file-preview">
+              @if (fileFront()!.preview) {
+                <img [src]="fileFront()!.preview" alt="Recto" class="preview-img">
+              } @else {
+                <div class="pdf-preview">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>PDF</span>
+                </div>
+              }
+              <div class="file-meta">
+                <span class="file-name">{{ fileFront()!.name }}</span>
+                <span class="file-size">{{ fileFront()!.size }}</span>
+              </div>
+              <button class="file-remove" (click)="removeFile('front')" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @else {
+            <label class="drop-zone" for="input-front" [class.error]="fileErrors()['front']">
+              <input id="input-front" type="file" hidden
+                accept="image/jpeg,image/png,image/webp,application/pdf"
+                (change)="onFileSelect($event, 'front')">
+              <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
+              <span class="drop-text">Cliquer pour uploader</span>
+              <span class="drop-sub">ou glisser-déposer ici</span>
+            </label>
+          }
+          @if (fileErrors()['front']) {
+            <span class="field-error">{{ fileErrors()['front'] }}</span>
+          }
+        </div>
+
+        <!-- Verso -->
+        <div class="upload-slot">
+          <div class="upload-label">
+            <span class="required-badge">Requis</span>
+            <span>Verso du document</span>
+          </div>
+          @if (fileBack()) {
+            <div class="file-preview">
+              @if (fileBack()!.preview) {
+                <img [src]="fileBack()!.preview" alt="Verso" class="preview-img">
+              } @else {
+                <div class="pdf-preview">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>PDF</span>
+                </div>
+              }
+              <div class="file-meta">
+                <span class="file-name">{{ fileBack()!.name }}</span>
+                <span class="file-size">{{ fileBack()!.size }}</span>
+              </div>
+              <button class="file-remove" (click)="removeFile('back')" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @else {
+            <label class="drop-zone" for="input-back" [class.error]="fileErrors()['back']">
+              <input id="input-back" type="file" hidden
+                accept="image/jpeg,image/png,image/webp,application/pdf"
+                (change)="onFileSelect($event, 'back')">
+              <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
+              <span class="drop-text">Cliquer pour uploader</span>
+              <span class="drop-sub">ou glisser-déposer ici</span>
+            </label>
+          }
+          @if (fileErrors()['back']) {
+            <span class="field-error">{{ fileErrors()['back'] }}</span>
+          }
+        </div>
+
+        <!-- Selfie -->
+        <div class="upload-slot upload-slot--full">
+          <div class="upload-label">
+            <span class="required-badge">Requis</span>
+            <span>Selfie avec le document</span>
+          </div>
+          <p class="upload-slot__desc">Prenez une photo de vous en tenant votre document bien visible à côté de votre visage.</p>
+          @if (fileSelfie()) {
+            <div class="file-preview">
+              @if (fileSelfie()!.preview) {
+                <img [src]="fileSelfie()!.preview" alt="Selfie" class="preview-img preview-img--wide">
+              }
+              <div class="file-meta">
+                <span class="file-name">{{ fileSelfie()!.name }}</span>
+                <span class="file-size">{{ fileSelfie()!.size }}</span>
+              </div>
+              <button class="file-remove" (click)="removeFile('selfie')" type="button">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          } @else {
+            <label class="drop-zone drop-zone--wide" for="input-selfie" [class.error]="fileErrors()['selfie']">
+              <input id="input-selfie" type="file" hidden
+                accept="image/jpeg,image/png,image/webp"
+                (change)="onFileSelect($event, 'selfie')">
+              <mat-icon class="drop-icon">face</mat-icon>
+              <span class="drop-text">Cliquer pour uploader votre selfie</span>
+              <span class="drop-sub">JPG, PNG ou WEBP uniquement</span>
+            </label>
+          }
+          @if (fileErrors()['selfie']) {
+            <span class="field-error">{{ fileErrors()['selfie'] }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Progress bar (pendant l'envoi) -->
+      @if (isSubmitting()) {
+        <div class="progress-section">
+          <div class="progress-label">
+            <span>Envoi des documents...</span>
+            <span>{{ uploadProgress() }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="uploadProgress()"></div>
+          </div>
+        </div>
+      }
+
+      <div class="step-actions">
+        <button class="btn-secondary" (click)="prevStep()" type="button" [disabled]="isSubmitting()">
+          <mat-icon>arrow_back</mat-icon> Retour
+        </button>
+        <button class="btn-primary" (click)="onSubmit()"
+          [disabled]="!canProceedStep2() || isSubmitting()" type="button">
+          @if (isSubmitting()) {
+            <mat-icon class="spin">sync</mat-icon> Envoi en cours...
+          } @else {
+            Soumettre le dossier <mat-icon>send</mat-icon>
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ─── STEP 3 : CONFIRMATION ─── -->
+  @if (step() === 3) {
+    <div class="kyc-card animate-in confirmation-card">
+      <div class="confirmation-icon">⏳</div>
+      <h2>Dossier en cours de vérification</h2>
+      <p>Vos documents ont bien été reçus. Notre équipe de conformité va les analyser sous <strong>24 à 48 heures ouvrables</strong>. Vous recevrez une notification par email dès que votre compte est activé.</p>
+
+      <div class="confirmation-steps">
+        <div class="conf-step done">
+          <mat-icon>check_circle</mat-icon>
+          <span>Documents reçus</span>
+        </div>
+        <div class="conf-step pending">
+          <mat-icon>hourglass_top</mat-icon>
+          <span>Vérification en cours</span>
+        </div>
+        <div class="conf-step waiting">
+          <mat-icon>radio_button_unchecked</mat-icon>
+          <span>Activation du compte</span>
+        </div>
+      </div>
+
+      <a routerLink="/proprietaire/dashboard" class="btn-primary">
+        Retour au tableau de bord
+      </a>
+    </div>
+  }
+
+</div>

@@ -1,8 +1,8 @@
 import { inject, ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../services/auth/auth-service';
-import { ButtonComponent } from '../../../shared/button/button.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 
@@ -37,16 +37,25 @@ export class LoginComponent {
       next: (response: any) => {
         try {
           const role = this.authService.getRole();
-          if (role === 'ADMIN') {
-            this.router.navigate(['/admin/dashboard']);
-          } else if (role === 'CHEF_AGENCE') {
-            this.router.navigate(['/chef_agence/dashboard']);
-          }else if(role === 'CHAUFFEUR') {
-            this.router.navigate(['/chauffeur/dashboard']);
-          }else if(role === 'AGENT') {
-            this.router.navigate(['/agent/dashboard']);
-          }else{
-            this.router.navigate(['/client/home'])
+          switch (role) {
+            case 'ADMIN':
+              this.router.navigate(['/admin/dashboard']);
+              break;
+            case 'CHEF_AGENCE':
+              this.router.navigate(['/chef_agence/dashboard']);
+              break;
+            case 'CHAUFFEUR':
+              this.router.navigate(['/chauffeur/dashboard']);
+              break;
+            case 'AGENT':
+              this.router.navigate(['/agent/dashboard']);
+              break;
+            case 'PROPRIETAIRE':
+              this.router.navigate(['/proprietaire/dashboard']);
+              break;
+            default:
+              this.router.navigate(['/client/home']);
+              break;
           }
         } catch (error) {
           console.error('Session save error', error);

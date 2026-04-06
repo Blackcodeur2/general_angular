@@ -1,0 +1,99 @@
+/* Re-uses agencies.page.css styles (shared design system) */
+/* Copy of the same file to keep components decoupled */
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in { animation: slideIn 0.35s ease-out both; }
+
+.page-container { display: flex; flex-direction: column; gap: 1.75rem; }
+
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.header-text h1 { font-size: 1.875rem; font-weight: 800; color: #1e293b; margin-bottom: 0.25rem; }
+.header-text p { color: #64748b; font-size: 0.95rem; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem;
+  cursor: pointer; text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); white-space: nowrap;
+}
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.25rem; background: #f1f5f9; color: #475569;
+  border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-secondary:hover { background: #e2e8f0; }
+
+.form-card { background: white; border-radius: 20px; border: 1px solid #ede9fe; box-shadow: 0 4px 20px rgba(124,58,237,0.06); overflow: hidden; }
+.form-card__header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-bottom: 1px solid #ddd6fe; }
+.form-card__header h2 { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 700; color: #4c1d95; }
+.form-card__header mat-icon { color: #7c3aed; }
+
+.icon-btn { background: rgba(124,58,237,0.08); border: none; color: #7c3aed; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+.icon-btn:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; padding: 2rem; }
+.field { display: flex; flex-direction: column; gap: 0.5rem; }
+.field--full { grid-column: 1 / -1; }
+.field label { font-size: 0.8rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap mat-icon:first-child { position: absolute; left: 0.875rem; color: #94a3b8; font-size: 18px; width: 18px; height: 18px; pointer-events: none; }
+.input-wrap input, .input-wrap select { width: 100%; padding: 0.875rem 1rem 0.875rem 3rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; color: #1e293b; background: white; transition: all 0.2s; }
+.input-wrap input:focus, .input-wrap select:focus { border-color: #7c3aed; outline: none; box-shadow: 0 0 0 4px rgba(124,58,237,0.1); }
+
+.toggle-pw { position: absolute; right: 0.875rem; background: none; border: none; cursor: pointer; color: #94a3b8; display: flex; align-items: center; }
+.toggle-pw:hover { color: #7c3aed; }
+
+.field-error { font-size: 0.75rem; color: #ef4444; font-weight: 600; margin-top: 2px; }
+.field-hint { font-size: 0.8rem; color: #f59e0b; }
+.field-hint a { color: #7c3aed; text-decoration: underline; }
+
+.form-section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #7c3aed; padding-bottom: 0.5rem; border-bottom: 2px solid #ede9fe; margin-top: 0.5rem; }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 0.5rem; }
+
+.loading-state, .empty-state { background: white; border-radius: 20px; padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; border: 2px dashed #e2e8f0; }
+.loading-state { border-style: solid; border-color: transparent; }
+.large-icon { font-size: 3rem !important; width: 48px; height: 48px; color: #7c3aed; }
+.empty-state mat-icon { font-size: 4rem !important; width: 64px; height: 64px; color: #c4b5fd; }
+.empty-state h2 { font-weight: 700; color: #1e293b; }
+.empty-state p { color: #64748b; max-width: 400px; }
+
+.managers-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.manager-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; transition: box-shadow 0.2s; }
+.manager-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.manager-avatar { width: 48px; height: 48px; min-width: 48px; background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; }
+
+.manager-info { flex: 1; min-width: 0; }
+.manager-info h3 { font-weight: 700; color: #1e293b; margin-bottom: 0.4rem; }
+
+.manager-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.8rem; color: #64748b; }
+.manager-meta span { display: inline-flex; align-items: center; gap: 0.25rem; }
+.manager-meta mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+.agency-badge { background: #ede9fe; color: #5b21b6; padding: 2px 8px; border-radius: 99px; font-weight: 700; }
+
+.manager-actions { display: flex; gap: 0.5rem; }
+.action-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.875rem; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.action-btn--delete { background: #fef2f2; color: #ef4444; }
+.action-btn--delete:hover { background: #ef4444; color: white; }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; }
+  .manager-card { flex-wrap: wrap; }
+}

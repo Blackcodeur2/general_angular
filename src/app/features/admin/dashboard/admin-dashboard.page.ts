@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../../services/user/user.service';
-import { AgenceService } from '../../../services/agence/agence.service';
+import { UserService } from '../../../services/admin/user.service';
+import { AgenceService } from '../../../services/admin/agence.service';
 import { forkJoin } from 'rxjs';
 
 @Component({

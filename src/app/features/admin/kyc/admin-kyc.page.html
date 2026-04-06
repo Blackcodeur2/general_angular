@@ -1,0 +1,98 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>Vérifications KWC</h1>
+      <p>Approuvez ou rejetez les demandes de création de comptes Propriétaires.</p>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-icon class="spin large-icon">sync</mat-icon>
+      <p>Chargement des dossiers KWC...</p>
+    </div>
+  }
+
+  @if (!isLoading() && submissions().length === 0) {
+    <div class="empty-state">
+      <mat-icon>verified_user</mat-icon>
+      <h2>Aucun dossier en attente</h2>
+      <p>Toutes les demandes de vérification KWC ont été traitées.</p>
+    </div>
+  }
+
+  @if (!isLoading() && submissions().length > 0) {
+    <div class="submissions-list">
+      @for (sub of submissions(); track sub.user.id) {
+        <div class="submission-card animate-in">
+          <div class="card-header">
+            <div class="user-info">
+              <div class="avatar">{{ sub.user.prenom[0] }}{{ sub.user.nom[0] }}</div>
+              <div>
+                <h3>{{ sub.user.prenom }} {{ sub.user.nom }}</h3>
+                <span class="user-meta">{{ sub.user.email }} • {{ sub.user.telephone }}</span>
+              </div>
+            </div>
+            <div class="badge-pending">En attente</div>
+          </div>
+
+          <div class="documents-grid">
+            @for (doc of sub.documents; track doc.id) {
+              <div class="document-item" (click)="viewDocument(doc)">
+                <div class="doc-icon">
+                  <mat-icon>{{ doc.chemin_fichier.endsWith('.pdf') ? 'picture_as_pdf' : 'image' }}</mat-icon>
+                </div>
+                <div class="doc-details">
+                  <span class="doc-type">{{ doc.type | uppercase }}</span>
+                  @if (doc.commentaire) {
+                    <span class="doc-comment">{{ doc.commentaire }}</span>
+                  }
+                </div>
+                <mat-icon class="view-icon">visibility</mat-icon>
+              </div>
+            }
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-reject" (click)="reject(sub.user)" [disabled]="isProcessing()">
+              <mat-icon>close</mat-icon> Rejeter
+            </button>
+            <button class="btn-approve" (click)="approve(sub.user)" [disabled]="isProcessing()">
+              <mat-icon>check</mat-icon> Approuver
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Modal de prévisualisation de document -->
+  @if (previewDocument()) {
+    <div class="modal-overlay" (click)="closePreview()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Document : {{ previewDocument()!.type | uppercase }}</h3>
+          <div class="modal-actions">
+            <a [href]="previewDocument()!.rawUrl" target="_blank" class="icon-btn" title="Ouvrir dans un nouvel onglet" style="margin-right: 8px;">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+            <button class="icon-btn" (click)="closePreview()"><mat-icon>close</mat-icon></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          @if (previewDocument()!.isPdf) {
+            <iframe [src]="previewDocument()!.url" width="100%" height="500px"></iframe>
+          } @else {
+            <img [src]="previewDocument()!.url" alt="Document KWC" [class.selfie-img]="previewDocument()!.type === 'selfie'">
+          }
+          @if (previewDocument()!.comment) {
+            <div class="doc-info-box">
+              <mat-icon>info</mat-icon>
+              <span>{{ previewDocument()!.comment }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

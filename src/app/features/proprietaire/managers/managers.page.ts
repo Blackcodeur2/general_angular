@@ -1,0 +1,157 @@
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
+import { Agence } from '../../../models/agence';
+import { User } from '../../../models/user';
+import Swal from 'sweetalert2';
+
+@Component({
+  selector: 'app-managers',
+  standalone: true,
+  imports: [CommonModule, MatIconModule, ReactiveFormsModule],
+  templateUrl: './managers.page.html',
+  styleUrls: ['./managers.page.css']
+})
+export class ManagersPage implements OnInit {
+  private proprietaireService = inject(ProprietaireService);
+  private fb = inject(FormBuilder);
+
+  managers = signal<User[]>([]);
+  agencies = signal<Agence[]>([]);
+  isLoading = signal(true);
+  isSubmitting = signal(false);
+  showForm = signal(false);
+  showPassword = signal(false);
+
+  gerantForm = this.fb.nonNullable.group({
+    prenom:               ['', Validators.required],
+    nom:                  ['', Validators.required],
+    email:                ['', [Validators.required, Validators.email]],
+    telephone:            ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
+    num_cni:              ['', Validators.required],
+    date_naissance:       ['', Validators.required],
+    agence_id:            [0,  Validators.required],
+    password:             ['', [Validators.required, Validators.minLength(8)]],
+    password_confirmation: ['', Validators.required],
+  }, { validators: this.passwordMatchValidator });
+
+  private passwordMatchValidator(ctrl: any) {
+    const pw  = ctrl.get('password')?.value;
+    const cpw = ctrl.get('password_confirmation')?.value;
+    if (pw && cpw && pw !== cpw) {
+      ctrl.get('password_confirmation')?.setErrors({ mismatch: true });
+      return { mismatch: true };
+    }
+    return null;
+  }
+
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.isLoading.set(true);
+    this.proprietaireService.getMyGerants().subscribe({
+      next: (data) => {
+        this.managers.set(Array.isArray(data) ? data : (data as any).data ?? []);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+    this.proprietaireService.getMyAgences().subscribe({
+      next: (data) => {
+        this.agencies.set(Array.isArray(data) ? data : (data as any).data ?? []);
+      }
+    });
+  }
+
+  openForm() {
+    this.showForm.set(true);
+    this.gerantForm.reset();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  closeForm() {
+    this.showForm.set(false);
+    this.gerantForm.reset();
+  }
+
+  togglePassword() {
+    this.showPassword.update(v => !v);
+  }
+
+  onSubmit() {
+    if (this.gerantForm.invalid) {
+      this.gerantForm.markAllAsTouched();
+      return;
+    }
+    this.isSubmitting.set(true);
+    const payload = this.gerantForm.getRawValue();
+
+    this.proprietaireService.createGerant(payload).subscribe({
+      next: (newManager) => {
+        this.isSubmitting.set(false);
+        this.managers.update(list => [newManager, ...list]);
+        Swal.fire({ icon: 'success', title: 'Gérant créé !', text: 'Le gérant a accès à son espace et peut se connecter.', confirmButtonColor: '#7c3aed' });
+        this.closeForm();
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        const errors = err.error?.errors;
+        const message = errors
+          ? Object.values(errors).flat().join('\n')
+          : (err.error?.message || 'Impossible de créer le gérant.');
+        Swal.fire({ icon: 'error', title: 'Erreur', text: message, confirmButtonColor: '#7c3aed' });
+      }
+    });
+  }
+
+  removeManager(manager: User) {
+    Swal.fire({
+      title: 'Retirer ce gérant ?',
+      text: `${manager.prenom} ${manager.nom} n'aura plus accès à l'agence.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Retirer',
+      cancelButtonText: 'Annuler',
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.proprietaireService.removeGerant(manager.id).subscribe({
+          next: () => {
+            this.managers.update(list => list.filter(m => m.id !== manager.id));
+            Swal.fire({ icon: 'success', title: 'Gérant retiré', timer: 1500, showConfirmButton: false });
+          },
+          error: () => Swal.fire('Erreur', 'Impossible de retirer ce gérant.', 'error')
+        });
+      }
+    });
+  }
+
+  agenceName(id: number): string {
+    return this.agencies().find(a => a.id === id)?.nom_agence ?? `Agence #${id}`;
+  }
+
+  shouldShowError(field: string): boolean {
+    const ctrl = this.gerantForm.get(field);
+    return !!ctrl && ctrl.touched && ctrl.invalid;
+  }
+
+  errorMessage(field: string): string {
+    const errors = this.gerantForm.get(field)?.errors;
+    if (!errors) return '';
+    if (errors['required']) return 'Champ obligatoire.';
+    if (errors['email']) return 'Email invalide.';
+    if (errors['minlength']) return `Minimum ${errors['minlength'].requiredLength} caractères.`;
+    if (errors['pattern']) return 'Format invalide (ex: 6xx xxx xxx).';
+    if (errors['mismatch']) return 'Les mots de passe ne correspondent pas.';
+    return 'Valeur invalide.';
+  }
+
+  getInitials(manager: User): string {
+    return ((manager.prenom?.[0] ?? '') + (manager.nom?.[0] ?? '')).toUpperCase() || '?';
+  }
+}

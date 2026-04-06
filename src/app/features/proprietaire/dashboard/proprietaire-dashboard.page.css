@@ -1,0 +1,142 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.welcome-text h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-text p {
+  color: #64748b;
+}
+
+.kyc-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.kyc-badge--not_started { background: #f1f5f9; color: #64748b; }
+.kyc-badge--pending { background: #fef3c7; color: #d97706; }
+.kyc-badge--verified { background: #dcfce7; color: #15803d; }
+.kyc-badge--rejected { background: #fee2e2; color: #b91c1c; }
+
+/* Alert Card */
+.alert-card {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-left: 4px solid #3b82f6;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.alert-icon { font-size: 2rem; }
+.alert-content h3 { font-weight: 700; margin-bottom: 0.25rem; }
+.alert-content p { font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; }
+.alert-action {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.alert-action:hover { background: #2563eb; transform: translateX(2px); }
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-info { display: flex; flex-direction: column; }
+.stat-label { font-size: 0.875rem; color: #64748b; font-weight: 600; }
+.stat-value { font-size: 1.5rem; font-weight: 800; color: #1e293b; }
+
+/* Quick Actions */
+.quick-actions { margin-top: 1rem; }
+.section-header h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.action-btn mat-icon { font-size: 2.5rem; width: 40px; height: 40px; }
+.action-btn span { font-weight: 700; font-size: 0.95rem; }
+
+@media (max-width: 640px) {
+  .welcome-section { flex-direction: column; align-items: stretch; }
+  .kyc-badge { justify-content: center; }
+}

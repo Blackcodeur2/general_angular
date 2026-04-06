@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { VoyageService } from '../../../services/voyage/voyage.service';
+import { VoyageService } from '../../../services/chauffeur/voyage.service';
 import { Incident } from '../../../models/incident';
 
 @Component({

@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../services/auth/auth-service';
-import { ButtonComponent } from '../../../shared/button/button.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
 
 @Component({
     selector: 'app-reset-password',

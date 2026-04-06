@@ -1,0 +1,66 @@
+<div class="dashboard-container">
+  <header class="welcome-section">
+    <div class="welcome-text">
+      <h1>Bienvenue, {{ userName() }} ! 👋</h1>
+      <p>Gérez vos agences et suivez vos performances en temps réel.</p>
+    </div>
+    
+    <div class="kyc-badge" [class]="'kyc-badge--' + kycStatus().toLowerCase()">
+      <mat-icon>{{ kycStatus() === 'VERIFIED' ? 'verified' : 'info' }}</mat-icon>
+      <span>
+        @switch (kycStatus()) {
+          @case ('NOT_STARTED') { Statut KWC: Non démarré }
+          @case ('PENDING') { Statut KWC: En attente }
+          @case ('VERIFIED') { Compte Vérifié }
+          @case ('REJECTED') { Vérification rejetée }
+        }
+      </span>
+    </div>
+  </header>
+
+  <!-- Info Cards -->
+  @if (kycStatus() === 'NOT_STARTED') {
+    <div class="alert-card animate-pulse">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <h3>Action requise : Vérification KWC</h3>
+        <p>Pour commencer à ajouter des agences, vous devez d'abord vérifier votre identité.</p>
+        <a routerLink="/proprietaire/kyc" class="alert-action">Compléter mon profil</a>
+      </div>
+    </div>
+  }
+
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-card">
+        <div class="stat-icon" [style.background-color]="stat.color + '15'" [style.color]="stat.color">
+          <mat-icon>{{ stat.icon }}</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">{{ stat.label }}</span>
+          <span class="stat-value">{{ stat.value }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <section class="quick-actions">
+    <header class="section-header">
+      <h2>Actions rapides</h2>
+    </header>
+    <div class="actions-grid">
+      <button class="action-btn" routerLink="/proprietaire/agencies">
+        <mat-icon>add_business</mat-icon>
+        <span>Ajouter une agence</span>
+      </button>
+      <button class="action-btn" routerLink="/proprietaire/managers">
+        <mat-icon>person_add</mat-icon>
+        <span>Recruter un gérant</span>
+      </button>
+      <button class="action-btn">
+        <mat-icon>assessment</mat-icon>
+        <span>Rapports financiers</span>
+      </button>
+    </div>
+  </section>
+</div>

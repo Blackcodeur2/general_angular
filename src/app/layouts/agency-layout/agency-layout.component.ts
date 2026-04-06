@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../services/auth/auth-service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-agency-layout',

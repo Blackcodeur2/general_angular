@@ -1,9 +1,9 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { VoyageService } from '../../../services/voyage/voyage.service';
+import { VoyageService } from '../../../services/chauffeur/voyage.service';
 import { Voyage } from '../../../models/voyage';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-voyage-history',

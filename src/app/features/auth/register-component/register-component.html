@@ -6,6 +6,28 @@
     </header>
 
     <form class="auth__form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      
+      <div class="field field--full">
+        <label class="field__label">Je suis un...</label>
+        <div class="role-selector">
+          <label class="role-option" [class.role-option--active]="registerForm.get('role_user')?.value === 'CLIENT'">
+            <input type="radio" formControlName="role_user" value="CLIENT" class="role-radio">
+            <span class="role-icon">🎒</span>
+            <div class="role-info">
+              <span class="role-name">Client</span>
+              <span class="role-desc">Je voyage avec GEV</span>
+            </div>
+          </label>
+          <label class="role-option" [class.role-option--active]="registerForm.get('role_user')?.value === 'PROPRIETAIRE'">
+            <input type="radio" formControlName="role_user" value="PROPRIETAIRE" class="role-radio">
+            <span class="role-icon">🏢</span>
+            <div class="role-info">
+              <span class="role-name">Propriétaire</span>
+              <span class="role-desc">Je gère mes agences</span>
+            </div>
+          </label>
+        </div>
+      </div>
 
       <div class="field">
         <label class="field__label" for="prenom">Numero de CNI</label>

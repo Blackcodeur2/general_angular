@@ -1,8 +1,8 @@
 import { inject, ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../services/auth/auth-service';
-import { ButtonComponent } from '../../../shared/button/button.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 @Component({
@@ -20,6 +20,7 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
 
   protected readonly registerForm = this.fb.nonNullable.group({
+    role_user: ['CLIENT', [Validators.required]],
     num_cni: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     date_naissance: ['', [Validators.required]],
@@ -44,11 +45,7 @@ export class RegisterComponent {
 
     if (this.registerForm.invalid) return;
 
-    const rawValue = this.registerForm.getRawValue();
-    const data = {
-        ...rawValue,
-        role_user: 'CLIENT'
-    };
+    const data = this.registerForm.getRawValue();
     
     this.isLoading.set(true);
 
@@ -61,7 +58,12 @@ export class RegisterComponent {
           timer: 2000,
           showConfirmButton: false,
         }).then(() => {
-          this.router.navigate(['/client/home']); // Redirection vers landing page après inscription
+          const role = response.user.role_user;
+          if (role === 'PROPRIETAIRE') {
+            this.router.navigate(['/proprietaire/dashboard']);
+          } else {
+            this.router.navigate(['/client/home']);
+          }
         });
       },
       error: (error) => {

@@ -4,12 +4,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
 import { Voyage } from '../../../models/voyage';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import Swal from 'sweetalert2';
 import { Route } from '../../../models/route';
 import { Bus } from '../../../models/bus';
-import { AuthService } from '../../../services/auth/auth-service';
+import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../models/user';
 
 @Component({
