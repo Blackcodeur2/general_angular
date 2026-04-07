@@ -33,10 +33,10 @@ export class AgenciesPage implements OnInit {
   expandedAgenceId = signal<number | null>(null);
 
   agenceForm = this.fb.nonNullable.group({
-    nom_agence:   ['', [Validators.required, Validators.minLength(2)]],
-    email_agence: ['', [Validators.required, Validators.email]],
+    nom:   ['', [Validators.required, Validators.minLength(2)]], // Correspond au backend
+    email: ['', [Validators.required, Validators.email]], // Correspond au backend
     telephone:    ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
-    bp:           [''],
+    adresse:           [''], // Correspond au backend
   });
 
   gareForm = this.fb.nonNullable.group({
@@ -77,10 +77,10 @@ export class AgenciesPage implements OnInit {
     if (agence) {
       this.editingAgence.set(agence);
       this.agenceForm.patchValue({
-        nom_agence:   agence.nom_agence,
-        email_agence: agence.email_agence,
+        nom:   agence.nom, // Correspond au backend
+        email: agence.email, // Correspond au backend
         telephone:    agence.telephone,
-        bp:           agence.bp ?? '',
+        adresse:           agence.adresse ?? '', // Correspond au backend
       });
     } else {
       this.editingAgence.set(null);
@@ -132,7 +132,7 @@ export class AgenciesPage implements OnInit {
   deleteAgence(agence: Agence) {
     Swal.fire({
       title: 'Supprimer cette agence ?',
-      text: `"${agence.nom_agence}" sera définitivement supprimée.`,
+      text: `"${agence.nom}" sera définitivement supprimée.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#ef4444',

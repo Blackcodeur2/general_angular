@@ -1,7 +1,7 @@
 <div class="page-container">
   <header class="page-header">
     <div class="header-text">
-      <h1>Vérifications KWC</h1>
+      <h1>Vérifications KYC</h1>
       <p>Approuvez ou rejetez les demandes de création de comptes Propriétaires.</p>
     </div>
   </header>
@@ -9,7 +9,7 @@
   @if (isLoading()) {
     <div class="loading-state">
       <mat-icon class="spin large-icon">sync</mat-icon>
-      <p>Chargement des dossiers KWC...</p>
+      <p>Chargement des dossiers KYC...</p>
     </div>
   }
 
@@ -17,7 +17,7 @@
     <div class="empty-state">
       <mat-icon>verified_user</mat-icon>
       <h2>Aucun dossier en attente</h2>
-      <p>Toutes les demandes de vérification KWC ont été traitées.</p>
+      <p>Toutes les demandes de vérification KYC ont été traitées.</p>
     </div>
   }
 
@@ -83,7 +83,7 @@
           @if (previewDocument()!.isPdf) {
             <iframe [src]="previewDocument()!.url" width="100%" height="500px"></iframe>
           } @else {
-            <img [src]="previewDocument()!.url" alt="Document KWC" [class.selfie-img]="previewDocument()!.type === 'selfie'">
+            <img [src]="previewDocument()!.url" alt="Document KYC" [class.selfie-img]="previewDocument()!.type === 'selfie'">
           }
           @if (previewDocument()!.comment) {
             <div class="doc-info-box">

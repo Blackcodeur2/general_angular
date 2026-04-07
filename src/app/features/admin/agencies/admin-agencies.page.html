@@ -51,7 +51,7 @@
                     <select formControlName="agence_id" class="form-control">
                         <option value="">Sélectionnez une agence</option>
                         @for (agence of agences(); track agence.id) {
-                        <option [value]="agence.id">{{ agence.nom_agence }}</option>
+                        <option [value]="agence.id">{{ agence.nom }}</option>
                         }
                     </select>
                 </div>
@@ -115,12 +115,12 @@
                                     <mat-icon>business</mat-icon>
                                 </div>
                                 <div>
-                                    <div class="agence-name">{{ agence.nom_agence }}</div>
+                                    <div class="agence-name">{{ agence.nom }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ agence.bp }}</td>
-                        <td>{{ agence.email_agence }}</td>
+                        <td>{{ agence.adresse }}</td>
+                        <td>{{ agence.email }}</td>
                         <td>{{ agence.telephone }}</td>
                         <td>
                             @if (agence.gares && agence.gares.length > 0) {

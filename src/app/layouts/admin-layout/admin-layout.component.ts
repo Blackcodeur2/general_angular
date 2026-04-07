@@ -20,7 +20,7 @@ export class AdminLayoutComponent implements OnInit {
 
     menuItems = [
         { label: 'Tableau de bord', icon: 'dashboard', route: '/admin/dashboard' },
-        { label: 'Vérifications KWC', icon: 'verified_user', route: '/admin/kyc' },
+        { label: 'Vérifications KYC', icon: 'verified_user', route: '/admin/kyc' },
         { label: 'Agences', icon: 'business', route: '/admin/agencies' },
         { label: 'Utilisateurs', icon: 'people', route: '/admin/users' },
         { label: 'Mon profil', icon: 'person', route: '/admin/profile' },

@@ -6,7 +6,7 @@ export interface Bus {
     classe_bus: 'vip' | 'classique';
     nb_places: number;
     gare_id: number;
-    statut: 'disponible' | 'en_voyage' | 'en_maintenance';
+    statut: 'disponible' | 'en voyage' | 'en maintenance' | 'indisponible';
     created_at?: string;
     updated_at?: string;
 }

@@ -8,7 +8,7 @@ export interface User {
   telephone: string;
   gare_id: number;
   role_user: 'ADMIN' | 'CLIENT' | 'CHEF_AGENCE' | 'CHAUFFEUR' | 'AGENT' | 'CONTROLEUR' | 'PROPRIETAIRE';
-  kyc_status?: 'NOT_STARTED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+  statut?: string,// 'NOT_STARTED' | 'en attente' | 'approuve' | 'rejete';
   created_at?: string;
   updated_at?: string;
 }

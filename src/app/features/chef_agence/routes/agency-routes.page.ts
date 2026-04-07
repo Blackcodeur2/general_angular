@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
 import { Route } from '../../../models/route';
+import { Gare } from '../../../models/gare';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import Swal from 'sweetalert2';
@@ -22,6 +23,7 @@ export class AgencyRoutesPage implements OnInit {
   private authService = inject(AuthService);
 
   routesList = signal<Route[]>([]);
+  gares = signal<Gare[]>([]);
   showForm = signal(false);
   isSubmitting = signal(false);
 
@@ -47,12 +49,21 @@ export class AgencyRoutesPage implements OnInit {
   ngOnInit() {
     const user = this.authService.currentUser();
     if (user) {
-      this.routeForm.patchValue(
-        {
-          gare_id: user.gare_id,
-        });
+      this.routeForm.patchValue({ gare_id: user.gare_id });
     }
     this.loadRoutes();
+    this.loadGares();
+  }
+
+  loadGares() {
+    this.agencyService.getGares().subscribe({
+      next: (data: any) => {
+        this.gares.set(Array.isArray(data) ? data : (data as any).data ?? []);
+      },
+      error: () => {
+        this.gares.set([]);
+      }
+    });
   }
 
   loadRoutes() {

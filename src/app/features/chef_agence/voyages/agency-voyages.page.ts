@@ -45,9 +45,9 @@ export class AgencyVoyagesPage implements OnInit {
     date_depart: ['', Validators.required],
     trajet_id: ['', Validators.required],
     bus_id: ['', Validators.required],
-    //prix: ['', Validators.required],
+    prix: [0, Validators.required],
     chauffeur_id: ['', Validators.required],
-    statut: ['programmé'],
+    statut: ['en attente'],
     gare_id: [null as number | null],
   });
 
@@ -56,6 +56,16 @@ export class AgencyVoyagesPage implements OnInit {
     this.loadBuses();
     this.loadRoutes();
     this.loadChauffeurs();
+
+    this.voyageForm.get('trajet_id')?.valueChanges.subscribe((value: string | number | null) => {
+      if (value === null || value === '') {
+        return;
+      }
+      const route = this.routesList().find(r => r.id === Number(value));
+      if (route) {
+        this.voyageForm.patchValue({ prix: route.prix ?? 0 });
+      }
+    });
   }
 
   loadBuses() {
@@ -148,13 +158,17 @@ export class AgencyVoyagesPage implements OnInit {
   onSubmit() {
     if (this.voyageForm.invalid) return;
     this.isSubmitting.set(true);
-    this.voyageForm.value.gare_id = this.authService.currentUser()?.gare_id;
-    this.agencyService.createVoyage(this.voyageForm.value as any).subscribe({
+    const payload = {
+      ...this.voyageForm.getRawValue(),
+      gare_id: this.authService.currentUser()?.gare_id,
+    };
+
+    this.agencyService.createVoyage(payload as any).subscribe({
       next: (newVoyage) => {
         this.voyages.update(list => [newVoyage, ...list]);
         this.showForm.set(false);
         this.isSubmitting.set(false);
-        this.voyageForm.reset();
+        this.voyageForm.reset({ statut: 'en attente', prix: 0 });
         Swal.fire({ icon: 'success', title: 'Succès', text: 'Voyage programmé', timer: 2000, showConfirmButton: false });
       },
       error: () => {

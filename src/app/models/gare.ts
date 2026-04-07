@@ -1,5 +1,6 @@
 export interface Gare {
     id: number;
+    nom: string;
     ville: string;
     quartier: string;
     telephone: string;

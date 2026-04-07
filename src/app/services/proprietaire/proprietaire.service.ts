@@ -1,15 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Agence } from '../../models/agence';
 import { Gare } from '../../models/gare';
 import { User } from '../../models/user';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface CreateAgencePayload {
-  nom_agence: string;
-  email_agence: string;
+  nom: string; // Correspond au backend
+  email: string; // Correspond au backend
   telephone: string;
-  bp?: string;
+  adresse?: string; // Correspond au backend
 }
 
 export interface CreateGerantPayload {
@@ -19,7 +20,7 @@ export interface CreateGerantPayload {
   telephone: string;
   num_cni: string;
   date_naissance: string;
-  agence_id: number;
+  gare_id: number;
   password: string;
   password_confirmation: string;
 }
@@ -34,11 +35,13 @@ export interface CreateGarePayload {
 @Injectable({ providedIn: 'root' })
 export class ProprietaireService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private readonly API = 'http://127.0.0.1:8000/api';
 
   // ── Agences ──
   getMyAgences(): Observable<Agence[]> {
-    return this.http.get<Agence[]>(`${this.API}/proprietaire/agences`);
+     const user = this.authService.currentUser();
+    return this.http.get<Agence[]>(`${this.API}/proprietaire/mes-agences/${user?.id}`);
   }
 
   createAgence(payload: CreateAgencePayload): Observable<Agence> {
@@ -54,8 +57,51 @@ export class ProprietaireService {
   }
 
   // ── Gares ──
+  getMyGares(): Observable<Gare[]> {
+    return this.http.get<{ statut: boolean; data: Gare[] }>(`${this.API}/proprietaire/gares`)
+      .pipe(map(response => response.data));
+  }
+
   createGare(payload: CreateGarePayload): Observable<Gare> {
     return this.http.post<Gare>(`${this.API}/proprietaire/gares`, payload);
+  }
+
+  updateGare(id: number, payload: Partial<CreateGarePayload>): Observable<Gare> {
+    return this.http.put<Gare>(`${this.API}/proprietaire/gares/${id}`, payload);
+  }
+
+  deleteGare(id: number): Observable<any> {
+    return this.http.delete(`${this.API}/proprietaire/gares/${id}`);
+  }
+
+  // ── Buses ──
+  getMyBuses(): Observable<any[]> {
+    return this.http.get<{ statut: boolean; data: any[] }>(`${this.API}/proprietaire/buses`)
+      .pipe(map(response => response.data));
+  }
+
+  // ── Routes/Trajets ──
+  getMyTrajets(): Observable<any[]> {
+    return this.http.get<{ statut: boolean; data: any[] }>(`${this.API}/proprietaire/trajets`)
+      .pipe(map(response => response.data));
+  }
+
+  // ── Voyages ──
+  getMyVoyages(): Observable<any[]> {
+    return this.http.get<{ statut: boolean; data: any[] }>(`${this.API}/proprietaire/voyages`)
+      .pipe(map(response => response.data));
+  }
+
+  // ── Utilisateurs ──
+  getMyUtilisateurs(): Observable<User[]> {
+    return this.http.get<{ statut: boolean; data: User[] }>(`${this.API}/proprietaire/utilisateurs`)
+      .pipe(map(response => response.data));
+  }
+
+  // ── Statistiques ──
+  getMyStatistics(): Observable<any> {
+    return this.http.get<{ statut: boolean; data: any }>(`${this.API}/proprietaire/statistiques`)
+      .pipe(map(response => response.data));
   }
 
   // ── Gérants (CHEF_AGENCE) ──

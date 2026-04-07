@@ -44,7 +44,7 @@ export class AgencyStaffPage implements OnInit {
     num_cni: ['', Validators.required],
     telephone: ['', Validators.required],
     role_user: ['AGENT', Validators.required],
-    password: ['', Validators.required, Validators.minLength(8)],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     gare_id: [null as number | null | undefined],
   });
 
@@ -88,8 +88,12 @@ export class AgencyStaffPage implements OnInit {
   onSubmit() {
     if (this.staffForm.invalid) return;
     this.isSubmitting.set(true);
-    this.staffForm.value.gare_id = this.authService.currentUser()?.gare_id;
-    this.agencyService.addStaff(this.staffForm.value).subscribe({
+    const payload = {
+      ...this.staffForm.getRawValue(),
+      gare_id: this.authService.currentUser()?.gare_id,
+    };
+
+    this.agencyService.addStaff(payload).subscribe({
       next: (newMember) => {
         this.staffMembers.update(list => [newMember, ...list]);
         this.showForm.set(false);

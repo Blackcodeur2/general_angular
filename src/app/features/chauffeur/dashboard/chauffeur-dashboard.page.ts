@@ -95,12 +95,9 @@ export class ChauffeurDashboardPage implements OnInit {
       ville_arrivee: 'Douala',
       date_depart: '2026-03-21',
       heure_depart: '14:30',
-      statut: 'PROGRAMME'
+      statut: 'en attente'
     };
 
-    this.upcomingVoyages = [
-      { id: 2, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Douala', ville_arrivee: 'Yaoundé', date_depart: '2026-03-22', heure_depart: '08:00', statut: 'PROGRAMME' },
-      { id: 3, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Yaoundé', ville_arrivee: 'Bafoussam', date_depart: '2026-03-22', heure_depart: '16:00', statut: 'PROGRAMME' }
-    ];
+    this.upcomingVoyages = [];
   }
 }

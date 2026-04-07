@@ -82,19 +82,19 @@
         <div class="form-section-title field--full">Affectation & Accès</div>
 
         <div class="field field--full">
-          <label for="g-agence">Agence à gérer *</label>
+          <label for="g-gare">Gare à gérer *</label>
           <div class="input-wrap">
-            <mat-icon>business</mat-icon>
-            <select id="g-agence" formControlName="agence_id">
-              <option value="0" disabled>-- Sélectionner une agence --</option>
-              @for (agence of agencies(); track agence.id) {
-                <option [value]="agence.id">{{ agence.nom_agence }}</option>
+            <mat-icon>location_city</mat-icon>
+            <select id="g-gare" formControlName="gare_id">
+              <option value="0" disabled>-- Sélectionner une gare --</option>
+              @for (gare of gares(); track gare.id) {
+                <option [value]="gare.id">{{ gare.nom || (gare.ville + ' - ' + gare.quartier) }}</option>
               }
             </select>
           </div>
-          @if (shouldShowError('agence_id')) { <span class="field-error">Veuillez sélectionner une agence.</span> }
-          @if (agencies().length === 0) {
-            <span class="field-hint">⚠️ Aucune agence disponible. <a routerLink="/proprietaire/agencies">Créez d'abord une agence.</a></span>
+          @if (shouldShowError('gare_id')) { <span class="field-error">Veuillez sélectionner une gare.</span> }
+          @if (gares().length === 0) {
+            <span class="field-hint">⚠️ Aucune gare disponible. <a routerLink="/proprietaire/gares">Créez d'abord une gare.</a></span>
           }
         </div>
 
@@ -165,8 +165,8 @@
               <span><mat-icon>phone</mat-icon>{{ manager.telephone }}</span>
               @if (manager.gare_id) {
                 <span class="agency-badge">
-                  <mat-icon>business</mat-icon>
-                  {{ agenceName(manager.gare_id) }}
+                  <mat-icon>location_city</mat-icon>
+                  {{ gareName(manager.gare_id) }}
                 </span>
               }
             </div>

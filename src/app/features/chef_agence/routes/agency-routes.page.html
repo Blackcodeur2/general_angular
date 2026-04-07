@@ -15,12 +15,22 @@
         <form [formGroup]="routeForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Ville de départ</label>
-                    <input type="text" formControlName="depart" class="form-control" placeholder="Ex: Yaoundé" />
+                    <label>Gare de départ</label>
+                    <select formControlName="depart" class="form-control">
+                        <option value="">-- Sélectionnez une gare --</option>
+                        @for (gare of gares(); track gare.id) {
+                        <option [value]="gare.id">{{ gare.ville }} - {{ gare.quartier }}</option>
+                        }
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label>Ville d'arrivée</label>
-                    <input type="text" formControlName="arrivee" class="form-control" placeholder="Ex: Douala" />
+                    <label>Gare d'arrivée</label>
+                    <select formControlName="arrivee" class="form-control">
+                        <option value="">-- Sélectionnez une gare --</option>
+                        @for (gare of gares(); track gare.id) {
+                        <option [value]="gare.id">{{ gare.ville }} - {{ gare.quartier }}</option>
+                        }
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Prix (XAF)</label>

@@ -37,13 +37,13 @@ export class AdminKycPage implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        Swal.fire('Erreur', 'Impossible de charger les dossiers KWC.', 'error');
+        Swal.fire('Erreur', 'Impossible de charger les dossiers KYC.', 'error');
       }
     });
   }
 
   viewDocument(doc: any) {
-    const backendUrl = 'http://127.0.0.1:8000/storage'; // Adaptez selon votre configuration
+    const backendUrl = 'http://127.0.0.1:8000/storage/kwc'; // Adaptez selon votre configuration
     const fullUrl = doc.chemin_fichier.startsWith('http') ? doc.chemin_fichier : `${backendUrl}/${doc.chemin_fichier}`;
     const isPdf = fullUrl.toLowerCase().endsWith('.pdf');
     const safeUrl = isPdf ? this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl) : fullUrl;

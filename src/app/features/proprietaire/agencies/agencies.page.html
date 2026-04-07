@@ -19,7 +19,7 @@
       <div class="form-card__header">
         <h2>
           <mat-icon>{{ editingAgence() ? 'edit' : 'add_business' }}</mat-icon>
-          {{ editingAgence() ? 'Modifier : ' + editingAgence()!.nom_agence : 'Nouvelle agence' }}
+          {{ editingAgence() ? 'Modifier : ' + editingAgence()!.nom : 'Nouvelle agence' }}
         </h2>
         <button class="icon-btn" (click)="closeForm()"><mat-icon>close</mat-icon></button>
       </div>
@@ -27,24 +27,24 @@
       <form [formGroup]="agenceForm" (ngSubmit)="onSubmitAgence()" class="form-grid">
 
         <div class="field field--full">
-          <label for="nom_agence">Nom de l'agence *</label>
+          <label for="nom">Nom de l'agence *</label>
           <div class="input-wrap">
             <mat-icon>business</mat-icon>
-            <input id="nom_agence" type="text" formControlName="nom_agence" placeholder="Ex: Express Voyages SA">
+            <input id="nom" type="text" formControlName="nom" placeholder="Ex: Express Voyages SA">
           </div>
-          @if (shouldShowError('agence', 'nom_agence')) {
-            <span class="field-error">{{ errorMessage('agence', 'nom_agence') }}</span>
+          @if (shouldShowError('agence', 'nom')) {
+            <span class="field-error">{{ errorMessage('agence', 'nom') }}</span>
           }
         </div>
 
         <div class="field">
-          <label for="email_agence">Email de contact *</label>
+          <label for="email">Email de contact *</label>
           <div class="input-wrap">
             <mat-icon>email</mat-icon>
-            <input id="email_agence" type="email" formControlName="email_agence" placeholder="agence@exemple.com">
+            <input id="email" type="email" formControlName="email" placeholder="agence@exemple.com">
           </div>
-          @if (shouldShowError('agence', 'email_agence')) {
-            <span class="field-error">{{ errorMessage('agence', 'email_agence') }}</span>
+          @if (shouldShowError('agence', 'email')) {
+            <span class="field-error">{{ errorMessage('agence', 'email') }}</span>
           }
         </div>
 
@@ -60,10 +60,10 @@
         </div>
 
         <div class="field">
-          <label for="bp">Boîte postale</label>
+          <label for="adresse">Adresse</label>
           <div class="input-wrap">
             <mat-icon>markunread_mailbox</mat-icon>
-            <input id="bp" type="text" formControlName="bp" placeholder="BP 1234, Yaoundé">
+            <input id="adresse" type="text" formControlName="adresse" placeholder="Adresse de l'agence">
           </div>
         </div>
 
@@ -84,7 +84,7 @@
       <div class="form-card__header">
         <h2>
           <mat-icon>add_location_alt</mat-icon>
-          Nouvelle gare — <span class="accent">{{ agenceForGare()?.nom_agence }}</span>
+          Nouvelle gare — <span class="accent">{{ agenceForGare()?.nom }}</span>
         </h2>
         <button class="icon-btn" (click)="closeForm()"><mat-icon>close</mat-icon></button>
       </div>
@@ -161,14 +161,14 @@
       @for (agence of agencies(); track agence.id) {
         <div class="agency-card">
           <div class="agency-card__main">
-            <div class="agency-avatar">{{ agence.nom_agence[0] }}</div>
+            <div class="agency-avatar">{{ agence.nom[0] }}</div>
             <div class="agency-info">
-              <h3>{{ agence.nom_agence }}</h3>
+              <h3>{{ agence.nom }}</h3>
               <div class="agency-meta">
-                <span><mat-icon>email</mat-icon> {{ agence.email_agence }}</span>
+                <span><mat-icon>email</mat-icon> {{ agence.email }}</span>
                 <span><mat-icon>phone</mat-icon> {{ agence.telephone }}</span>
-                @if (agence.bp) {
-                  <span><mat-icon>markunread_mailbox</mat-icon> {{ agence.bp }}</span>
+                @if (agence.adresse) {
+                  <span><mat-icon>markunread_mailbox</mat-icon> {{ agence.adresse }}</span>
                 }
               </div>
             </div>

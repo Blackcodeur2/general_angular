@@ -90,13 +90,6 @@ export class VoyageHistoryPage implements OnInit {
 
   ngOnInit() {
     // Extended mock data for pagination
-    this.history.set([
-      { id: 10, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Yaoundé', ville_arrivee: 'Douala', date_depart: '2026-03-20', heure_depart: '08:00', statut: 'TERMINE' },
-      { id: 11, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Douala', ville_arrivee: 'Yaoundé', date_depart: '2026-03-20', heure_depart: '16:00', statut: 'TERMINE' },
-      { id: 12, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Yaoundé', ville_arrivee: 'Ebolowa', date_depart: '2026-03-19', heure_depart: '07:30', statut: 'TERMINE' },
-      { id: 13, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Ebolowa', ville_arrivee: 'Yaoundé', date_depart: '2026-03-19', heure_depart: '14:00', statut: 'TERMINE' },
-      { id: 14, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Yaoundé', ville_arrivee: 'Bafoussam', date_depart: '2026-03-18', heure_depart: '06:00', statut: 'TERMINE' },
-      { id: 15, chauffeur_id: 1, vehicule_immatriculation: 'LT 123 AA', ville_depart: 'Bafoussam', ville_arrivee: 'Yaoundé', date_depart: '2026-03-18', heure_depart: '15:00', statut: 'TERMINE' }
-    ]);
+    this.history.set([]);
   }
 }

@@ -28,7 +28,7 @@ export class AdminKycService {
   }
 
   approveKyc(userId: number): Observable<any> {
-    return this.http.post(`${this.API}/admin/kyc/${userId}/approve`, {});
+    return this.http.put(`${this.API}/admin/kyc/${userId}/approve`, {});
   }
 
   rejectKyc(userId: number, reason: string): Observable<any> {

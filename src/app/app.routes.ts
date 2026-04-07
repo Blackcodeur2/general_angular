@@ -189,12 +189,28 @@ export const routes: Routes = [
         loadComponent: () => import('./features/proprietaire/dashboard/proprietaire-dashboard.page').then(m => m.ProprietaireDashboardPage),
       },
       {
-        path: 'kyc',
-        loadComponent: () => import('./features/proprietaire/kyc/kyc.page').then(m => m.KycPage),
-      },
-      {
         path: 'agencies',
         loadComponent: () => import('./features/proprietaire/agencies/agencies.page').then(m => m.AgenciesPage),
+      },
+      {
+        path: 'gares',
+        loadComponent: () => import('./features/proprietaire/gares/gares.page').then(m => m.GaresPage),
+      },
+      {
+        path: 'buses',
+        loadComponent: () => import('./features/proprietaire/buses/buses.page').then(m => m.BusesPage),
+      },
+      {
+        path: 'routes',
+        loadComponent: () => import('./features/proprietaire/routes/routes.page').then(m => m.RoutesPage),
+      },
+      {
+        path: 'voyages',
+        loadComponent: () => import('./features/proprietaire/voyages/voyages.page').then(m => m.VoyagesPage),
+      },
+      {
+        path: 'kyc',
+        loadComponent: () => import('./features/proprietaire/kyc/kyc.page').then(m => m.KycPage),
       },
       {
         path: 'managers',

@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
 import { Agence } from '../../../models/agence';
+import { Gare } from '../../../models/gare';
 import { User } from '../../../models/user';
 import Swal from 'sweetalert2';
 
@@ -20,6 +21,7 @@ export class ManagersPage implements OnInit {
 
   managers = signal<User[]>([]);
   agencies = signal<Agence[]>([]);
+  gares = signal<Gare[]>([]);
   isLoading = signal(true);
   isSubmitting = signal(false);
   showForm = signal(false);
@@ -32,7 +34,7 @@ export class ManagersPage implements OnInit {
     telephone:            ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
     num_cni:              ['', Validators.required],
     date_naissance:       ['', Validators.required],
-    agence_id:            [0,  Validators.required],
+    gare_id:              [0,  Validators.required],
     password:             ['', [Validators.required, Validators.minLength(8)]],
     password_confirmation: ['', Validators.required],
   }, { validators: this.passwordMatchValidator });
@@ -63,6 +65,11 @@ export class ManagersPage implements OnInit {
     this.proprietaireService.getMyAgences().subscribe({
       next: (data) => {
         this.agencies.set(Array.isArray(data) ? data : (data as any).data ?? []);
+      }
+    });
+    this.proprietaireService.getMyGares().subscribe({
+      next: (data) => {
+        this.gares.set(Array.isArray(data) ? data : (data as any).data ?? []);
       }
     });
   }
@@ -131,8 +138,12 @@ export class ManagersPage implements OnInit {
     });
   }
 
-  agenceName(id: number): string {
-    return this.agencies().find(a => a.id === id)?.nom_agence ?? `Agence #${id}`;
+  gareName(id: number): string {
+    const gare = this.gares().find(g => g.id === id);
+    if (!gare) {
+      return `Gare #${id}`;
+    }
+    return gare.nom || `${gare.ville} - ${gare.quartier}`;
   }
 
   shouldShowError(field: string): boolean {
