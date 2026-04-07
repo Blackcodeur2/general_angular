@@ -5,6 +5,7 @@ import { Agence } from '../../models/agence';
 import { Gare } from '../../models/gare';
 import { User } from '../../models/user';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface CreateAgencePayload {
   nom: string; // Correspond au backend
@@ -36,7 +37,7 @@ export interface CreateGarePayload {
 export class ProprietaireService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly API = 'http://127.0.0.1:8000/api';
+  private readonly API = environment.apiUrl;
 
   // ── Agences ──
   getMyAgences(): Observable<Agence[]> {
@@ -122,5 +123,13 @@ export class ProprietaireService {
 
   removeGerant(userId: number): Observable<any> {
     return this.http.delete(`${this.API}/proprietaire/gerants/${userId}`);
+  }
+
+  // ── KYC ──
+  submitKyc(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.API}/proprietaire/kyc/submit`, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
   }
 }

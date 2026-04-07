@@ -40,7 +40,7 @@
             @for (doc of sub.documents; track doc.id) {
               <div class="document-item" (click)="viewDocument(doc)">
                 <div class="doc-icon">
-                  <mat-icon>{{ doc.chemin_fichier.endsWith('.pdf') ? 'picture_as_pdf' : 'image' }}</mat-icon>
+                  <mat-icon>{{ doc.chemin_fichier.toLowerCase().endsWith('.pdf') ? 'picture_as_pdf' : 'image' }}</mat-icon>
                 </div>
                 <div class="doc-details">
                   <span class="doc-type">{{ doc.type | uppercase }}</span>
@@ -48,7 +48,10 @@
                     <span class="doc-comment">{{ doc.commentaire }}</span>
                   }
                 </div>
-                <mat-icon class="view-icon">visibility</mat-icon>
+                <div class="doc-action-btn">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Aperçu</span>
+                </div>
               </div>
             }
           </div>

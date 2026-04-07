@@ -16,7 +16,12 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
         <p>Liste de vos voyages terminés</p>
       </header>
 
-      <div class="history-list">
+      <div *ngIf="isLoading()" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement de l'historique...</p>
+      </div>
+
+      <div *ngIf="!isLoading()" class="history-list">
         @for (voyage of paginatedHistory(); track voyage.id) {
           <div class="history-card">
             <div class="date-badge">
@@ -70,15 +75,22 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
     .meta mat-icon { font-size: 16px; width: 16px; height: 16px; color: #94A3B8; }
     
     .status-icon .check { color: #10B981; font-size: 24px; width: 24px; height: 24px; }
+    
+    .loading-state { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; padding: 4rem 0; color: #64748B; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top: 4px solid #10B981; border-radius: 50%; animation: spin 1s linear infinite; }
 
     .empty-state { text-align: center; padding: 4rem 2rem; color: #94A3B8; }
     .empty-state mat-icon { font-size: 3rem; width: 3rem; height: 3rem; margin-bottom: 1rem; }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
   `]
 })
 export class VoyageHistoryPage implements OnInit {
+  private voyageService = inject(VoyageService);
+  
   history = signal<Voyage[]>([]);
+  isLoading = signal(true);
   currentPage = signal(1);
   pageSize = signal(4);
 
@@ -89,6 +101,20 @@ export class VoyageHistoryPage implements OnInit {
   });
 
   ngOnInit() {
-    this.history.set([]);
+    this.loadHistory();
+  }
+
+  private loadHistory() {
+    this.isLoading.set(true);
+    this.voyageService.getHistoriqueChauffeur().subscribe({
+      next: (data) => {
+        this.history.set(data || []);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+        this.history.set([]);
+      }
+    });
   }
 }

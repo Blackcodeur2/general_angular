@@ -35,27 +35,33 @@ export class AdminDashboardPage implements OnInit {
       agencies: this.agenceService.getAgences()
     }).subscribe({
       next: (res: any) => {
-        const usersList = Array.isArray(res.users) ? res.users : (res.users.data || []);
-        const agenciesList = Array.isArray(res.agencies) ? res.agencies : (res.agencies.data || []);
+        const usersList = Array.isArray(res.users) ? res.users : (res.users?.data || []);
+        const agenciesList = Array.isArray(res.agencies) ? res.agencies : (res.agencies?.data || []);
         
         this.totalUsers.set(usersList.length);
         this.totalAgencies.set(agenciesList.length);
         
+        // Calcul robuste des gares à travers toutes les agences
         let garesCount = 0;
         agenciesList.forEach((a: any) => {
-           if (a.gares) garesCount += a.gares.length;
+           if (Array.isArray(a.gares)) {
+             garesCount += a.gares.length;
+           } else if (a.nb_gares) { // Fallback si le backend renvoie juste le compte
+             garesCount += Number(a.nb_gares);
+           }
         });
         this.totalGares.set(garesCount);
         
-        // Mocking some values for revenue and trips since there's no global stats endpoint yet
-        // but based on actual entity counts
-        this.totalTrips.set(agenciesList.length * 12 + 5); 
-        this.totalRevenue.set(this.totalTrips() * 4500); 
+        // Statistiques simulées basées sur les entités réelles
+        // À remplacer par un vrai endpoint de stats globales une fois disponible
+        const baseTrips = agenciesList.length * 15;
+        this.totalTrips.set(baseTrips > 0 ? baseTrips + 3 : 0); 
+        this.totalRevenue.set(this.totalTrips() * 5000); 
         
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error("Dashboard error", err);
+        console.error("Erreur Dashboard Admin:", err);
         this.isLoading.set(false);
       }
     });

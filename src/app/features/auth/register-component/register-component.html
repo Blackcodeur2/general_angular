@@ -7,50 +7,53 @@
 
     <form class="auth__form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       
-      <div class="field field--full">
-        <label class="field__label">Je suis un...</label>
-        <div class="role-selector">
-          <label class="role-option" [class.role-option--active]="registerForm.get('role_user')?.value === 'CLIENT'">
-            <input type="radio" formControlName="role_user" value="CLIENT" class="role-radio">
-            <span class="role-icon">🎒</span>
-            <div class="role-info">
-              <span class="role-name">Client</span>
-              <span class="role-desc">Je voyage avec GEV</span>
-            </div>
-          </label>
-          <label class="role-option" [class.role-option--active]="registerForm.get('role_user')?.value === 'PROPRIETAIRE'">
-            <input type="radio" formControlName="role_user" value="PROPRIETAIRE" class="role-radio">
-            <span class="role-icon">🏢</span>
-            <div class="role-info">
-              <span class="role-name">Propriétaire</span>
-              <span class="role-desc">Je gère mes agences</span>
-            </div>
-          </label>
+      <!-- LIGNE 1 : Role & CNI -->
+      <div class="field">
+        <label class="field__label">Type de Compte</label>
+        <div class="input-container">
+          <span class="input-icon">👤</span>
+          <select formControlName="role_user" class="field__control field__control--select">
+            <option value="CLIENT">Client (Voyageur)</option>
+            <option value="PROPRIETAIRE">Propriétaire (Entreprise)</option>
+          </select>
         </div>
       </div>
 
       <div class="field">
-        <label class="field__label" for="prenom">Numero de CNI</label>
+        <label class="field__label" for="num_cni">Numero de CNI</label>
         <div class="input-container">
-          <span class="input-icon">👤</span>
-          <input id="prenom" class="field__control" type="text" formControlName="num_cni" placeholder="Ex: cni_cl_00" />
+          <span class="input-icon">🆔</span>
+          <input id="num_cni" class="field__control" type="text" formControlName="num_cni" placeholder="Ex: 123456789" />
         </div>
         @if (shouldShowError('num_cni')) {
         <div class="field__error">{{ errorMessage('num_cni') }}</div>
         }
       </div>
 
+      <!-- LIGNE 2 : Prénom & Nom -->
       <div class="field">
-        <label class="field__label" for="nom">Date de naissance</label>
+        <label class="field__label" for="prenom">Prénom</label>
         <div class="input-container">
-          <span class="input-icon">👥</span>
-          <input id="nom" class="field__control" type="date" formControlName="date_naissance" />
+          <span class="input-icon">👤</span>
+          <input id="prenom" class="field__control" type="text" formControlName="prenom" placeholder="Ex: Jean" />
         </div>
-        @if (shouldShowError('date_naissance')) {
-        <div class="field__error">{{ errorMessage('date_naissance') }}</div>
+        @if (shouldShowError('prenom')) {
+        <div class="field__error">{{ errorMessage('prenom') }}</div>
         }
       </div>
 
+      <div class="field">
+        <label class="field__label" for="nom">Nom</label>
+        <div class="input-container">
+          <span class="input-icon">👤</span>
+          <input id="nom" class="field__control" type="text" formControlName="nom" placeholder="Ex: Dupont" />
+        </div>
+        @if (shouldShowError('nom')) {
+        <div class="field__error">{{ errorMessage('nom') }}</div>
+        }
+      </div>
+
+      <!-- LIGNE 3 : Email & Téléphone -->
       <div class="field">
         <label class="field__label" for="email">Email</label>
         <div class="input-container">
@@ -74,6 +77,33 @@
         }
       </div>
 
+      <!-- LIGNE 4 : Date de Naissance & Sexe -->
+      <div class="field">
+        <label class="field__label" for="date_naissance">Date de naissance</label>
+        <div class="input-container">
+          <span class="input-icon">📅</span>
+          <input id="date_naissance" class="field__control" type="date" formControlName="date_naissance" />
+        </div>
+        @if (shouldShowError('date_naissance')) {
+        <div class="field__error">{{ errorMessage('date_naissance') }}</div>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="sexe">Sexe</label>
+        <div class="input-container">
+          <span class="input-icon">🚻</span>
+          <select id="sexe" formControlName="sexe" class="field__control field__control--select">
+            <option value="M">Masculin</option>
+            <option value="F">Féminin</option>
+          </select>
+        </div>
+        @if (shouldShowError('sexe')) {
+        <div class="field__error">{{ errorMessage('sexe') }}</div>
+        }
+      </div>
+
+      <!-- LIGNE 5 : Password & Confirmation -->
       <div class="field">
         <label class="field__label" for="password">Mot de passe</label>
         <div class="input-container">

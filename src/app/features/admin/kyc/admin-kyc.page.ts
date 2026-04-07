@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminKycService, KycSubmission } from '../../../services/admin/kyc.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -31,8 +32,8 @@ export class AdminKycPage implements OnInit {
     this.isLoading.set(true);
     this.kycService.getPendingKyc().subscribe({
       next: (data: any) => {
-        // En cas de retour paginé ou direct du backend
-        this.submissions.set(Array.isArray(data) ? data : data.data ?? []);
+        let list = Array.isArray(data) ? data : data.data ?? [];
+        this.submissions.set(list);
         this.isLoading.set(false);
       },
       error: () => {
@@ -43,7 +44,7 @@ export class AdminKycPage implements OnInit {
   }
 
   viewDocument(doc: any) {
-    const backendUrl = 'http://127.0.0.1:8000/storage/kwc'; // Adaptez selon votre configuration
+    const backendUrl = `${environment.storageUrl}/kwc`;
     const fullUrl = doc.chemin_fichier.startsWith('http') ? doc.chemin_fichier : `${backendUrl}/${doc.chemin_fichier}`;
     const isPdf = fullUrl.toLowerCase().endsWith('.pdf');
     const safeUrl = isPdf ? this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl) : fullUrl;

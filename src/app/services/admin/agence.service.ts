@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Agence } from '../../models/agence';
 import { Gare } from '../../models/gare';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AgenceService {
     private http = inject(HttpClient);
-    private readonly API = 'http://127.0.0.1:8000/api';
+    private readonly API = environment.apiUrl;
 
     getAgences(): Observable<Agence[]> {
         return this.http.get<Agence[]>(`${this.API}/admin/agences`);

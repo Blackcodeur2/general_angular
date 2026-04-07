@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../models/user';
+import { environment } from '../../../environments/environment';
 
 export interface KycDocument {
   id: number;
@@ -21,7 +22,7 @@ export interface KycSubmission {
 })
 export class AdminKycService {
   private http = inject(HttpClient);
-  private readonly API = 'http://127.0.0.1:8000/api';
+  private readonly API = environment.apiUrl;
 
   getPendingKyc(): Observable<KycSubmission[]> {
     return this.http.get<KycSubmission[]>(`${this.API}/admin/kyc`);

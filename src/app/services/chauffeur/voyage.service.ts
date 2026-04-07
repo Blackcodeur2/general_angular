@@ -3,14 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Voyage } from '../../models/voyage';
 import { Incident } from '../../models/incident';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class VoyageService {
-  private apiUrl = 'http://127.0.0.1:8000/api/voyages';
-  private incidentUrl = 'http://127.0.0.1:8000/api/incidents';
+  private apiUrl = `${environment.apiUrl}/voyages`;
+  private incidentUrl = `${environment.apiUrl}/incidents`;
 
   constructor(private http: HttpClient) {}
 
@@ -27,5 +28,10 @@ export class VoyageService {
   // Report an incident for a specific voyage
   signalerIncident(incident: Incident): Observable<any> {
     return this.http.post<any>(this.incidentUrl, incident);
+  }
+
+  // Update trip status (start, end, etc.)
+  updateVoyageStatus(voyageId: number, status: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${voyageId}/status`, { statut: status });
   }
 }

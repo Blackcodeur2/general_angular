@@ -29,6 +29,7 @@ export class AgencyVoyagesPage implements OnInit {
   voyages = signal<Voyage[]>([]);
   chauffeurs = signal<User[]>([]);
   showForm = signal(false);
+  isLoading = signal(true);
   isSubmitting = signal(false);
 
   currentPage = signal(1);
@@ -142,11 +143,15 @@ export class AgencyVoyagesPage implements OnInit {
   }
 
   loadVoyages() {
+    this.isLoading.set(true);
     this.agencyService.getVoyages().subscribe({
-      next: (data) => this.voyages.set(data),
+      next: (data) => {
+        this.voyages.set(data.sort((a,b) => new Date(b.date_depart).getTime() - new Date(a.date_depart).getTime()));
+        this.isLoading.set(false);
+      },
       error: () => {
-        // Mock data
         this.voyages.set([]);
+        this.isLoading.set(false);
       }
     });
   }
@@ -164,8 +169,8 @@ export class AgencyVoyagesPage implements OnInit {
     };
 
     this.agencyService.createVoyage(payload as any).subscribe({
-      next: (newVoyage) => {
-        this.voyages.update(list => [newVoyage, ...list]);
+      next: () => {
+        this.loadVoyages(); // Refresh to get joined data
         this.showForm.set(false);
         this.isSubmitting.set(false);
         this.voyageForm.reset({ statut: 'en attente', prix: 0 });

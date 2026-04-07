@@ -25,14 +25,31 @@
       <p>Chargement des statistiques...</p>
     </div>
   } @else if (stats()) {
-    <!-- KYC Alert -->
+    <!-- KYC Alerts -->
     @if (kycStatus() === 'NOT_STARTED') {
-      <div class="alert-card animate-pulse">
+      <div class="alert-card alert-warning animate-pulse">
         <div class="alert-icon">⚠️</div>
         <div class="alert-content">
           <h3>Action requise : Vérification KYC</h3>
-          <p>Pour commencer à ajouter des agences, vous devez d'abord vérifier votre identité.</p>
+          <p>Pour commencer à gérer vos agences, vous devez d'abord vérifier votre identité.</p>
           <a routerLink="/proprietaire/kyc" class="alert-action">Compléter mon profil</a>
+        </div>
+      </div>
+    } @else if (kycStatus() === 'EN ATTENTE') {
+      <div class="alert-card alert-info">
+        <div class="alert-icon">⏳</div>
+        <div class="alert-content">
+          <h3>Vérification en cours</h3>
+          <p>Votre dossier KYC est en cours d'examen par nos services. Cette opération prend généralement moins de 24h.</p>
+        </div>
+      </div>
+    } @else if (kycStatus() === 'REJETE') {
+      <div class="alert-card alert-danger">
+        <div class="alert-icon">❌</div>
+        <div class="alert-content">
+          <h3>Vérification rejetée</h3>
+          <p>Votre dossier a été rejeté. Veuillez consulter vos emails ou recommencer la procédure avec des documents valides.</p>
+          <a routerLink="/proprietaire/kyc" class="alert-action">Réessayer la vérification</a>
         </div>
       </div>
     }

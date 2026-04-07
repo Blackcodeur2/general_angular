@@ -61,7 +61,14 @@
     </div>
     }
 
-    <div class="card">
+    @if (isLoading()) {
+    <div class="card loading-card">
+        <div class="spinner"></div>
+        <p>Chargement des voyages...</p>
+    </div>
+    }
+
+    <div class="card" *ngIf="!isLoading()">
         <div class="table-responsive">
             <table class="data-table">
                 <thead>

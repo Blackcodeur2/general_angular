@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { Route } from '../../models/route';
 import { Voyage } from '../../models/voyage';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { Voyage } from '../../models/voyage';
 export class AgentService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly API = 'http://127.0.0.1:8000/api';
+  private readonly API = environment.apiUrl;
 
   getDashboardStats(): Observable<{ sales_today: number; active_reservations: number; revenue_today: number; pending_validations: number }> {
     return this.http.get<{ statut: boolean; data: any }>(`${this.API}/agent/dashboard`).pipe(map(response => response.data));
@@ -36,5 +37,13 @@ export class AgentService {
 
   validateTicket(code: string): Observable<any> {
     return this.http.post<any>(`${this.API}/agent/tickets/validate`, { code });
+  }
+
+  cancelReservation(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.API}/agent/reservations/${id}`);
+  }
+
+  getReservationDetail(id: number): Observable<any> {
+    return this.http.get<{ statut: boolean; data: any }>(`${this.API}/agent/reservations/${id}`).pipe(map(response => response.data));
   }
 }

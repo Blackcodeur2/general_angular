@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { AgentService } from '../../../services/agent/agent.service';
 import { catchError, of } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reservations',
@@ -42,8 +43,8 @@ import { catchError, of } from 'rxjs';
                 <td>{{ res.date || res.voyage?.date_depart || 'N/A' }}</td>
                 <td><span class="status-badge" [class]="res.status">{{ res.statusLabel || res.status || 'Inconnu' }}</span></td>
                 <td>
-                  <button class="icon-btn" title="Imprimer"><mat-icon>print</mat-icon></button>
-                  <button class="icon-btn delete" title="Annuler"><mat-icon>cancel</mat-icon></button>
+                  <button class="icon-btn" title="Imprimer" (click)="printReservation(res.id)"><mat-icon>print</mat-icon></button>
+                  <button class="icon-btn delete" title="Annuler" (click)="cancelReservation(res.id)"><mat-icon>cancel</mat-icon></button>
                 </td>
               </tr>
             }
@@ -110,5 +111,56 @@ export class ReservationsPage implements OnInit {
         this.reservations.set(data);
         this.isLoading.set(false);
       });
+  }
+
+  cancelReservation(id: number) {
+    Swal.fire({
+      title: 'Annuler la réservation ?',
+      text: 'Cette action est irréversible.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Oui, annuler',
+      cancelButtonText: 'Fermer'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.agentService.cancelReservation(id).subscribe({
+          next: () => {
+            this.reservations.update(list => list.filter(r => r.id !== id));
+            Swal.fire('Annulée !', 'La réservation a été annulée.', 'success');
+          },
+          error: () => {
+            Swal.fire('Erreur', 'Impossible d\'annuler la réservation.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  printReservation(id: number) {
+    // Basic mock print logic
+    this.agentService.getReservationDetail(id).subscribe({
+      next: (data) => {
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(`
+            <html>
+              <head><title>Ticket - GevApp</title></head>
+              <body>
+                <h1>Détails de la Réservation</h1>
+                <p><strong>Reservation ID:</strong> #${data.id}</p>
+                <p><strong>Client:</strong> ${data.client_name || 'N/A'}</p>
+                <p><strong>Route:</strong> ${data.route_name || 'N/A'}</p>
+                <p><strong>Date:</strong> ${data.date || 'N/A'}</p>
+                <p><strong>Status:</strong> ${data.status || 'N/A'}</p>
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+          printWindow.print();
+        }
+      }
+    });
   }
 }

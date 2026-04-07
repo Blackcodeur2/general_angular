@@ -33,7 +33,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="sidebar-footer">
                 <button class="nav-item logout" (click)="logout()">
                     <mat-icon class="icon">logout</mat-icon>
-                    <span>{{ 'nav.logout' }}</span>
+                    <span>Déconnexion</span>
                 </button>
             </div>
         </aside>
@@ -102,21 +102,18 @@ export class StaffLayoutComponent implements OnInit {
     userInitials = signal('AG');
 
     menuItems = [
-        { label: 'nav.booking', icon: 'point_of_sale', route: '/agent/booking' },
-        { label: 'nav.history', icon: 'history', route: '/agent/reservations' },
-        { label: 'nav.dashboard', icon: 'dashboard', route: '/agent/dashboard' },
-        { label: 'nav.agents', icon: 'groups', route: '/agent/agents' },
-        { label: 'nav.validate', icon: 'qr_code_scanner', route: '/agent/validate' },
-        { label: 'nav.profile', icon: 'person ', route: '/agent/profile' },
+        { label: 'Nouvelle Vente', icon: 'point_of_sale', route: '/agent/booking' },
+        { label: 'Historique', icon: 'history', route: '/agent/reservations' },
+        { label: 'Tableau de bord', icon: 'dashboard', route: '/agent/dashboard' },
+        { label: 'Validation', icon: 'qr_code_scanner', route: '/agent/validate' },
+        { label: 'Mon Profil', icon: 'person', route: '/agent/profile' },
     ];
 
     ngOnInit() {
-        /*this.authService.currentUser$.subscribe(user => {
-            if (user) {
-                this.userInitials.set(this.getInitials(user.name));
-                this.loadUnreadCount(user.id);
-            }
-        });*/
+        const user = this.authService.currentUser();
+        if (user) {
+            this.userInitials.set(this.getInitials(user.prenom + ' ' + user.nom));
+        }
     }
 
     getInitials(name: string): string {

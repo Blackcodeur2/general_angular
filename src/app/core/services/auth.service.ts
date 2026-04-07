@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { User } from '../../models/user';
+import { environment } from '../../../environments/environment';
 
 export interface AuthResponse {
   user: User;
@@ -13,7 +14,7 @@ export interface AuthResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly API = 'http://127.0.0.1:8000/api';
+  private readonly API = environment.apiUrl;
 
   // État réactif de l'utilisateur avec Signal
   public readonly currentUser = signal<User | null>(this.getUserFromStorage());

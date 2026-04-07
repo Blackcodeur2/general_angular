@@ -7,6 +7,7 @@ import { Voyage } from '../../models/voyage';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../models/user';
 import { Gare } from '../../models/gare';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,7 @@ import { Gare } from '../../models/gare';
 export class AgencyOpsService {
     private http = inject(HttpClient);
     private authService = inject(AuthService);
-    private readonly API = 'http://127.0.0.1:8000/api';
+    private readonly API = environment.apiUrl;
 
     // Buses
     getBuses(): Observable<Bus[]> {

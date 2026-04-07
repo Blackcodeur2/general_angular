@@ -2,7 +2,9 @@ import { Component, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
+import { HttpClient, HttpEventType, HttpEvent, HttpResponse } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 
 interface UploadedFile {
@@ -22,8 +24,8 @@ interface UploadedFile {
 })
 export class KycPage {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private readonly API = 'http://127.0.0.1:8000/api';
+  private proprietaireService = inject(ProprietaireService);
+  private readonly API = environment.apiUrl;
 
   isSubmitting = signal(false);
   uploadProgress = signal(0);
@@ -159,20 +161,23 @@ export class KycPage {
       formData.append('file_selfie', this.fileSelfie()!.file);
     }
 
-    this.http.post(`${this.API}/client/kyc/submit`, formData, {
-      reportProgress: true,
-      observe: 'events'
-    }).subscribe({
-      next: (event) => {
+    this.proprietaireService.submitKyc(formData).subscribe({
+      next: (event: HttpEvent<any>) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
           this.uploadProgress.set(Math.round((event.loaded / event.total) * 100));
         } else if (event.type === HttpEventType.Response) {
           this.isSubmitting.set(false);
           this.uploadProgress.set(100);
           this.step.set(3);
+          Swal.fire({
+            icon: 'success',
+            title: 'Documents envoyés',
+            text: 'Votre dossier est en cours de traitement par nos administrateurs.',
+            confirmButtonColor: '#10b981'
+          });
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSubmitting.set(false);
         Swal.fire({
           icon: 'error',
