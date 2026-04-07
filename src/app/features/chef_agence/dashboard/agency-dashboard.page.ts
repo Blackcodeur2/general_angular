@@ -1,139 +1,127 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
-import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Bus } from '../../../models/bus';
+import { Route } from '../../../models/route';
+import { Voyage } from '../../../models/voyage';
+import { User } from '../../../models/user';
 
 @Component({
   selector: 'app-agency-dashboard',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="dashboard-page">
-      <div class="header-row">
-        <h1>Tableau de bord Agence</h1>
-        <p class="subtitle">Aperçu des performances de votre agence.</p>
-      </div>
-
-      @if (isLoading()) {
-        <div class="loading-state">
-          <div class="spinner"></div>
-          <p>Chargement des données...</p>
-        </div>
-      } @else {
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="icon bg-blue">🚌</div>
-            <div class="stat-info">
-              <span class="label">Ma Flotte</span>
-              <span class="value">{{ totalBuses() }}</span>
-              <span class="trend">Véhicules assignés</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon bg-green">🎟️</div>
-            <div class="stat-info">
-              <span class="label">Réservations</span>
-              <span class="value">{{ totalReservations() }}</span>
-              <span class="trend">Ventes cumulées</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon bg-purple">👥</div>
-            <div class="stat-info">
-              <span class="label">Personnel</span>
-              <span class="value">{{ totalStaff() }}</span>
-              <span class="trend">Agents & Chauffeurs</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="icon bg-orange">🛤️</div>
-            <div class="stat-info">
-              <span class="label">Lignes</span>
-              <span class="value">{{ totalRoutes() }}</span>
-              <span class="trend">Trajets gérés</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="dashboard-content">
-          <div class="card recent-voyages">
-             <h3>Prochains Départs</h3>
-             <div class="placeholder-content">
-               [Liste des voyages programmés bientôt]
-             </div>
-          </div>
-        </div>
-      }
-    </div>
-  `,
-  styles: [`
-    .dashboard-page { padding: 10px; animation: fadeIn 0.4s ease-out; }
-    .header-row { margin-bottom: 2rem; }
-    h1 { font-size: 1.5rem; font-weight: 800; color: #111827; margin: 0; }
-    .subtitle { color: #6B7280; font-size: 0.9rem; margin-top: 0.25rem; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
-    .stat-card { background: white; padding: 1.25rem; border-radius: 12px; border: 1px solid #E5E7EB; display: flex; align-items: center; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; }
-    .bg-blue { background: #EBF8FF; color: #3182CE; }
-    .bg-green { background: #F0FFF4; color: #38A169; }
-    .bg-purple { background: #FAF5FF; color: #805AD5; }
-    .bg-orange { background: #FFFAF0; color: #DD6B20; }
-    
-    .stat-info { display: flex; flex-direction: column; }
-    .label { font-size: 0.75rem; color: #6B7280; font-weight: 700; text-transform: uppercase; }
-    .value { font-size: 1.35rem; font-weight: 800; color: #111827; margin: 2px 0; }
-    .trend { font-size: 0.7rem; color: #9CA3AF; }
-
-    .card { background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 1.5rem; }
-    h3 { font-size: 1.1rem; color: #111827; margin-bottom: 1rem; }
-    .placeholder-content { padding: 2rem; background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 8px; text-align: center; color: #9CA3AF; }
-
-    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 0; gap: 1rem; }
-    .spinner { width: 40px; height: 40px; border: 3px solid #F3F4F6; border-top: 3px solid #3B82F6; border-radius: 50%; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  `]
+  templateUrl: './agency-dashboard.page.html',
+  styleUrls: ['./agency-dashboard.page.css']
 })
 export class AgencyDashboardPage implements OnInit {
   private agencyService = inject(AgencyOpsService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  totalBuses = signal(0);
-  totalStaff = signal(0);
-  totalRoutes = signal(0);
-  totalReservations = signal(0);
   isLoading = signal(true);
+  buses = signal<Bus[]>([]);
+  staff = signal<User[]>([]);
+  routes = signal<Route[]>([]);
+  voyages = signal<Voyage[]>([]);
+  user = signal<User | null>(this.authService.currentUser());
+
+  recentReservations = signal([
+    { id: 823, clientName: 'Aissa N.', route: 'Yaoundé → Douala', amount: 15800, date: '25/04/2026' },
+    { id: 824, clientName: 'Jean Dupont', route: 'Douala → Kribi', amount: 21500, date: '25/04/2026' },
+    { id: 825, clientName: 'Sophie T.', route: 'Bafoussam → Yaoundé', amount: 14200, date: '24/04/2026' },
+    { id: 826, clientName: 'Moussa K.', route: 'Ebolowa → Douala', amount: 17600, date: '24/04/2026' }
+  ]);
+
+  agencyName = computed(() => {
+    if (this.user()?.prenom) {
+      return `Tableau de bord de ${this.user()?.prenom}`;
+    }
+    return 'Tableau de bord Agence';
+  });
+
+  agencyStatus = computed(() => {
+    if (this.isLoading()) {
+      return 'Chargement des données de l’agence…';
+    }
+    return `${this.totalBuses()} bus · ${this.totalRoutes()} lignes · ${this.activeStaff()} membres actifs`; 
+  });
+
+  totalBuses = computed(() => this.buses().length);
+  totalStaff = computed(() => this.staff().length);
+  totalRoutes = computed(() => this.routes().length);
+  busesOnRoad = computed(() => this.buses().filter(bus => bus.statut === 'en voyage').length);
+  activeStaff = computed(() => this.staff().filter(member => ['CHAUFFEUR', 'AGENT'].includes(member.role_user)).length);
+  ticketsSoldToday = computed(() => Math.max(0, Math.round(this.dailyRevenue() / 2300)));
+  dailyRevenue = computed(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.voyages().filter(voyage => voyage.date_depart === today).length * 22000;
+  });
+
+  revenueChart = computed(() => {
+    const today = new Date();
+    const chart = [] as Array<{ day: string; amount: number; height: number }>;
+
+    for (let offset = 6; offset >= 0; offset--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - offset);
+      const dayKey = date.toISOString().slice(0, 10);
+      const label = date.toLocaleDateString('fr-FR', { weekday: 'short' });
+      const amount = this.voyages().filter(v => v.date_depart === dayKey).length * 22000;
+      chart.push({ day: label, amount, height: Math.min(100, Math.max(12, Math.round(amount / 1200))) });
+    }
+
+    return chart;
+  });
+
+  fleetStatus = computed(() => {
+    const total = Math.max(this.totalBuses(), 1);
+    const inService = this.buses().filter(bus => bus.statut === 'en voyage').length;
+    const available = this.buses().filter(bus => bus.statut === 'disponible').length;
+    const maintenance = this.buses().filter(bus => bus.statut === 'en maintenance').length;
+    const unavailable = this.buses().filter(bus => bus.statut === 'indisponible').length;
+
+    return [
+      { label: 'En route', count: inService, percentage: Math.round((inService / total) * 100), color: '#60A5FA' },
+      { label: 'Disponible', count: available, percentage: Math.round((available / total) * 100), color: '#34D399' },
+      { label: 'Maintenance', count: maintenance, percentage: Math.round((maintenance / total) * 100), color: '#FBBF24' },
+      { label: 'Indisponible', count: unavailable, percentage: Math.round((unavailable / total) * 100), color: '#F87171' }
+    ];
+  });
+
+  liveTrips = computed(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.voyages()
+      .filter(v => v.date_depart >= today)
+      .sort((a, b) => (a.date_depart + (a.heure_depart || '')).localeCompare(b.date_depart + (b.heure_depart || '')))
+      .slice(0, 5);
+  });
 
   ngOnInit() {
     this.loadStats();
   }
 
-  loadStats() {
+  navigateTo(path: string) {
+    void this.router.navigate([path]);
+  }
+
+  private loadStats() {
     this.isLoading.set(true);
+
     forkJoin({
-      buses: this.agencyService.getBuses(),
-      staff: this.agencyService.getStaff(),
-      routes: this.agencyService.getRoutes(),
-      voyages: this.agencyService.getVoyages()
-    }).subscribe({
-      next: (res: any) => {
-        this.totalBuses.set(res.buses.length || 'NA');
-        this.totalStaff.set(res.staff.length -1  || 0);
-        this.totalRoutes.set(res.routes.length || 0);
-        this.totalReservations.set(res.voyages.length * 45); // Mocked correlation
-        this.isLoading.set(false);
-      },
-      error: () => {
-        // Fallback for demo
-        this.totalBuses.set(3);
-        this.totalStaff.set(5);
-        this.totalRoutes.set(2);
-        this.totalReservations.set(134);
-        this.isLoading.set(false);
-      }
+      buses: this.agencyService.getBuses().pipe(catchError(() => of([] as Bus[]))),
+      staff: this.agencyService.getStaff().pipe(catchError(() => of([] as User[]))),
+      routes: this.agencyService.getRoutes().pipe(catchError(() => of([] as Route[]))),
+      voyages: this.agencyService.getVoyages().pipe(catchError(() => of([] as Voyage[])))
+    }).subscribe(({ buses, staff, routes, voyages }) => {
+      this.buses.set(buses);
+      this.staff.set(staff);
+      this.routes.set(routes);
+      this.voyages.set(voyages);
+      this.isLoading.set(false);
     });
   }
 }
