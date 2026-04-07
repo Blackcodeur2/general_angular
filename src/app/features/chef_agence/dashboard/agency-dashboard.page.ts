@@ -54,6 +54,7 @@ export class AgencyDashboardPage implements OnInit {
   totalStaff = computed(() => this.staff().length);
   totalRoutes = computed(() => this.routes().length);
   busesOnRoad = computed(() => this.buses().filter(bus => bus.statut === 'en voyage').length);
+  busUsage = computed(() => this.totalBuses() > 0 ? Math.round((this.busesOnRoad() / this.totalBuses()) * 100) : 0);
   activeStaff = computed(() => this.staff().filter(member => ['CHAUFFEUR', 'AGENT'].includes(member.role_user)).length);
   ticketsSoldToday = computed(() => Math.max(0, Math.round(this.dailyRevenue() / 2300)));
   dailyRevenue = computed(() => {
@@ -91,6 +92,8 @@ export class AgencyDashboardPage implements OnInit {
       { label: 'Indisponible', count: unavailable, percentage: Math.round((unavailable / total) * 100), color: '#F87171' }
     ];
   });
+
+  maintenanceCount = computed(() => this.fleetStatus().find(s => s.label === 'Maintenance')?.count ?? 0);
 
   liveTrips = computed(() => {
     const today = new Date().toISOString().slice(0, 10);

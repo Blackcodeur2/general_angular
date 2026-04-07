@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { AgentService } from '../../../services/agent/agent.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-validate',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, FormsModule],
   template: `
     <div class="validate-page">
       <header class="page-header">
         <h1>Validation des Tickets</h1>
-        <p>Scannez ou saisissez le code pour valider l'embarquement</p>
+        <p>Scannez le QR Code ou saisissez le code du ticket pour valider.</p>
       </header>
 
       <div class="scanner-mock">
@@ -23,9 +26,13 @@ import { MatIconModule } from '@angular/material/icon';
         <div class="manual-input">
           <span>OU</span>
           <div class="input-group">
-            <input type="text" placeholder="Entrer le code manuellement">
-            <button class="btn-verify">Vérifier</button>
+            <input type="text" [(ngModel)]="validationCode" placeholder="Entrer le code manuellement">
+            <button class="btn-verify" (click)="verifyCode()" [disabled]="isValidating()">{{ isValidating() ? 'Vérification...' : 'Vérifier' }}</button>
           </div>
+        </div>
+
+        <div *ngIf="resultMessage()" class="validation-result" [class.success]="validationSuccess()" [class.error]="!validationSuccess()">
+          {{ resultMessage() }}
         </div>
       </div>
     </div>
@@ -45,6 +52,11 @@ import { MatIconModule } from '@angular/material/icon';
     .input-group { display: flex; gap: 0.5rem; }
     .input-group input { flex: 1; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 8px; outline: none; }
     .btn-verify { background: #064E3B; color: white; border: none; padding: 0 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .btn-verify:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    .validation-result { margin-top: 1rem; padding: 1rem 1.25rem; border-radius: 10px; font-weight: 600; }
+    .validation-result.success { background: #DCFCE7; color: #166534; }
+    .validation-result.error { background: #FEE2E2; color: #B91C1C; }
 
     @keyframes scanning {
       0% { top: 20%; }
@@ -53,4 +65,30 @@ import { MatIconModule } from '@angular/material/icon';
     }
   `]
 })
-export class ValidatePage {}
+export class ValidatePage {
+  private agentService = inject(AgentService);
+
+  validationCode = signal('');
+  isValidating = signal(false);
+  resultMessage = signal<string | null>(null);
+  validationSuccess = signal(false);
+
+  verifyCode() {
+    if (!this.validationCode()) {
+      this.resultMessage.set('Veuillez entrer un code avant de vérifier.');
+      this.validationSuccess.set(false);
+      return;
+    }
+
+    this.isValidating.set(true);
+    this.resultMessage.set(null);
+
+    this.agentService.validateTicket(this.validationCode())
+      .pipe(catchError(() => of({ success: false, message: 'Impossible de contacter le serveur.' })))
+      .subscribe(result => {
+        this.validationSuccess.set(!!result?.success);
+        this.resultMessage.set(result?.message || (result?.success ? 'Ticket validé avec succès.' : 'Code invalide.'));
+        this.isValidating.set(false);
+      });
+  }
+}

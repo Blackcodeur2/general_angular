@@ -89,7 +89,6 @@ export class VoyageHistoryPage implements OnInit {
   });
 
   ngOnInit() {
-    // Extended mock data for pagination
     this.history.set([]);
   }
 }

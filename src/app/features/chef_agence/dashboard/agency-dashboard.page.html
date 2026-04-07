@@ -7,26 +7,31 @@
 
         <!-- Actions Rapides -->
         <div class="quick-actions">
-            <!-- TODO: Add correct routes when pages are ready -->
-            <button class="action-btn" (click)="navigateTo('/agency/buses')">
+            <button class="action-btn" (click)="navigateTo('/chef_agence/buses')">
                 <span class="icon">🚌</span>
-                <span class="label">Nouveau Bus</span>
+                <span class="label">Gestion Bus</span>
             </button>
-            <button class="action-btn" (click)="navigateTo('/agency/routes')">
+            <button class="action-btn" (click)="navigateTo('/chef_agence/routes')">
                 <span class="icon">🛣️</span>
-                <span class="label">Nouveau Trajet</span>
+                <span class="label">Gestion Trajets</span>
             </button>
-            <button class="action-btn" (click)="navigateTo('/agency/staff')">
+            <button class="action-btn" (click)="navigateTo('/chef_agence/staff')">
                 <span class="icon">👨‍✈️</span>
-                <span class="label">Nouveau Membre</span>
+                <span class="label">Personnel</span>
             </button>
-            <button class="action-btn active" (click)="navigateTo('/agency/voyages/create')">
+            <button class="action-btn active" (click)="navigateTo('/chef_agence/voyages')">
                 <span class="icon">📅</span>
-                <span class="label">Planifier Voyage</span>
+                <span class="label">Voyages</span>
             </button>
         </div>
     </div>
 
+    <div *ngIf="isLoading()" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des données de l’agence...</p>
+    </div>
+
+    <div *ngIf="!isLoading()">
     <!-- Statistiques Agence -->
     <div class="stats-grid">
         <div class="stat-card">
@@ -109,22 +114,21 @@
             <div class="custom-card">
                 <div class="card-header">
                     <h3>Départs en Direct</h3>
-                    <button class="btn-link">Voir Planning</button>
+                    <button class="btn-link" (click)="navigateTo('/chef_agence/voyages')">Voir Planning</button>
                 </div>
                 <div class="list-container">
                     <div class="list-item" *ngFor="let trip of liveTrips()">
-                        <div class="trip-time">{{ trip.heure_depart }}</div>
+                        <div class="trip-time">{{ trip.heure_depart || '—' }}</div>
                         <div class="trip-details">
-                            <span class="route">{{ trip.trajet?.origine }} ➝ {{ trip.trajet?.destination }}</span>
-                            <span class="bus badge">{{ trip.bus?.numero_bus }} ({{ trip.bus?.numero_immatriculation
-                                }})</span>
+                            <span class="route">{{ trip.ville_depart }} ➝ {{ trip.ville_arrivee }}</span>
+                            <span class="bus badge">{{ trip.vehicule_immatriculation }}</span>
                         </div>
-                        <span class="occupancy" [class.full]="trip.statut === 'completed'">
+                        <span class="occupancy" [class.full]="trip.statut === 'annule'">
                             {{ trip.statut }}
                         </span>
                     </div>
                     <div class="empty-state" *ngIf="liveTrips().length === 0">
-                        Aucun voyage prévu pour aujourd'hui.
+                        Aucun voyage prévu pour les prochains jours.
                     </div>
                 </div>
             </div>
@@ -139,13 +143,12 @@
                 </div>
                 <div class="recent-list">
                     <div class="recent-item" *ngFor="let res of recentReservations()">
-                        <div class="avatar">{{ res.client?.prenom?.charAt(0) || 'U' }}</div>
+                        <div class="avatar">{{ res.clientName.charAt(0) }}</div>
                         <div class="details">
-                            <span class="name">{{ res.client?.prenom }} {{ res.client?.nom }}</span>
-                            <span class="route-small">{{ res.voyage?.trajet?.origine }} ➝ {{
-                                res.voyage?.trajet?.destination }}</span>
+                            <span class="name">{{ res.clientName }}</span>
+                            <span class="route-small">{{ res.route }}</span>
                         </div>
-                        <span class="amount">{{ res.paiement?.montant || 0 | number }} FCFA</span>
+                        <span class="amount">{{ res.amount | number }} FCFA</span>
                     </div>
                     <div class="empty-state" *ngIf="recentReservations().length === 0">
                         Aucune réservation récente.
@@ -158,9 +161,9 @@
                 <div class="card-header">
                     <h3>Alertes Opérationnelles</h3>
                 </div>
-                <div class="alert-item warning" *ngIf="maintenanceBuses() > 0">
+                <div class="alert-item warning" *ngIf="maintenanceCount() > 0">
                     <strong>Maintenance Requise</strong>
-                    <p>{{ maintenanceBuses() }} bus nécessitent une maintenance ou une attention particulière.</p>
+                    <p>{{ maintenanceCount() }} bus nécessitent une maintenance ou une attention particulière.</p>
                 </div>
                 <div class="alert-item info">
                     <strong>Vue d'ensemble</strong>
