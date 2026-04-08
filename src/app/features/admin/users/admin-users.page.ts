@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from '../../../services/admin/user.service';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 @Component({
     selector: 'app-admin-users',
     standalone: true,
-    imports: [CommonModule, MatIconModule, DatePipe, TitleCasePipe, ReactiveFormsModule, ButtonComponent, PaginationComponent],
+    imports: [CommonModule, MatIconModule, DatePipe, ReactiveFormsModule, ButtonComponent, PaginationComponent],
     templateUrl: './admin-users.page.html',
     styleUrls: ['./admin-users.page.css']
 })
@@ -30,20 +30,22 @@ export class AdminUsersPage implements OnInit {
     isLoading = signal<boolean>(true);
     error = signal<string | null>(null);
 
-    // Pagination
+    // Pagination serveur
     currentPage = signal<number>(1);
-    pageSize = signal<number>(4);
-
-    paginatedUsers = computed(() => {
-        const start = (this.currentPage() - 1) * this.pageSize();
-        const end = start + this.pageSize();
-        return this.users().slice(start, end);
-    });
+    totalItems = signal<number>(0);
+    pageSize = signal<number>(20);
 
     showCreateForm = signal<boolean>(false);
     isCreating = signal<boolean>(false);
 
-    roles = ['ADMIN', 'CHEF_AGENCE', 'AGENT', 'CHAUFFEUR', 'CONTROLEUR', 'CLIENT'];
+    // Filtre par rôle
+    filterRole = signal<string>('');
+    filteredUsers = computed(() => {
+        const role = this.filterRole();
+        return role ? this.users().filter(u => u.role_user === role) : this.users();
+    });
+
+    roles = ['ADMIN', 'CHEF_AGENCE', 'AGENT', 'CHAUFFEUR', 'CONTROLEUR', 'CLIENT', 'PROPRIETAIRE'];
 
     userForm = this.fb.group({
         nom: ['', Validators.required],
@@ -62,7 +64,6 @@ export class AdminUsersPage implements OnInit {
         this.loadUsers();
         this.loadAgences();
 
-        // Ecouter le changement de l'agence pour filtrer les gares disponibles
         this.userForm.get('agence_id')?.valueChanges.subscribe(agenceId => {
             this.userForm.get('gare_id')?.setValue('');
             if (agenceId) {
@@ -73,7 +74,6 @@ export class AdminUsersPage implements OnInit {
             }
         });
 
-        // Rendre optionnels ou obligatoires l'affectation agence/gare selon le rôle
         this.userForm.get('role_user')?.valueChanges.subscribe(role => {
             if (role === 'CHEF_AGENCE' || role === 'AGENT' || role === 'CHAUFFEUR') {
                 this.userForm.get('agence_id')?.setValidators(Validators.required);
@@ -89,21 +89,31 @@ export class AdminUsersPage implements OnInit {
         });
     }
 
-    loadUsers() {
+    loadUsers(page: number = 1) {
         this.isLoading.set(true);
         this.error.set(null);
-        this.userService.getUsers().subscribe({
-            next: (data: any) => {
-                const list = Array.isArray(data) ? data : (data.data || []);
+        this.userService.getUsers(page).subscribe({
+            next: (response) => {
+                // Structure: { statut: true, data: { current_page, data: [...], total, per_page } }
+                const paginated = response?.data;
+                const list = paginated?.data ?? [];
                 this.users.set(list);
+                this.totalItems.set(paginated?.total ?? 0);
+                this.pageSize.set(paginated?.per_page ?? 20);
+                this.currentPage.set(paginated?.current_page ?? 1);
                 this.isLoading.set(false);
             },
             error: (err) => {
-                console.error("Erreur de chargement", err);
-                this.error.set("Impossible de charger la liste des utilisateurs.");
+                console.error('Erreur de chargement', err);
+                this.error.set('Impossible de charger la liste des utilisateurs.');
                 this.isLoading.set(false);
             }
         });
+    }
+
+    onPageChange(page: number) {
+        this.currentPage.set(page);
+        this.loadUsers(page);
     }
 
     loadAgences() {
@@ -117,12 +127,29 @@ export class AdminUsersPage implements OnInit {
 
     toggleForm() {
         this.showCreateForm.update(v => !v);
-        if (!this.showCreateForm()) this.userForm.reset({ password: 'password123' });
+        if (!this.showCreateForm()) this.userForm.reset({ password: '12345678' });
     }
 
     needsGareAssignment(): boolean {
         const role = this.userForm.get('role_user')?.value;
         return role === 'CHEF_AGENCE' || role === 'AGENT' || role === 'CHAUFFEUR';
+    }
+
+    getRoleLabel(role: string): string {
+        const labels: Record<string, string> = {
+            ADMIN: 'Administrateur',
+            CHEF_AGENCE: 'Chef d\'agence',
+            AGENT: 'Agent',
+            CHAUFFEUR: 'Chauffeur',
+            CONTROLEUR: 'Contrôleur',
+            CLIENT: 'Client',
+            PROPRIETAIRE: 'Propriétaire'
+        };
+        return labels[role] ?? role;
+    }
+
+    countByRole(role: string): number {
+        return this.users().filter(u => u.role_user === role).length;
     }
 
     onSubmitUser() {
@@ -136,14 +163,14 @@ export class AdminUsersPage implements OnInit {
 
         this.userService.createUser(formData).subscribe({
             next: (newUser) => {
-                // Ajout visuel local
                 this.users.update(users => [newUser, ...users]);
+                this.totalItems.update(t => t + 1);
                 this.isCreating.set(false);
                 this.toggleForm();
                 Swal.fire({
                     icon: 'success',
                     title: 'Utilisateur créé',
-                    text: 'Le nouvel utilisateur a été enregistré avec succès et éventuellement affecté.',
+                    text: 'Le nouvel utilisateur a été enregistré avec succès.',
                     timer: 2000,
                     showConfirmButton: false
                 });

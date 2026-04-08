@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { AdminKycService, KycSubmission } from '../../../services/admin/kyc.service';
+import { AdminKycService } from '../../../services/admin/kyc.service';
+import { KycDocument, KycGroupedByUser } from '../../../models/kyc';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
@@ -17,7 +18,7 @@ export class AdminKycPage implements OnInit {
   private kycService = inject(AdminKycService);
   private sanitizer = inject(DomSanitizer);
 
-  submissions = signal<KycSubmission[]>([]);
+  submissions = signal<KycGroupedByUser[]>([]);
   isLoading = signal(true);
   isProcessing = signal(false);
 
@@ -31,9 +32,9 @@ export class AdminKycPage implements OnInit {
   loadPendingKyc() {
     this.isLoading.set(true);
     this.kycService.getPendingKyc().subscribe({
-      next: (data: any) => {
-        let list = Array.isArray(data) ? data : data.data ?? [];
-        this.submissions.set(list);
+      next: (data: KycDocument[]) => {
+        const list = Array.isArray(data) ? data : (data as any).data ?? [];
+        this.submissions.set(this.groupDocumentsByUser(list));
         this.isLoading.set(false);
       },
       error: () => {
@@ -43,9 +44,32 @@ export class AdminKycPage implements OnInit {
     });
   }
 
-  viewDocument(doc: any) {
-    const backendUrl = `${environment.storageUrl}/kwc`;
-    const fullUrl = doc.chemin_fichier.startsWith('http') ? doc.chemin_fichier : `${backendUrl}/${doc.chemin_fichier}`;
+  private groupDocumentsByUser(docs: KycDocument[]): KycGroupedByUser[] {
+    const groups: { [key: number]: KycGroupedByUser } = {};
+
+    docs.forEach(doc => {
+      if (!doc.user) return;
+      const userId = doc.user.id;
+      if (!groups[userId]) {
+        groups[userId] = {
+          user: doc.user,
+          documents: [],
+          statutGlobal: 'en attente'
+        };
+      }
+      groups[userId].documents.push(doc);
+    });
+
+    return Object.values(groups);
+  }
+
+  viewDocument(doc: KycDocument) {
+    const storageUrl = environment.storageUrl || 'http://localhost:8000/storage';
+    // Le chemin peut être complet ou relatif
+    const fullUrl = doc.chemin_fichier.startsWith('http') 
+      ? doc.chemin_fichier 
+      : `${storageUrl}/${doc.chemin_fichier}`;
+      
     const isPdf = fullUrl.toLowerCase().endsWith('.pdf');
     const safeUrl = isPdf ? this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl) : fullUrl;
     
@@ -62,42 +86,44 @@ export class AdminKycPage implements OnInit {
     this.previewDocument.set(null);
   }
 
-  approve(user: any) {
+  approve(sub: KycGroupedByUser) {
     Swal.fire({
       title: 'Approuver ce dossier ?',
-      text: `Le compte de ${user.prenom} ${user.nom} sera activé.`,
+      text: `Tous les documents de ${sub.user.prenom} ${sub.user.nom} seront validés.`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Oui, approuver',
+      confirmButtonText: 'Oui, tout approuver',
       cancelButtonText: 'Annuler',
       confirmButtonColor: '#10b981'
     }).then((result) => {
       if (result.isConfirmed) {
         this.isProcessing.set(true);
-        this.kycService.approveKyc(user.id).subscribe({
-          next: () => {
-            this.isProcessing.set(false);
-            this.submissions.update(list => list.filter(sub => sub.user.id !== user.id));
-            Swal.fire('Approuvé', 'Le dossier a été validé avec succès.', 'success');
-          },
-          error: (err: any) => {
-            this.isProcessing.set(false);
-            Swal.fire('Erreur', err.error?.message || 'Une erreur est survenue', 'error');
-          }
+        // On approuve chaque document un par un (ou via une boucle)
+        // Note: Idéalement le backend devrait avoir un endpoint de validation globale
+        const pendingDocs = sub.documents.filter(d => d.statut === 'en attente');
+        const requests = pendingDocs.map(d => this.kycService.approveKyc(d.id).toPromise());
+
+        Promise.all(requests).then(() => {
+          this.isProcessing.set(false);
+          this.submissions.update(list => list.filter(item => item.user.id !== sub.user.id));
+          Swal.fire('Approuvé', 'Le dossier a été entièrement validé.', 'success');
+        }).catch((err) => {
+          this.isProcessing.set(false);
+          Swal.fire('Erreur', 'Certains documents n\'ont pas pu être approuvés.', 'error');
         });
       }
     });
   }
 
-  reject(user: any) {
+  reject(sub: KycGroupedByUser) {
     Swal.fire({
       title: 'Rejeter ce dossier ?',
-      text: 'Veuillez saisir le motif du rejet :',
+      text: 'Veuillez saisir le motif du rejet (s\'appliquera à tous les documents en attente) :',
       input: 'textarea',
       inputPlaceholder: 'Document illisible, expiré, etc.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Rejeter',
+      confirmButtonText: 'Rejeter tout',
       cancelButtonText: 'Annuler',
       confirmButtonColor: '#ef4444',
       preConfirm: (reason) => {
@@ -109,16 +135,16 @@ export class AdminKycPage implements OnInit {
     }).then((result) => {
       if (result.isConfirmed && result.value) {
         this.isProcessing.set(true);
-        this.kycService.rejectKyc(user.id, result.value).subscribe({
-          next: () => {
-            this.isProcessing.set(false);
-            this.submissions.update(list => list.filter(sub => sub.user.id !== user.id));
-            Swal.fire('Rejeté', 'Le dossier a été rejeté.', 'success');
-          },
-          error: (err: any) => {
-            this.isProcessing.set(false);
-            Swal.fire('Erreur', err.error?.message || 'Une erreur est survenue', 'error');
-          }
+        const pendingDocs = sub.documents.filter(d => d.statut === 'en attente');
+        const requests = pendingDocs.map(d => this.kycService.rejectKyc(d.id, result.value).toPromise());
+
+        Promise.all(requests).then(() => {
+          this.isProcessing.set(false);
+          this.submissions.update(list => list.filter(item => item.user.id !== sub.user.id));
+          Swal.fire('Rejeté', 'Le dossier a été rejeté.', 'success');
+        }).catch((err) => {
+          this.isProcessing.set(false);
+          Swal.fire('Erreur', 'Certains documents n\'ont pas pu être rejetés.', 'error');
         });
       }
     });

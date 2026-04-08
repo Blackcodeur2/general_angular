@@ -1,0 +1,24 @@
+import { User } from './user';
+
+export type KycDocType = 'cni_recto' | 'cni_verso' | 'selfie' | 'patente' | 'carte_grise';
+
+export type KycStatus = 'en attente' | 'approuve' | 'rejete';
+
+export interface KycDocument {
+  id: number;
+  user_id: number;
+  type: KycDocType | string;
+  chemin_fichier: string;
+  statut: KycStatus;
+  commentaire: string;
+  created_at: string;
+  updated_at: string;
+  user?: User;
+}
+
+/** Interface pour grouper les documents par utilisateur dans l'UI Admin */
+export interface KycGroupedByUser {
+  user: User;
+  documents: KycDocument[];
+  statutGlobal: KycStatus;
+}

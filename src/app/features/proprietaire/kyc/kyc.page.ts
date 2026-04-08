@@ -1,10 +1,11 @@
-import { Component, signal, inject, computed } from '@angular/core';
+import { Component, signal, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
 import { HttpClient, HttpEventType, HttpEvent, HttpResponse } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { KycDocument } from '../../../models/kyc';
 import Swal from 'sweetalert2';
 
 interface UploadedFile {
@@ -22,14 +23,18 @@ interface UploadedFile {
   templateUrl: './kyc.page.html',
   styleUrls: ['./kyc.page.css']
 })
-export class KycPage {
+export class KycPage implements OnInit {
   private fb = inject(FormBuilder);
   private proprietaireService = inject(ProprietaireService);
   private readonly API = environment.apiUrl;
 
   isSubmitting = signal(false);
+  isLoading = signal(true);
   uploadProgress = signal(0);
   step = signal(1);
+
+  // Documents existants
+  kycDocuments = signal<KycDocument[]>([]);
 
   // Fichiers uploadés
   fileFront = signal<UploadedFile | null>(null);
@@ -46,6 +51,26 @@ export class KycPage {
     expiry_date: ['', [Validators.required, this.futureDateValidator]],
   });
 
+  ngOnInit() {
+    this.loadKycStatus();
+  }
+
+  loadKycStatus() {
+    this.isLoading.set(true);
+    this.proprietaireService.getKycStatus().subscribe({
+      next: (docs) => {
+        this.kycDocuments.set(docs);
+        if (docs.length > 0) {
+          this.step.set(3); // Aller direct à l'état "en attente/validé" si des docs existent
+        }
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+      }
+    });
+  }
+
   /** Vérifie que la date est dans le futur (like backend: after:today) */
   private futureDateValidator(control: import('@angular/forms').AbstractControl) {
     if (!control.value) return null;
@@ -57,8 +82,7 @@ export class KycPage {
 
   // L'étape 2 est valide si les 3 fichiers requis sont présents
   canProceedStep2 = computed(() => {
-    const requiresSelfie = true; // peut être conditionnel
-    return this.fileFront() !== null && this.fileBack() !== null && (!requiresSelfie || this.fileSelfie() !== null);
+    return this.fileFront() !== null && this.fileBack() !== null && this.fileSelfie() !== null;
   });
 
   nextStep() {
@@ -168,7 +192,7 @@ export class KycPage {
         } else if (event.type === HttpEventType.Response) {
           this.isSubmitting.set(false);
           this.uploadProgress.set(100);
-          this.step.set(3);
+          this.loadKycStatus(); // Recharger les documents pour passer à l'étape 3 proprement
           Swal.fire({
             icon: 'success',
             title: 'Documents envoyés',

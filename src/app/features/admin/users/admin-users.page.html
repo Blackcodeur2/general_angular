@@ -30,8 +30,7 @@
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" formControlName="email" class="form-control"
-                        placeholder="Ex: contact@email.com" />
+                    <input type="email" formControlName="email" class="form-control" placeholder="Ex: contact@email.com" />
                 </div>
                 <div class="form-group">
                     <label>Téléphone</label>
@@ -55,7 +54,7 @@
                     <select formControlName="role_user" class="form-control">
                         <option value="">Sélectionnez un rôle</option>
                         @for (r of roles; track r) {
-                        <option [value]="r">{{ r }}</option>
+                        <option [value]="r">{{ getRoleLabel(r) }}</option>
                         }
                     </select>
                 </div>
@@ -106,6 +105,20 @@
             <button class="btn-retry" (click)="loadUsers()">Réessayer</button>
         </div>
         } @else {
+
+        <!-- Barre de filtres par rôle -->
+        <div class="filter-bar">
+            <button class="filter-btn" [class.active]="filterRole() === ''" (click)="filterRole.set('')">
+                Tous <span class="filter-count">{{ users().length }}</span>
+            </button>
+            @for (r of roles; track r) {
+            <button class="filter-btn" [class.active]="filterRole() === r" (click)="filterRole.set(r)">
+                {{ getRoleLabel(r) }}
+                <span class="filter-count">{{ countByRole(r) }}</span>
+            </button>
+            }
+        </div>
+
         <div class="table-responsive">
             <table class="data-table">
                 <thead>
@@ -120,28 +133,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (user of paginatedUsers(); track user.id) {
+                    @for (user of filteredUsers(); track user.id) {
                     <tr>
                         <td>
                             <div class="user-cell">
-                                <div class="user-avatar" [class.admin-avatar]="user.role_user === 'ADMIN'">
-                                    {{ user.prenom[0] || null }}{{ user.nom[0] || null }}
+                                <div class="user-avatar" [class]="'avatar-' + user.role_user.toLowerCase()">
+                                    {{ user.prenom[0] }}{{ user.nom[0] }}
                                 </div>
                                 <div>
                                     <div class="user-name">{{ user.prenom }} {{ user.nom }}</div>
+                                    <div class="user-sub">ID #{{ user.id }}</div>
                                 </div>
                             </div>
                         </td>
                         <td><span class="text-gray">{{ user.email }}</span></td>
-                        <td>{{ user.telephone || '--' }}</td>
-                        <td>{{ user.num_cni || '--' }}</td>
+                        <td>{{ user.telephone || '—' }}</td>
+                        <td><span class="text-gray">{{ user.num_cni || '—' }}</span></td>
                         <td>
-                            <span class="role-badge" [class.admin]="user.role_user === 'ADMIN'"
-                                [class.agent]="user.role_user === 'AGENT'" [class.chauffeur]="user.role_user === 'CHAUFFEUR'" [class.controleur]="user.role_user === 'CONTROLEUR'" [class.client]="user.role_user === 'CLIENT'" [class.chef_agence]="user.role_user === 'CHEF_AGENCE'" [class.proprietaire]="user.role_user === 'PROPRIETAIRE'">
-                                {{ user.role_user | titlecase }}
+                            <span class="role-badge" [class]="'role-' + user.role_user.toLowerCase()">
+                                {{ getRoleLabel(user.role_user) }}
                             </span>
                         </td>
-                        <td>{{ (user.created_at | date:'dd/MM/yyyy') || '--' }}</td>
+                        <td>{{ (user.created_at | date:'dd/MM/yyyy') || '—' }}</td>
                         <td class="text-right">
                             <button class="action-btn" title="Voir détails">
                                 <mat-icon>visibility</mat-icon>
@@ -153,19 +166,19 @@
                         <td colspan="7">
                             <div class="state-container empty-state">
                                 <mat-icon class="empty-icon">people_outline</mat-icon>
-                                <p>Aucun utilisateur n'est inscrit pour le moment.</p>
+                                <p>Aucun utilisateur trouvé pour ce filtre.</p>
                             </div>
                         </td>
                     </tr>
                     }
                 </tbody>
             </table>
-            
-            <gev-pagination 
-                [totalItems]="users().length" 
-                [pageSize]="pageSize()" 
+
+            <gev-pagination
+                [totalItems]="totalItems()"
+                [pageSize]="pageSize()"
                 [currentPage]="currentPage()"
-                (pageChange)="currentPage.set($event)">
+                (pageChange)="onPageChange($event)">
             </gev-pagination>
         </div>
         }

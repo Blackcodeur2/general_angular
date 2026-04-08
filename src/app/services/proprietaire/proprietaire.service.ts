@@ -126,6 +126,10 @@ export class ProprietaireService {
   }
 
   // ── KYC ──
+  getKycStatus(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API}/proprietaire/kyc/status`);
+  }
+
   submitKyc(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.API}/proprietaire/kyc/submit`, formData, {
       reportProgress: true,

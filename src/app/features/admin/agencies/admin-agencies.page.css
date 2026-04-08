@@ -383,3 +383,222 @@
 .btn-secondary:hover {
     background-color: #F9FAFB;
 }
+
+/* ─── Accordéon Agences ─── */
+.agency-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.agency-row:hover {
+    background-color: #EFF6FF !important;
+}
+
+.agency-row.expanded {
+    background-color: #EFF6FF;
+    border-bottom: none;
+}
+
+.expand-cell {
+    width: 40px;
+    padding-right: 0 !important;
+}
+
+.expand-icon {
+    color: #9CA3AF;
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 0.25s ease;
+    display: block;
+}
+
+.expand-icon.rotated {
+    transform: rotate(180deg);
+    color: #2563EB;
+}
+
+/* Badge comptage gares */
+.gares-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: #F3F4F6;
+    color: #6B7280;
+    padding: 0.3rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #E5E7EB;
+}
+
+.gares-count-badge mat-icon {
+    font-size: 0.9rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    color: #9CA3AF;
+}
+
+.gares-count-badge.has-gares {
+    background: #DBEAFE;
+    color: #1E40AF;
+    border-color: #BFDBFE;
+}
+
+.gares-count-badge.has-gares mat-icon {
+    color: #2563EB;
+}
+
+/* Badge statut */
+.statut-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.statut-actif, .statut-approuve {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.statut-inactif, .statut-suspendu {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.statut-inconnu {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* Panneau accordéon */
+.gares-expanded-row td {
+    padding: 0;
+    border-bottom: 2px solid #BFDBFE;
+}
+
+.gares-panel {
+    background: #F8FAFF;
+    padding: 1.5rem 2rem;
+    animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.gares-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1E40AF;
+    margin-bottom: 1.25rem;
+}
+
+.gares-panel-header mat-icon {
+    color: #2563EB;
+}
+
+/* Grille des cards gare */
+.gares-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.gare-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: white;
+    border: 1px solid #DBEAFE;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.gare-card:hover {
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    transform: translateY(-2px);
+}
+
+.gare-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: #EFF6FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.gare-card-icon mat-icon {
+    color: #2563EB;
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.gare-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.gare-ville {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gare-quartier {
+    font-size: 0.78rem;
+    color: #6B7280;
+}
+
+.gare-tel {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.75rem;
+    color: #9CA3AF;
+}
+
+.gare-tel mat-icon {
+    font-size: 0.8rem;
+    width: 0.8rem;
+    height: 0.8rem;
+}
+
+/* Etat vide dans l'accordéon */
+.gares-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: #9CA3AF;
+    text-align: center;
+}
+
+.gares-empty mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.gares-empty p {
+    margin: 0;
+    font-size: 0.875rem;
+}

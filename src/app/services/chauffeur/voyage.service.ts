@@ -10,14 +10,14 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class VoyageService {
-  private apiUrl = `${environment.apiUrl}/voyages`;
+  private apiUrl = `${environment.apiUrl}`;
   private incidentUrl = `${environment.apiUrl}/incidents`;
 
   constructor(private http: HttpClient) {}
 
   // Get current and upcoming program for the connected chauffeur
   getProgrammeChauffeur(): Observable<Voyage[]> {
-    return this.http.get<Voyage[]>(`${this.apiUrl}/chauffeur/programme`);
+    return this.http.get<Voyage[]>(`${this.apiUrl}/chauffeur/voyages`);
   }
 
   // Get past trips completed by the chauffeur

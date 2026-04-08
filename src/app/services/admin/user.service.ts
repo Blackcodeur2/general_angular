@@ -4,6 +4,21 @@ import { Observable } from 'rxjs';
 import { User } from '../../models/user';
 import { environment } from '../../../environments/environment';
 
+export interface PaginatedUsers {
+    current_page: number;
+    data: User[];
+    total: number;
+    per_page: number;
+    last_page: number;
+    from: number;
+    to: number;
+}
+
+export interface UsersApiResponse {
+    statut: boolean;
+    data: PaginatedUsers;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -11,8 +26,8 @@ export class UserService {
     private http = inject(HttpClient);
     private readonly API = environment.apiUrl;
 
-    getUsers(): Observable<User[]> {
-        return this.http.get<User[]>(`${this.API}/admin/users`);
+    getUsers(page: number = 1): Observable<UsersApiResponse> {
+        return this.http.get<UsersApiResponse>(`${this.API}/admin/users?page=${page}`);
     }
 
     createUser(userData: Partial<User>): Observable<User> {

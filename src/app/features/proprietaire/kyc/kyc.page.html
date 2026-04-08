@@ -1,4 +1,10 @@
 <div class="kyc-container">
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <mat-icon class="spin">sync</mat-icon>
+      <p>Chargement de votre dossier...</p>
+    </div>
+  }
 
   <!-- HEADER -->
   <header class="kyc-header">
@@ -8,7 +14,7 @@
   </header>
 
   <!-- STEPPER -->
-  <div class="stepper">
+  <div class="stepper" [class.hidden]="step() === 3">
     <div class="stepper-step" [class.active]="step() >= 1" [class.done]="step() > 1">
       <div class="stepper-step__circle">
         @if (step() > 1) { <mat-icon>check</mat-icon> } @else { 1 }
@@ -237,31 +243,71 @@
     </div>
   }
 
-  <!-- ─── STEP 3 : CONFIRMATION ─── -->
+  <!-- ─── STEP 3 : CONFIRMATION & STATUT ─── -->
   @if (step() === 3) {
     <div class="kyc-card animate-in confirmation-card">
-      <div class="confirmation-icon">⏳</div>
-      <h2>Dossier en cours de vérification</h2>
-      <p>Vos documents ont bien été reçus. Notre équipe de conformité va les analyser sous <strong>24 à 48 heures ouvrables</strong>. Vous recevrez une notification par email dès que votre compte est activé.</p>
-
-      <div class="confirmation-steps">
-        <div class="conf-step done">
-          <mat-icon>check_circle</mat-icon>
-          <span>Documents reçus</span>
-        </div>
-        <div class="conf-step pending">
-          <mat-icon>hourglass_top</mat-icon>
-          <span>Vérification en cours</span>
-        </div>
-        <div class="conf-step waiting">
-          <mat-icon>radio_button_unchecked</mat-icon>
-          <span>Activation du compte</span>
-        </div>
+      <div class="status-summary">
+        @if (kycDocuments().length > 0) {
+          <div class="status-badge" [class]="kycDocuments()[0].statut.replace(' ', '-')">
+            {{ kycDocuments()[0].statut | uppercase }}
+          </div>
+        }
       </div>
 
-      <a routerLink="/proprietaire/dashboard" class="btn-primary">
-        Retour au tableau de bord
-      </a>
+      <div class="confirmation-icon">
+        @if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve') {
+          ✅
+        } @else if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete') {
+          ❌
+        } @else {
+          ⏳
+        }
+      </div>
+
+      <h2>{{ kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve' ? 'Compte Vérifié' : (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete' ? 'Dossier Rejeté' : 'Dossier en cours de vérification') }}</h2>
+      
+      <p>
+        @if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve') {
+          Félicitations ! Vos documents ont été validés. Votre compte propriétaire est maintenant pleinement opérationnel.
+        } @else if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete') {
+          Certains de vos documents ont été rejetés. Veuillez consulter les motifs ci-dessous et soumettre à nouveau les pièces concernées.
+        } @else {
+          Vos documents ont bien été reçus. Notre équipe de conformité va les analyser sous <strong>24 à 48 heures ouvrables</strong>. Vous recevrez une notification par email dès que votre compte est activé.
+        }
+      </p>
+
+      <!-- Liste des documents soumis et leur statut -->
+      <div class="submitted-docs-list">
+        <h3>Documents soumis</h3>
+        @for (doc of kycDocuments(); track doc.id) {
+          <div class="doc-status-item">
+            <div class="doc-type-icon">
+              <mat-icon>{{ doc.type === 'selfie' ? 'face' : 'badge' }}</mat-icon>
+              <span>{{ doc.type | uppercase }}</span>
+            </div>
+            <div class="doc-status-label" [class]="doc.statut.replace(' ', '-')">
+              {{ doc.statut }}
+            </div>
+            @if (doc.commentaire && doc.statut === 'rejete') {
+              <div class="doc-rejection-reason">
+                <mat-icon>warning</mat-icon>
+                <span>{{ doc.commentaire }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="confirmation-actions">
+        @if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete') {
+          <button (click)="step.set(1)" class="btn-primary">
+            Soumettre à nouveau <mat-icon>refresh</mat-icon>
+          </button>
+        }
+        <a routerLink="/proprietaire/dashboard" class="btn-secondary">
+          Retour au tableau de bord
+        </a>
+      </div>
     </div>
   }
 

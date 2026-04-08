@@ -89,7 +89,7 @@
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  border-left: 4px solid #06b6d4;
+  border-left: 4px solid #5441b1;
 }
 
 .voyage-card:hover {
@@ -99,7 +99,7 @@
 
 .card-header {
   padding: 16px;
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  background: #5441b1;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -139,7 +139,7 @@
 }
 
 .status-planned {
-  background: rgba(59, 130, 246, 0.8);
+  background: #5441b1;
 }
 
 .status-ongoing {
@@ -178,7 +178,7 @@
 }
 
 .info-item mat-icon {
-  color: #06b6d4;
+  color: #5441b1;
   margin-top: 2px;
 }
 

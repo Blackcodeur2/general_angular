@@ -37,6 +37,13 @@ export class AdminAgenciesPage implements OnInit {
     activeForm = signal<'GARE' | 'AGENCE'>('GARE');
     isCreating = signal<boolean>(false);
 
+    // Accordéon : id de l'agence dépliée
+    expandedAgenceId = signal<number | null>(null);
+
+    toggleExpand(agenceId: number) {
+        this.expandedAgenceId.update(id => id === agenceId ? null : agenceId);
+    }
+
     gareForm = this.fb.group({
         agence_id: ['', Validators.required],
         ville: ['', Validators.required],

@@ -57,10 +57,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-reject" (click)="reject(sub.user)" [disabled]="isProcessing()">
+            <button class="btn-reject" (click)="reject(sub)" [disabled]="isProcessing()">
               <mat-icon>close</mat-icon> Rejeter
             </button>
-            <button class="btn-approve" (click)="approve(sub.user)" [disabled]="isProcessing()">
+            <button class="btn-approve" (click)="approve(sub)" [disabled]="isProcessing()">
               <mat-icon>check</mat-icon> Approuver
             </button>
           </div>
