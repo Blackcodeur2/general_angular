@@ -70,6 +70,10 @@ export class AuthService {
   resetPassword(data: any): Observable<any> {
     return this.http.post(`${this.API}/reset-password`, data);
   }
+  
+  changePassword(data: any): Observable<any> {
+    return this.http.post(`${this.API}/change-password`, data);
+  }
 
   getToken(): string | null {
     return localStorage.getItem('token');

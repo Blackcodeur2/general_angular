@@ -87,13 +87,82 @@
     </div>
 
     <div class="profile-footer">
-        <gev-button variant="auth__secondary" size="large">
-            <mat-icon>lock_reset</mat-icon>
-            Changer le mot de passe
-        </gev-button>
-        <gev-button variant="auth__primary" size="large">
-            <mat-icon>edit_note</mat-icon>
-            Modifier le profil
-        </gev-button>
+        @if (!isChangingPassword()) {
+            <gev-button variant="auth__secondary" size="large" (click)="togglePasswordForm()">
+                <mat-icon>lock_reset</mat-icon>
+                Changer le mot de passe
+            </gev-button>
+        }
     </div>
+
+    @if (isChangingPassword()) {
+        <div class="password-form-card animate-in">
+            <div class="card-header">
+                <mat-icon>security</mat-icon>
+                <h2>Modifier le mot de passe</h2>
+            </div>
+            
+            <form [formGroup]="changePasswordForm" (ngSubmit)="onSubmitPassword()">
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Mot de passe actuel</label>
+                        <div class="input-wrapper">
+                            <mat-icon>lock_open</mat-icon>
+                            <input type="password" formControlName="current_password" placeholder="••••••••">
+                        </div>
+                        @if (shouldShowError('current_password')) {
+                            <span class="error-msg">Ce champ est obligatoire</span>
+                        }
+                    </div>
+
+                    <div class="field">
+                        <label>Nouveau mot de passe</label>
+                        <div class="input-wrapper">
+                            <mat-icon>lock</mat-icon>
+                            <input type="password" formControlName="new_password" placeholder="••••••••">
+                        </div>
+                        @if (shouldShowError('new_password')) {
+                            <span class="error-msg">
+                                @if (changePasswordForm.get('new_password')?.errors?.['required']) {
+                                    Requis
+                                } @else {
+                                    Minimum 8 caractères
+                                }
+                            </span>
+                        }
+                    </div>
+
+                    <div class="field">
+                        <label>Confirmer le nouveau mot de passe</label>
+                        <div class="input-wrapper">
+                            <mat-icon>enhanced_encryption</mat-icon>
+                            <input type="password" formControlName="confirm_password" placeholder="••••••••">
+                        </div>
+                        @if (shouldShowError('confirm_password')) {
+                            <span class="error-msg">
+                                @if (changePasswordForm.get('confirm_password')?.errors?.['passwordMismatch']) {
+                                    Les mots de passe ne correspondent pas
+                                } @else {
+                                    Requis
+                                }
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <gev-button type="button" variant="auth__secondary" (click)="togglePasswordForm()" [disabled]="isSubmitting()">
+                        Annuler
+                    </gev-button>
+                    <gev-button type="submit" variant="auth__primary" [disabled]="changePasswordForm.invalid || isSubmitting()">
+                        @if (isSubmitting()) {
+                            <mat-icon class="spin">sync</mat-icon> Mise à jour...
+                        } @else {
+                            Enregistrer <mat-icon>check</mat-icon>
+                        }
+                    </gev-button>
+                </div>
+            </form>
+        </div>
+    }
 </div>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { HttpClient, HttpEventType, HttpEvent, HttpResponse } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { KycDocument } from '../../../models/kyc';
@@ -26,12 +27,14 @@ interface UploadedFile {
 export class KycPage implements OnInit {
   private fb = inject(FormBuilder);
   private proprietaireService = inject(ProprietaireService);
+  private authService = inject(AuthService);
   private readonly API = environment.apiUrl;
 
   isSubmitting = signal(false);
   isLoading = signal(true);
   uploadProgress = signal(0);
   step = signal(1);
+  userStatut = computed(() => this.authService.currentUser()?.statut);
 
   // Documents existants
   kycDocuments = signal<KycDocument[]>([]);
@@ -57,11 +60,18 @@ export class KycPage implements OnInit {
 
   loadKycStatus() {
     this.isLoading.set(true);
+    
+    // Si déjà approuvé, on passe direct à l'étape 3
+    const user = this.authService.currentUser();
+    if (user?.statut === 'approuve') {
+      this.step.set(3);
+    }
+
     this.proprietaireService.getKycStatus().subscribe({
       next: (docs) => {
         this.kycDocuments.set(docs);
-        if (docs.length > 0) {
-          this.step.set(3); // Aller direct à l'état "en attente/validé" si des docs existent
+        if (docs.length > 0 || user?.statut === 'approuve') {
+          this.step.set(3); // Aller direct à l'état "en attente/validé/approuvé"
         }
         this.isLoading.set(false);
       },

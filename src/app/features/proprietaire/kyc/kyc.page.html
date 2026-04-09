@@ -247,7 +247,9 @@
   @if (step() === 3) {
     <div class="kyc-card animate-in confirmation-card">
       <div class="status-summary">
-        @if (kycDocuments().length > 0) {
+        @if (userStatut() === 'approuve') {
+          <div class="status-badge approuve">APPROUVÉ</div>
+        } @else if (kycDocuments().length > 0) {
           <div class="status-badge" [class]="kycDocuments()[0].statut.replace(' ', '-')">
             {{ kycDocuments()[0].statut | uppercase }}
           </div>
@@ -255,7 +257,7 @@
       </div>
 
       <div class="confirmation-icon">
-        @if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve') {
+        @if (userStatut() === 'approuve' || (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve')) {
           ✅
         } @else if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete') {
           ❌
@@ -264,10 +266,10 @@
         }
       </div>
 
-      <h2>{{ kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve' ? 'Compte Vérifié' : (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete' ? 'Dossier Rejeté' : 'Dossier en cours de vérification') }}</h2>
+      <h2>{{ (userStatut() === 'approuve' || (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve')) ? 'Compte Vérifié' : (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete' ? 'Dossier Rejeté' : 'Dossier en cours de vérification') }}</h2>
       
       <p>
-        @if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve') {
+        @if (userStatut() === 'approuve' || (kycDocuments().length > 0 && kycDocuments()[0].statut === 'approuve')) {
           Félicitations ! Vos documents ont été validés. Votre compte propriétaire est maintenant pleinement opérationnel.
         } @else if (kycDocuments().length > 0 && kycDocuments()[0].statut === 'rejete') {
           Certains de vos documents ont été rejetés. Veuillez consulter les motifs ci-dessous et soumettre à nouveau les pièces concernées.
