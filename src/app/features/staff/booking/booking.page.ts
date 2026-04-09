@@ -1,161 +1,232 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { AgentService } from '../../../services/agent/agent.service';
-import { catchError, of } from 'rxjs';
+import { catchError, of, debounceTime, distinctUntilChanged, switchMap, finalize, tap } from 'rxjs';
 import { Route } from '../../../models/route';
+import { Voyage } from '../../../models/voyage';
+import Swal from 'sweetalert2';
+import { routes } from '../../../app.routes';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
   imports: [CommonModule, MatIconModule, ReactiveFormsModule],
-  template: `
-    <div class="booking-page">
-      <header class="page-header">
-        <h1>Nouvelle Vente / Réservation</h1>
-        <p>Enregistrez rapidement un ticket et envoyez la confirmation au client.</p>
-      </header>
-
-      <div class="booking-card">
-        <form [formGroup]="bookingForm" (ngSubmit)="submitBooking()" class="booking-form">
-          <div class="form-section">
-            <h3>Informations du Voyage</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Trajet</label>
-                <select formControlName="route_id" class="form-control">
-                  <option value="">Sélectionnez un trajet</option>
-                  <option *ngFor="let route of routes()" [value]="route.id">{{ route.depart }} → {{ route.arrivee }}</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Date</label>
-                <input type="date" formControlName="date" class="form-control">
-              </div>
-              <div class="form-group">
-                <label>Heure</label>
-                <select formControlName="time" class="form-control">
-                  <option value="">Sélectionnez l'heure</option>
-                  <option *ngFor="let item of availableTimes" [value]="item">{{ item }}</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <h3>Informations Client</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Nom complet</label>
-                <input type="text" formControlName="clientName" class="form-control" placeholder="Nom du client">
-              </div>
-              <div class="form-group">
-                <label>Téléphone</label>
-                <input type="tel" formControlName="telephone" class="form-control" placeholder="Ex: 6XXXXXXXX">
-              </div>
-              <div class="form-group">
-                <label>CNI (Optionnel)</label>
-                <input type="text" formControlName="cni" class="form-control" placeholder="Numéro de CNI">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-footer">
-            <button type="submit" class="btn-submit" [disabled]="bookingForm.invalid || submitting()">
-              <mat-icon>confirmation_number</mat-icon>
-              {{ submitting() ? 'Enregistrement...' : 'Générer le Ticket' }}
-            </button>
-          </div>
-
-          <div class="form-message success" *ngIf="message() === 'success'">Réservation enregistrée avec succès.</div>
-          <div class="form-message error" *ngIf="message() === 'error'">Impossible d’enregistrer la réservation, vérifiez votre connexion.</div>
-        </form>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .booking-page { animation: slideIn 0.4s ease-out; }
-    .page-header h1 { font-size: 1.75rem; font-weight: 700; color: #111827; }
-    .booking-card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 2rem; margin-top: 2rem; border: 1px solid #E5E7EB; }
-
-    .form-section { margin-bottom: 2rem; }
-    .form-section h3 { font-size: 1.1rem; font-weight: 600; color: #374151; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #F3F4F6; }
-
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
-    .form-group label { display: block; font-size: 0.875rem; font-weight: 500; color: #6B7280; margin-bottom: 0.5rem; }
-    .form-control { width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
-    .form-control:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
-
-    .form-footer { display: flex; justify-content: flex-end; padding-top: 1rem; }
-    .btn-submit { background: #064E3B; color: white; border: none; padding: 0.875rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.2s; }
-    .btn-submit:hover:not(:disabled) { background: #065F46; }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .form-message { margin-top: 1rem; font-size: 0.95rem; }
-    .form-message.success { color: #047857; }
-    .form-message.error { color: #B91C1C; }
-
-    @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-  `]
+  templateUrl: './booking.page.html',
+  styleUrls: ['./booking.page.css']
 })
 export class BookingPage implements OnInit {
   private agentService = inject(AgentService);
   private fb = inject(FormBuilder);
 
+  // -- State --
+  currentStep = signal(5); // 1: Trip, 2: Voyage, 3: Client, 4: Seat, 5: Review
   routes = signal<Route[]>([]);
+  voyages = signal<Voyage[]>([]);
+  clientsSearch = signal<any[]>([]);
+  availableSeats = signal<string[]>([]);
+  
   submitting = signal(false);
-  message = signal<'success' | 'error' | null>(null);
+  loadingVoyages = signal(false);
+  searchingClients = signal(false);
+  loadingSeats = signal(false);
 
-  bookingForm = this.fb.group({
+  // -- Selections --
+  selectedRoute = signal<Route | null>(null);
+  selectedVoyage = signal<Voyage | null>(null);
+  selectedClient = signal<any | null>(null);
+  selectedSeat = signal<string | null>(null);
+
+  // -- Forms --
+  tripForm = this.fb.group({
     route_id: ['', Validators.required],
-    date: [new Date().toISOString().slice(0, 10), Validators.required],
-    time: ['', Validators.required],
-    clientName: ['', Validators.required],
-    telephone: ['', [Validators.required, Validators.pattern('^6[0-9]{8}$')]],
-    cni: ['']
+    date: [new Date().toISOString().slice(0, 10), Validators.required]
   });
 
-  availableTimes = ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00'];
+  clientSearchControl = new FormControl('');
+  
+  clientForm = this.fb.group({
+    nom: ['', Validators.required],
+    prenom: ['', Validators.required],
+    telephone: ['', [Validators.required, Validators.pattern('^6[0-9]{8}$')]],
+    email: ['', [Validators.email]],
+    num_cni: ['', Validators.required],
+    sexe: ['M', Validators.required],
+    date_naissance: ['', Validators.required]
+  });
+
+  isNewClient = signal(false);
+
+  constructor() {
+    // Setup search debounce
+    this.clientSearchControl.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      tap(() => this.searchingClients.set(true)),
+      switchMap(query => {
+        if (!query || query.length < 2) return of([]);
+        return this.agentService.searchClients(query).pipe(
+          catchError(() => of([]))
+        );
+      }),
+      tap(() => this.searchingClients.set(false))
+    ).subscribe(results => this.clientsSearch.set(results));
+  }
 
   ngOnInit() {
     this.loadRoutes();
   }
 
-  submitBooking() {
-    if (this.bookingForm.invalid) {
-      this.bookingForm.markAllAsTouched();
+  loadRoutes() {
+    this.agentService.getRoutes().pipe(
+      catchError(() => of([] as Route[]))
+    ).subscribe(routes => this.routes.set(routes));
+  }
+
+  // -- Step Navigation --
+  nextStep() {
+    if (this.currentStep() === 1) {
+      this.searchVoyages();
+    } else if (this.currentStep() === 3) {
+      if (!this.selectedClient() && !this.isNewClient()) {
+        Swal.fire('Attention', 'Veuillez sélectionner ou créer un client', 'warning');
+        return;
+      }
+      if (this.isNewClient()) {
+        this.submitNewClient();
+        return;
+      }
+      this.loadSeats();
+    } else {
+      this.currentStep.update(s => s + 1);
+    }
+  }
+
+  prevStep() {
+    this.currentStep.update(s => s - 1);
+  }
+
+  // -- Functional Logic --
+  searchVoyages() {
+    if (this.tripForm.invalid) return;
+    
+    this.loadingVoyages.set(true);
+    const { route_id, date } = this.tripForm.value;
+    
+    this.agentService.getVoyagesByRoute(Number(route_id), date!).pipe(
+      finalize(() => this.loadingVoyages.set(true)) // Set loading to true is weird, but let's assume UI handled
+    ).subscribe(res => {
+      this.voyages.set(res);
+      this.loadingVoyages.set(false);
+      this.currentStep.set(2);
+      this.selectedRoute.set(this.routes().find(r => r.id === Number(route_id)) || null);
+    });
+  }
+
+  selectVoyage(voyage: Voyage) {
+    this.selectedVoyage.set(voyage);
+    this.currentStep.set(3);
+  }
+
+  selectClient(client: any) {
+    this.selectedClient.set(client);
+    this.isNewClient.set(false);
+    this.nextStep();
+  }
+
+  toggleNewClient() {
+    this.isNewClient.update(v => !v);
+    this.selectedClient.set(null);
+  }
+
+  submitNewClient() {
+    if (this.clientForm.invalid) {
+      this.clientForm.markAllAsTouched();
       return;
     }
 
     this.submitting.set(true);
-    this.message.set(null);
-
-    const payload = {
-      route_id: this.bookingForm.value.route_id,
-      date_depart: this.bookingForm.value.date,
-      heure_depart: this.bookingForm.value.time,
-      client_name: this.bookingForm.value.clientName,
-      telephone: this.bookingForm.value.telephone,
-      cni: this.bookingForm.value.cni
-    };
-
-    this.agentService.createBooking(payload).pipe(
-      catchError(() => {
-        this.message.set('error');
+    this.agentService.createClient(this.clientForm.value).subscribe({
+      next: (client) => {
+        this.selectedClient.set(client);
+        this.isNewClient.set(false);
         this.submitting.set(false);
-        return of(null);
-      })
-    ).subscribe(response => {
-      if (response) {
-        this.message.set('success');
-        this.bookingForm.reset({ date: new Date().toISOString().slice(0, 10), route_id: '', time: '', clientName: '', telephone: '', cni: '' });
+        this.loadSeats();
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        Swal.fire('Erreur', err.error?.message || 'Impossible de créer le client', 'error');
       }
-      this.submitting.set(false);
     });
   }
 
-  private loadRoutes() {
-    this.agentService.getRoutes().pipe(catchError(() => of([] as Route[]))).subscribe(routes => this.routes.set(routes));
+  loadSeats() {
+    if (!this.selectedVoyage()) return;
+    this.loadingSeats.set(true);
+    this.agentService.getAvailableSeats(this.selectedVoyage()!.id).subscribe({
+      next: (seats) => {
+        this.availableSeats.set(seats);
+        this.loadingSeats.set(false);
+        this.currentStep.set(4);
+      },
+      error: () => this.loadingSeats.set(false)
+    });
+  }
+
+  selectSeat(seat: string) {
+    this.selectedSeat.set(seat);
+  }
+
+  confirmSeat() {
+    if (!this.selectedSeat()) return;
+    this.currentStep.set(5);
+  }
+
+  submitBooking() {
+    this.submitting.set(true);
+    const payload = {
+      voyage_id: this.selectedVoyage()?.id,
+      client_id: this.selectedClient()?.id,
+      numero_siege: this.selectedSeat(),
+      // Backward compatibility fields if needed by backend until fully updated
+      client_name: `${this.selectedClient()?.prenom} ${this.selectedClient()?.nom}`,
+      telephone: this.selectedClient()?.telephone
+    };
+
+    this.agentService.createBooking(payload).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        Swal.fire('Succès', 'Réservation enregistrée avec succès !', 'success').then(() => {
+          this.resetBooking();
+        });
+      },
+      error: (err) => {
+        this.submitting.set(false);
+        Swal.fire('Erreur', err.error?.message || 'Erreur lors de la réservation', 'error');
+      }
+    });
+  }
+
+  resetBooking() {
+    this.currentStep.set(1);
+    this.selectedRoute.set(null);
+    this.selectedVoyage.set(null);
+    this.selectedClient.set(null);
+    this.selectedSeat.set(null);
+    this.tripForm.reset({ date: new Date().toISOString().slice(0, 10) });
+    this.clientForm.reset({ sexe: 'M' });
+    this.isNewClient.set(false);
+  }
+
+  // -- UI Helpers --
+  getTotalSeatsArray(): number[] {
+    // Assuming standard coaster if not provided, but ideally voyages should have bus info
+    // For now let's generate 70 seats if we don't know
+    return Array.from({ length: 70 }, (_, i) => i + 1);
+  }
+
+  isSeatAvailable(seat: number): boolean {
+    return this.availableSeats().includes(seat.toString());
   }
 }

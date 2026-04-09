@@ -46,4 +46,24 @@ export class AgentService {
   getReservationDetail(id: number): Observable<any> {
     return this.http.get<{ statut: boolean; data: any }>(`${this.API}/agent/reservations/${id}`).pipe(map(response => response.data));
   }
+
+  // ── Client Management ──
+  searchClients(query: string): Observable<any[]> {
+    return this.http.get<{ statut: boolean; data: any[] }>(`${this.API}/agent/clients/search?query=${query}`)
+      .pipe(map(response => response.data));
+  }
+
+  createClient(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.API}/agent/clients`, payload);
+  }
+
+  // ── Voyage & Seats ──
+  getVoyagesByRoute(routeId: number, date: string): Observable<Voyage[]> {
+    return this.http.get<{ statut: boolean; data: Voyage[] }>(`${this.API}/agent/voyages/search?route_id=${routeId}&date=${date}`)
+      .pipe(map(response => response.data));
+  }
+
+  getAvailableSeats(voyageId: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.API}/voyages/${voyageId}/available-seats`);
+  }
 }
