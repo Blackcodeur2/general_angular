@@ -1,0 +1,83 @@
+<div class="voyages-container">
+  <div class="header">
+    <h1>Voyages Disponibles</h1>
+    <p>Trouvez et réservez votre voyage</p>
+  </div>
+
+  <!-- Formulaire de recherche -->
+  <div class="search-section">
+    <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ville de départ</label>
+          <input type="text" formControlName="villeDepart" placeholder="Ex: Kinshasa" class="input-field">
+        </div>
+        <div class="form-group">
+          <label>Ville d'arrivée</label>
+          <input type="text" formControlName="villeArrivee" placeholder="Ex: Bukavu" class="input-field">
+        </div>
+        <div class="form-group">
+          <label>Date de départ</label>
+          <input type="date" formControlName="dateDepart" class="input-field">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn-primary" [disabled]="isLoading">
+            <span *ngIf="!isLoading">Rechercher</span>
+            <span *ngIf="isLoading">Chargement...</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Liste des voyages -->
+  <div class="voyages-list">
+    <div *ngIf="isLoading" class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des voyages...</p>
+    </div>
+
+    <div *ngIf="voyages.length === 0 && !isLoading" class="empty-state">
+      <p>Aucun voyage trouvé. Essayez d'autres critères de recherche.</p>
+    </div>
+
+    <div class="voyage-card" *ngFor="let voyage of voyages">
+      <div class="voyage-header">
+        <div class="route">
+          <span class="ville">{{ voyage.ville_depart }}</span>
+          <span class="arrow">→</span>
+          <span class="ville">{{ voyage.ville_arrivee }}</span>
+        </div>
+        <div class="statut" [ngClass]="getStatutClass(voyage.statut)">
+          {{ voyage.statut | capitalize }}
+        </div>
+      </div>
+
+      <div class="voyage-details">
+        <div class="detail">
+          <label>Date de départ :</label>
+          <span>{{ voyage.date_depart | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="detail">
+          <label>Heure de départ :</label>
+          <span>{{ voyage.heure_depart || '--:--' }}</span>
+        </div>
+        <div class="detail">
+          <label>Véhicule :</label>
+          <span>{{ voyage.vehicule_immatriculation }}</span>
+        </div>
+        <div class="detail" *ngIf="voyage.chauffeur">
+          <label>Chauffeur :</label>
+          <span>{{ voyage.chauffeur.nom }} {{ voyage.chauffeur.prenom }}</span>
+        </div>
+      </div>
+
+      <div class="voyage-actions">
+        <button class="btn-secondary" (click)="onViewDetails(voyage.id)">Détails</button>
+        <button class="btn-primary" (click)="onReserve(voyage.id)" [disabled]="voyage.statut === 'annule'">
+          Réserver
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

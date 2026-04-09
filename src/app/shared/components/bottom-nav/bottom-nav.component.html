@@ -1,0 +1,37 @@
+<nav class="bottom-nav">
+  <a class="nav-item" 
+     routerLink="/client/home" 
+     routerLinkActive="active"
+     [routerLinkActiveOptions]="{ exact: true }">
+    <div class="nav-icon">🏠</div>
+    <span class="nav-label">Accueil</span>
+  </a>
+
+  <a class="nav-item" 
+     routerLink="/client/voyages"
+     routerLinkActive="active">
+    <div class="nav-icon">✈️</div>
+    <span class="nav-label">Voyages</span>
+  </a>
+
+  <a class="nav-item" 
+     routerLink="/client/agences"
+     routerLinkActive="active">
+    <div class="nav-icon">🏢</div>
+    <span class="nav-label">Agences</span>
+  </a>
+
+  <a class="nav-item" 
+     routerLink="/client/mes-reservations"
+     routerLinkActive="active">
+    <div class="nav-icon">📋</div>
+    <span class="nav-label">Réservations</span>
+  </a>
+
+  <a class="nav-item" 
+     routerLink="/client/profile"
+     routerLinkActive="active">
+    <div class="nav-icon">👤</div>
+    <span class="nav-label">Profil</span>
+  </a>
+</nav>

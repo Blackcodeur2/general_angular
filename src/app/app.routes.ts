@@ -4,18 +4,24 @@ import { AgencyLayoutComponent } from './layouts/agency-layout/agency-layout.com
 import { StaffLayoutComponent } from './layouts/staff-layout/staff-layout.component';
 import { ChauffeurLayoutComponent } from './layouts/chauffeur-layout/chauffeur-layout.component';
 import { ProprietaireLayoutComponent } from './layouts/proprietaire-layout/proprietaire-layout.component';
+import { ClientLayoutComponent } from './layouts/client-layout/client-layout.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
-
+  // Route par défaut - redirige vers splash
   {
     path: '',
-    loadComponent: () => import('./features/public/landing/landing.page').then(m => m.LandingPage)
+    redirectTo: '/splash',
+    pathMatch: 'full'
   },
   {
     path: 'splash',
     loadComponent: () => import('./features/splash/splash.page').then(m => m.SplashPage)
+  },
+  {
+    path: 'landing',
+    loadComponent: () => import('./features/public/landing/landing.page').then(m => m.LandingPage)
   },
   {
     path: 'login',
@@ -226,13 +232,36 @@ export const routes: Routes = [
   // Routes pour le client uniquement
   {
     path: 'client',
+    component: ClientLayoutComponent,
     canActivate: [authGuard],
     data: { roles: ['CLIENT'] },
     children: [
       {
         path: 'home',
         loadComponent: () => import('./features/client/home-component/home-component').then(m => m.HomeComponent),
+      },
+      {
+        path: 'voyages',
+        loadComponent: () => import('./features/client/voyages/voyages.page').then(m => m.VoyagesPage),
+      },
+      {
+        path: 'agences',
+        loadComponent: () => import('./features/client/agences/agences.page').then(m => m.AgencesPage),
+      },
+      {
+        path: 'mes-reservations',
+        loadComponent: () => import('./features/client/mes-reservations/mes-reservations.page').then(m => m.MesReservationsPage),
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/profile.page').then(m => m.ProfilePage),
       }
     ]
+  },
+
+  // Wildcard route - redirige vers splash pour les routes non trouvées
+  {
+    path: '**',
+    redirectTo: '/splash'
   }
 ];

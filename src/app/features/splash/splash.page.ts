@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-splash',
@@ -36,7 +37,7 @@ import { Router } from '@angular/router';
         </div>
       </div>
       
-      <p class="loading-text">En route vers votre destination...</p>
+      <p class="loading-text">{{ loadingMessage }}</p>
     </div>
   `,
   styles: [`
@@ -206,13 +207,43 @@ import { Router } from '@angular/router';
 
 })
 export class SplashPage implements OnInit {
-
-  constructor(private router: Router) { }
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  
+  public loadingMessage = 'En route vers votre destination...';
 
   ngOnInit() {
-    // Simulate loading time then navigate
-    setTimeout(() => {
-      this.router.navigate(['/']);
-    }, 3000); // 3 seconds delay
+    // Vérifier si l'utilisateur est connecté
+    if (this.authService.isLoggedIn()) {
+      // Si connecté, rediriger vers le dashboard approprié après la durée du splash
+      setTimeout(() => {
+        this.redirectToUserDashboard();
+      }, 2000);
+    } else {
+      // Si non connecté, rediriger vers la landing après la durée du splash
+      this.loadingMessage = 'Bienvenue chez GEV...';
+      setTimeout(() => {
+        this.router.navigate(['/landing']);
+      }, 3000);
+    }
+  }
+
+  /**
+   * Redirige l'utilisateur vers son dashboard selon son rôle
+   */
+  private redirectToUserDashboard(): void {
+    const role = this.authService.getRole();
+
+    const roleRoutes: { [key: string]: string } = {
+      'ADMIN': '/admin/dashboard',
+      'CHEF_AGENCE': '/chef_agence/dashboard',
+      'CHAUFFEUR': '/chauffeur/dashboard',
+      'AGENT': '/agent/dashboard',
+      'PROPRIETAIRE': '/proprietaire/dashboard',
+      'CLIENT': '/client/home'
+    };
+
+    const redirectPath = roleRoutes[role || ''] || '/landing';
+    this.router.navigate([redirectPath]);
   }
 }

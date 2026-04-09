@@ -1,0 +1,79 @@
+<div class="agences-container">
+  <div class="header">
+    <h1>Agences de Voyage</h1>
+    <p>Découvrez nos partenaires et leurs services</p>
+  </div>
+
+  <!-- Barre de recherche -->
+  <div class="search-bar">
+    <input type="text" placeholder="Rechercher une agence..." 
+           [(ngModel)]="searchTerm" 
+           (keyup)="onSearchAgency()"
+           class="search-input">
+  </div>
+
+  <!-- Liste des agences -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement des agences...</p>
+  </div>
+
+  <div *ngIf="!isLoading && filteredAgencies.length === 0" class="empty-state">
+    <p>Aucune agence trouvée.</p>
+  </div>
+
+  <div class="agences-grid">
+    <div class="agence-card" *ngFor="let agence of filteredAgencies">
+      <div class="agence-header">
+        <h2 class="agence-nom">{{ agence.nom }}</h2>
+      </div>
+
+      <div class="agence-info">
+        <div class="info-item">
+          <span class="icon">📞</span>
+          <div>
+            <label>Téléphone</label>
+            <p>{{ agence.telephone }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="icon">📍</span>
+          <div>
+            <label>Adresse</label>
+            <p>{{ agence.adresse }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="icon">✉️</span>
+          <div>
+            <label>Email</label>
+            <p>{{ agence.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gares de l'agence -->
+      <div class="gares-section">
+        <h3>Gares</h3>
+        <div class="gares-list">
+          <div class="gare-item" *ngFor="let gare of agence.gares">
+            <span class="gare-nom">{{ gare.nom }}</span>
+            <span class="gare-ville">{{ gare.ville }}</span>
+          </div>
+          <div *ngIf="!agence.gares || agence.gares.length === 0" class="no-gares">
+            Aucune gare disponible
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="agence-actions">
+        <button class="btn-secondary" (click)="onViewAgencyVoyages(agence.id)">
+          Voir les voyages
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

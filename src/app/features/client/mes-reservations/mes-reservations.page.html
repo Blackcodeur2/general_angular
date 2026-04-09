@@ -1,0 +1,125 @@
+<div class="reservations-container">
+  <div class="header">
+    <h1>Mes Réservations</h1>
+    <p>Consultez et gérez vos réservations</p>
+  </div>
+
+  <!-- Filtres de statut -->
+  <div class="filters">
+    <button class="filter-btn" 
+            [class.active]="activeFilter === 'all'"
+            (click)="setFilter('all')">
+      Tous ({{ reservations.length }})
+    </button>
+    <button class="filter-btn" 
+            [class.active]="activeFilter === 'confirmee'"
+            (click)="setFilter('confirmee')">
+      Confirmées ({{ getCountByStatus('confirmee') }})
+    </button>
+    <button class="filter-btn" 
+            [class.active]="activeFilter === 'en_attente'"
+            (click)="setFilter('en_attente')">
+      En attente ({{ getCountByStatus('en_attente') }})
+    </button>
+    <button class="filter-btn" 
+            [class.active]="activeFilter === 'annulee'"
+            (click)="setFilter('annulee')">
+      Annulées ({{ getCountByStatus('annulee') }})
+    </button>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement de vos réservations...</p>
+  </div>
+
+  <!-- État vide -->
+  <div *ngIf="!isLoading && filteredReservations.length === 0" class="empty-state">
+    <p>Aucune réservation trouvée.</p>
+    <button class="btn-primary" (click)="goToVoyages()">Faire une réservation</button>
+  </div>
+
+  <!-- Liste des réservations -->
+  <div class="reservations-list">
+    <div class="reservation-card" *ngFor="let reservation of filteredReservations">
+      <!-- En-tête de la réservation -->
+      <div class="reservation-header">
+        <div class="route-info">
+          <span class="ville-depart">{{ reservation.voyage.ville_depart }}</span>
+          <span class="arrow">→</span>
+          <span class="ville-arrivee">{{ reservation.voyage.ville_arrivee }}</span>
+        </div>
+        <div class="statut-badge" [ngClass]="'statut-' + reservation.statut">
+          {{ reservation.statut | uppercase }}
+        </div>
+      </div>
+
+      <!-- Détails de la réservation -->
+      <div class="reservation-details">
+        <div class="detail-row">
+          <div class="detail-item">
+            <label>Référence</label>
+            <span class="reference">{{ reservation.reference }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Siège</label>
+            <span>{{ reservation.numero_siege }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Montant</label>
+            <span class="montant">{{ reservation.montant | currency: 'CDF' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-item">
+            <label>Date de départ</label>
+            <span>{{ reservation.voyage.date_depart | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Heure de départ</label>
+            <span>{{ reservation.voyage.heure_depart || '--:--' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Véhicule</label>
+            <span>{{ reservation.voyage.vehicule_immatriculation }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row" *ngIf="reservation.voyage.agence">
+          <div class="detail-item">
+            <label>Agence</label>
+            <span>{{ reservation.voyage.agence.nom }}</span>
+          </div>
+          <div class="detail-item">
+            <label>Téléphone Agence</label>
+            <span>{{ reservation.voyage.agence.telephone }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-item">
+            <label>Date de réservation</label>
+            <span>{{ reservation.date_reservation | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="reservation-actions">
+        <button class="btn-secondary" (click)="onViewDetails(reservation.id)">
+          Détails complets
+        </button>
+        <button class="btn-download" (click)="onDownloadReceipt(reservation.id)">
+          📥 Télécharger
+        </button>
+        <button class="btn-danger" 
+                (click)="onCancelReservation(reservation.id)"
+                [disabled]="reservation.statut === 'annulee' || reservation.statut === 'confirmee'">
+          Annuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
