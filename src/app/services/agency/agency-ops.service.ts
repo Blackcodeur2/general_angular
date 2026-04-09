@@ -23,6 +23,11 @@ export class AgencyOpsService {
             .pipe(map(response => response.data));
     }
 
+    getBusesDispo(): Observable<Bus[]> {
+        return this.http.get<{ statut: boolean; data: Bus[] }>(`${this.API}/chef-agence/buses/dispo`)
+            .pipe(map(response => response.data));
+    }
+
     createBus(bus: Partial<Bus>): Observable<Bus> {
         return this.http.post<Bus>(`${this.API}/chef-agence/buses`, bus);
     }

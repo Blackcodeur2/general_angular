@@ -15,10 +15,6 @@
         <form [formGroup]="voyageForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Numero de Voyage</label>
-                    <input type="text" formControlName="num_voyage" class="form-control" />
-                </div>
-                <div class="form-group">
                     <label>Trajet</label>
                     <select formControlName="trajet_id" class="form-control">
                         <option value=""> -- Sélectionnez un Trajet --</option>

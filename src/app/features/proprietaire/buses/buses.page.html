@@ -23,21 +23,21 @@
         <div class="bus-card">
           <div class="card-header">
             <h3>{{ bus.marque }} {{ bus.modele }}</h3>
-            <span class="plate">{{ bus.plaque_immatriculation }}</span>
+            <span class="plate">{{ bus.immatriculation }}</span>
           </div>
           <div class="card-body">
             <div class="info-item">
               <mat-icon>badge</mat-icon>
               <div>
                 <span class="label">Immatriculation</span>
-                <span class="value">{{ bus.plaque_immatriculation }}</span>
+                <span class="value">{{ bus.immatriculation }}</span>
               </div>
             </div>
             <div class="info-item">
               <mat-icon>event_seat</mat-icon>
               <div>
                 <span class="label">Capacité</span>
-                <span class="value">{{ bus.capacite }} places</span>
+                <span class="value">{{ bus.nb_places }} places</span>
               </div>
             </div>
             <div class="info-item">

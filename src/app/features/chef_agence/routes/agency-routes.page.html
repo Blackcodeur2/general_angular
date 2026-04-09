@@ -59,6 +59,7 @@
                 <thead>
                     <tr>
                         <th>Ligne</th>
+                        <th>Distance</th>
                         <th>Prix</th>
                         <th>Type</th>
                         <th>Actions</th>
@@ -77,6 +78,7 @@
                                 </div>
                             </div>
                         </td>
+                        <td>{{ route.distance_km | number }} Km</td>
                         <td><span class="price">{{ route.prix | number }} XAF</span></td>
                         <td><span>{{ route.type_trajet }}</span></td>
                         <td>

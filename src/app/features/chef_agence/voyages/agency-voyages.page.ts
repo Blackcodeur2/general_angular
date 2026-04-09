@@ -42,7 +42,6 @@ export class AgencyVoyagesPage implements OnInit {
   });
 
   voyageForm = this.fb.group({
-    num_voyage: ['', Validators.required],
     date_depart: ['', Validators.required],
     trajet_id: ['', Validators.required],
     bus_id: ['', Validators.required],
@@ -70,7 +69,7 @@ export class AgencyVoyagesPage implements OnInit {
   }
 
   loadBuses() {
-    this.agencyService.getBuses().subscribe({
+    this.agencyService.getBusesDispo().subscribe({
       next: (data: any) => {
         if (Array.isArray(data)) {
           this.buses.set(data);

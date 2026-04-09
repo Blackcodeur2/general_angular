@@ -3,6 +3,7 @@ export interface Gare {
     nom: string;
     ville: string;
     quartier: string;
+    adresse: string;
     telephone: string;
     agence_id: number;
     created_at?: string;
