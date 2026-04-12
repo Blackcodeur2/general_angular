@@ -107,7 +107,7 @@ export class VoyageHistoryPage implements OnInit {
   private loadHistory() {
     this.isLoading.set(true);
     this.voyageService.getHistoriqueChauffeur().subscribe({
-      next: (data) => {
+      next: (data: Voyage[]) => {
         this.history.set(data || []);
         this.isLoading.set(false);
       },

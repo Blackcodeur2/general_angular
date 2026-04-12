@@ -20,12 +20,12 @@ export class AgencyOpsService {
     // Buses
     getBuses(): Observable<Bus[]> {
         return this.http.get<{ statut: boolean; data: Bus[] }>(`${this.API}/chef-agence/buses`)
-            .pipe(map(response => response.data));
+            .pipe(map((response: { statut: boolean; data: Bus[] }) => response.data));
     }
 
     getBusesDispo(): Observable<Bus[]> {
         return this.http.get<{ statut: boolean; data: Bus[] }>(`${this.API}/chef-agence/buses/dispo`)
-            .pipe(map(response => response.data));
+            .pipe(map((response: { statut: boolean; data: Bus[] }) => response.data));
     }
 
     createBus(bus: Partial<Bus>): Observable<Bus> {
@@ -39,41 +39,68 @@ export class AgencyOpsService {
     // Routes
     getRoutes(): Observable<Route[]> {
         return this.http.get<{ statut: boolean; data: Route[] }>(`${this.API}/chef-agence/trajets`)
-            .pipe(map(response => response.data));
+            .pipe(map((response: { statut: boolean; data: Route[] }) => response.data));
     }
 
     createRoute(route: Partial<Route>): Observable<Route> {
         return this.http.post<Route>(`${this.API}/chef-agence/trajets`, route);
     }
 
+    updateRoute(route: Partial<Route>): Observable<Route> {
+        return this.http.put<Route>(`${this.API}/chef-agence/trajets/${route.id}`, route);
+    }
+
     // Gares
     getGares(): Observable<Gare[]> {
         return this.http.get<{ statut: boolean; data: Gare[] }>(`${this.API}/chef-agence/gares`)
-            .pipe(map(response => response.data));
+            .pipe(map((response: { statut: boolean; data: Gare[] }) => response.data));
     }
 
     // Staff
     getStaff(): Observable<User[]> {
         return this.http.get<{ statut: boolean; data: User[] }>(`${this.API}/chef-agence/utilisateurs`)
-            .pipe(map(response => response.data));
+            .pipe(map((response: { statut: boolean; data: User[] }) => response.data));
     }
 
     getChauffeurs(): Observable<User[]> {
         return this.http.get<{ statut: boolean; data: User[] }>(`${this.API}/chef-agence/utilisateurs`)
-            .pipe(map(response => response.data.filter(user => user.role_user === 'CHAUFFEUR')));
+            .pipe(map((response: { statut: boolean; data: User[] }) => response.data.filter((user: User) => user.role_user === 'CHAUFFEUR')));
     }
 
     addStaff(staff: any): Observable<User> {
         return this.http.post<User>(`${this.API}/chef-agence/staff`, staff);
     }
 
+    updateStaff(staff: any): Observable<User> {
+        return this.http.put<User>(`${this.API}/chef-agence/staff/${staff.id}`, staff);
+    }
+
     // Voyages
     getVoyages(): Observable<Voyage[]> {
         return this.http.get<{ statut: boolean; data: Voyage[] }>(`${this.API}/chef-agence/voyages`)
-            .pipe(map(response => response.data));
+            .pipe(map((response: { statut: boolean; data: Voyage[] }) => response.data));
     }
 
     createVoyage(voyage: Partial<Voyage>): Observable<Voyage> {
         return this.http.post<Voyage>(`${this.API}/chef-agence/voyages`, voyage);
+    }
+
+    updateVoyage(voyage: Partial<Voyage>): Observable<Voyage> {
+        return this.http.put<Voyage>(`${this.API}/chef-agence/voyages/${voyage.id}`, voyage);
+    }
+
+    getDashboardStats(): Observable<any> {
+        return this.http.get<{ statut: boolean; data: any }>(`${this.API}/chef-agence/dashboard-stats`)
+            .pipe(map((response: { statut: boolean; data: any }) => response.data));
+    }
+
+    // Reservations
+    getReservations(): Observable<any[]> {
+        return this.http.get<{ statut: boolean; data: any[] }>(`${this.API}/chef-agence/reservations`)
+            .pipe(map((response: { statut: boolean; data: any[] }) => response.data));
+    }
+
+    cancelReservation(id: number): Observable<any> {
+        return this.http.delete<any>(`${this.API}/chef-agence/reservations/${id}`);
     }
 }

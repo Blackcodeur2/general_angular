@@ -8,6 +8,8 @@ import { Route } from '../../../models/route';
 import { Voyage } from '../../../models/voyage';
 import Swal from 'sweetalert2';
 import { routes } from '../../../app.routes';
+import { AuthService } from '../../../core/services/auth.service';
+import { TicketService } from '../../../services/agent/ticket.service';
 
 @Component({
   selector: 'app-booking',
@@ -19,9 +21,11 @@ import { routes } from '../../../app.routes';
 export class BookingPage implements OnInit {
   private agentService = inject(AgentService);
   private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private ticketService = inject(TicketService);
 
   // -- State --
-  currentStep = signal(5); // 1: Trip, 2: Voyage, 3: Client, 4: Seat, 5: Review
+  currentStep = signal(1); // 1: Trip, 2: Voyage, 3: Client, 4: Seat, 5: Review
   routes = signal<Route[]>([]);
   voyages = signal<Voyage[]>([]);
   clientsSearch = signal<any[]>([]);
@@ -71,7 +75,7 @@ export class BookingPage implements OnInit {
         );
       }),
       tap(() => this.searchingClients.set(false))
-    ).subscribe(results => this.clientsSearch.set(results));
+    ).subscribe((results: any[]) => this.clientsSearch.set(results));
   }
 
   ngOnInit() {
@@ -81,7 +85,7 @@ export class BookingPage implements OnInit {
   loadRoutes() {
     this.agentService.getRoutes().pipe(
       catchError(() => of([] as Route[]))
-    ).subscribe(routes => this.routes.set(routes));
+    ).subscribe((routes: Route[]) => this.routes.set(routes));
   }
 
   // -- Step Navigation --
@@ -115,8 +119,8 @@ export class BookingPage implements OnInit {
     const { route_id, date } = this.tripForm.value;
     
     this.agentService.getVoyagesByRoute(Number(route_id), date!).pipe(
-      finalize(() => this.loadingVoyages.set(true)) // Set loading to true is weird, but let's assume UI handled
-    ).subscribe(res => {
+      finalize(() => this.loadingVoyages.set(false))
+    ).subscribe((res: Voyage[]) => {
       this.voyages.set(res);
       this.loadingVoyages.set(false);
       this.currentStep.set(2);
@@ -124,7 +128,13 @@ export class BookingPage implements OnInit {
     });
   }
 
+  isVoyageDisabled(voyage: Voyage): boolean {
+    const disabledStatuses = ['en cours', 'termine', 'terminé', 'en voyage', 'annule', 'annulé'];
+    return disabledStatuses.includes(voyage.statut?.toLowerCase());
+  }
+
   selectVoyage(voyage: Voyage) {
+    if (this.isVoyageDisabled(voyage)) return;
     this.selectedVoyage.set(voyage);
     this.currentStep.set(3);
   }
@@ -148,7 +158,7 @@ export class BookingPage implements OnInit {
 
     this.submitting.set(true);
     this.agentService.createClient(this.clientForm.value).subscribe({
-      next: (client) => {
+      next: (client: any) => {
         this.selectedClient.set(client);
         this.isNewClient.set(false);
         this.submitting.set(false);
@@ -165,7 +175,7 @@ export class BookingPage implements OnInit {
     if (!this.selectedVoyage()) return;
     this.loadingSeats.set(true);
     this.agentService.getAvailableSeats(this.selectedVoyage()!.id).subscribe({
-      next: (seats) => {
+      next: (seats: string[]) => {
         this.availableSeats.set(seats);
         this.loadingSeats.set(false);
         this.currentStep.set(4);
@@ -187,9 +197,10 @@ export class BookingPage implements OnInit {
     this.submitting.set(true);
     const payload = {
       voyage_id: this.selectedVoyage()?.id,
-      client_id: this.selectedClient()?.id,
-      numero_siege: this.selectedSeat(),
-      // Backward compatibility fields if needed by backend until fully updated
+      user_id: this.selectedClient()?.id,
+      gare_id: this.authService.currentUser()?.gare_id,
+      place: Number(this.selectedSeat()),
+      // Client info for display if needed
       client_name: `${this.selectedClient()?.prenom} ${this.selectedClient()?.nom}`,
       telephone: this.selectedClient()?.telephone
     };

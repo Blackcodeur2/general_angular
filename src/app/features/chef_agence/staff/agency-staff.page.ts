@@ -24,6 +24,9 @@ export class AgencyStaffPage implements OnInit {
   staffMembers = signal<User[]>([]);
   showForm = signal(false);
   isSubmitting = signal(false);
+  isEditing = signal(false);
+  editId = signal<number | null>(null);
+
   roles = ['AGENT', 'CHAUFFEUR'];
   currentPage = signal(1);
   pageSize = signal(5);
@@ -54,56 +57,92 @@ export class AgencyStaffPage implements OnInit {
 
   loadStaff() {
     this.agencyService.getStaff().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.staffMembers.set(data);
-        } else if (data && typeof data === 'object') {
-          // Handle Laravel wrapped responses
-          let arrayData = data.data || data.staff || data.users;
-
-          if (!arrayData) {
-            // If no known key, check if it's an associative array (object with numeric/string keys)
-            // If the first value is an object, assume it's a list of users
-            const values = Object.values(data);
-            if (values.length > 0 && typeof values[0] === 'object') {
-              arrayData = values;
-            }
-          }
-
-          this.staffMembers.set(Array.isArray(arrayData) ? arrayData : []);
-        } else {
-          this.staffMembers.set([]);
-        }
+      next: (data: User[]) => {
+        this.staffMembers.set(data || []);
       },
-      error: () => {
-        this.staffMembers.set([]);
-      }
+      error: () => this.staffMembers.set([])
     });
   }
 
   toggleForm() {
+    if (this.showForm()) {
+        this.isEditing.set(false);
+        this.editId.set(null);
+        this.staffForm.reset({ role_user: 'AGENT' });
+        this.staffForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
+    } else {
+        // Prepare for create mode
+        this.staffForm.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
+    }
+    this.staffForm.get('password')?.updateValueAndValidity();
     this.showForm.update(v => !v);
+  }
+
+  editStaff(member: User) {
+    this.isEditing.set(true);
+    this.editId.set(member.id || null);
+    this.staffForm.patchValue({
+        nom: member.nom,
+        prenom: member.prenom,
+        email: member.email,
+        date_naissance: member.date_naissance,
+        num_cni: member.num_cni,
+        telephone: member.telephone,
+        role_user: member.role_user,
+        gare_id: member.gare_id
+    });
+    // Password is not required when editing
+    this.staffForm.get('password')?.clearValidators();
+    this.staffForm.get('password')?.setValidators([Validators.minLength(8)]);
+    this.staffForm.get('password')?.updateValueAndValidity();
+    this.showForm.set(true);
   }
 
   onSubmit() {
     if (this.staffForm.invalid) return;
     this.isSubmitting.set(true);
+    
+    const formValue = this.staffForm.getRawValue();
     const payload = {
-      ...this.staffForm.getRawValue(),
-      gare_id: this.authService.currentUser()?.gare_id,
+      ...formValue,
+      id: this.editId(),
+      gare_id: this.editId() ? formValue.gare_id : this.authService.currentUser()?.gare_id,
     };
 
-    this.agencyService.addStaff(payload).subscribe({
-      next: (newMember) => {
-        this.staffMembers.update(list => [newMember, ...list]);
+    // If password is empty during edit, Remove it from payload
+    if (this.isEditing() && !payload.password) {
+        delete (payload as any).password;
+    }
+
+    const request = this.isEditing() 
+        ? this.agencyService.updateStaff(payload)
+        : this.agencyService.addStaff(payload);
+
+    request.subscribe({
+      next: (res: User) => {
+        if (this.isEditing()) {
+          this.staffMembers.update((list: User[]) => list.map((m: User) => m.id === this.editId() ? res : m));
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Personnel mis à jour', timer: 2000, showConfirmButton: false });
+        } else {
+          this.staffMembers.update((list: User[]) => [res, ...list]);
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Personnel ajouté', timer: 2000, showConfirmButton: false });
+        }
+
         this.showForm.set(false);
         this.isSubmitting.set(false);
+        this.isEditing.set(false);
+        this.editId.set(null);
         this.staffForm.reset({ role_user: 'AGENT' });
-        Swal.fire({ icon: 'success', title: 'Succès', text: 'Personnel ajouté', timer: 2000, showConfirmButton: false });
       },
-      error: () => {
+      error: (error) => {
         this.isSubmitting.set(false);
-        Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible d\'ajouter le personnel' });
+        let errorMsg = 'Impossible d\'enregistrer le personnel';
+        if (error.status === 422 && error.error?.errors) {
+            errorMsg = Object.entries(error.error.errors)
+                .map(([key, value]: [string, any]) => `${key}: ${value.join(', ')}`)
+                .join('\n');
+        }
+        Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
       }
     });
   }

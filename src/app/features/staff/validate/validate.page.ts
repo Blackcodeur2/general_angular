@@ -84,10 +84,13 @@ export class ValidatePage {
     this.resultMessage.set(null);
 
     this.agentService.validateTicket(this.validationCode())
-      .pipe(catchError(() => of({ success: false, message: 'Impossible de contacter le serveur.' })))
-      .subscribe(result => {
-        this.validationSuccess.set(!!result?.success);
-        this.resultMessage.set(result?.message || (result?.success ? 'Ticket validé avec succès.' : 'Code invalide.'));
+      .pipe(catchError((err: any) => {
+        console.error('Validation error:', err);
+        return of({ statut: false, message: err.error?.message || 'Impossible de contacter le serveur.' });
+      }))
+      .subscribe((result: any) => {
+        this.validationSuccess.set(!!result?.statut);
+        this.resultMessage.set(result?.message || (result?.statut ? 'Ticket validé avec succès.' : 'Code invalide.'));
         this.isValidating.set(false);
       });
   }

@@ -10,4 +10,14 @@ export interface Route {
     gare_id: number;
     created_at?: string;
     updated_at?: string;
+    gare_depart?: {
+        id: number;
+        nom: string;
+        ville: string;
+    };
+    gare_arrivee?: {
+        id: number;
+        nom: string;
+        ville: string;
+    };
 }

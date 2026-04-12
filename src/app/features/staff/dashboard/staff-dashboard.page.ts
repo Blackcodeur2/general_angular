@@ -113,13 +113,16 @@ export class StaffDashboardPage implements OnInit {
 
   private loadStats() {
     this.agentService.getDashboardStats()
-      .pipe(catchError(() => of({ sales_today: 0, active_reservations: 0, revenue_today: 0, pending_validations: 0 })))
-      .subscribe(data => {
+      .pipe(catchError((err: any) => {
+        console.error('Error loading dashboard stats:', err);
+        return of({ sales_today: 0, active_reservations: 0, revenue_today: 0, pending_validations: 0 });
+      }))
+      .subscribe((data: any) => {
         this.stats.set({
-          salesToday: data.sales_today,
-          activeReservations: data.active_reservations,
-          revenueToday: data.revenue_today,
-          pendingValidations: data.pending_validations
+          salesToday: data.sales_today || 0,
+          activeReservations: data.active_reservations || 0,
+          revenueToday: data.revenue_today || 0,
+          pendingValidations: data.pending_validations || 0
         });
         this.isLoading.set(false);
       });

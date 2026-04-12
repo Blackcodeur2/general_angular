@@ -13,7 +13,7 @@
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
         <div class="form-header">
-            <h2>Nouvel Employe</h2>
+            <h2>{{ isEditing() ? 'Modifier le Personnel' : 'Ajouter un Nouveau Membre' }}</h2>
         </div>
         <form [formGroup]="staffForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
@@ -43,8 +43,8 @@
                     <input type="text" formControlName="num_cni" class="form-control" placeholder="Ex: CNI..." />
                 </div>
                 <div class="form-group">
-                    <label>Mot de passe initial</label>
-                    <input type="text" formControlName="password" class="form-control" />
+                    <label>Mot de passe {{ isEditing() ? '(Laisser vide pour ne pas changer)' : '' }}</label>
+                    <input type="password" formControlName="password" class="form-control" />
                 </div>
 
                 <div class="form-group full-width">
@@ -60,7 +60,7 @@
             <div class="form-actions">
                 <gev-button type="submit" variant="primary" [disabled]="staffForm.invalid" [loading]="isSubmitting()"
                     loadingText="Enregistrement...">
-                    Enregistrer l'utilisateur
+                    {{ isEditing() ? 'Mettre à jour' : 'Enregistrer le personnel' }}
                 </gev-button>
             </div>
         </form>
@@ -96,8 +96,9 @@
                             </span>
                         </td>
                         <td>{{ member?.telephone || '--' }}</td>
-                        <td>
-                            <button class="action-btn"><mat-icon>edit</mat-icon></button>
+                        <td class="actions">
+                            <button class="action-btn" (click)="editStaff(member)" title="Modifier"><mat-icon>edit</mat-icon></button>
+                            <button class="action-btn delete"><mat-icon>delete</mat-icon></button>
                         </td>
                     </tr>
                     } @empty {

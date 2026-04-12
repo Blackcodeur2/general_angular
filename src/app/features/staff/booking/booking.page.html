@@ -56,7 +56,9 @@
                 <select formControlName="route_id">
                   <option value="">Sélectionnez un trajet</option>
                   @for (route of routes(); track route.id) {
-                    <option [value]="route.id">{{ route.depart }} → {{ route.arrivee }}</option>
+                    <option [value]="route.id">
+                      {{ route.gare_depart?.ville || 'Inconnu' }} → {{ route.gare_arrivee?.ville || 'Inconnu' }} ({{ route.type_trajet || 'Classique' }})
+                    </option>
                   }
                 </select>
               </div>
@@ -102,7 +104,10 @@
         } @else {
           <div class="voyages-list">
             @for (voyage of voyages(); track voyage.id) {
-              <div class="voyage-item" (click)="selectVoyage(voyage)" [class.selected]="selectedVoyage()?.id === voyage.id">
+              <div class="voyage-item" 
+                   (click)="selectVoyage(voyage)" 
+                   [class.selected]="selectedVoyage()?.id === voyage.id"
+                   [class.disabled]="isVoyageDisabled(voyage)">
                 <div class="voyage-time">
                   <span class="time">{{ voyage.heure_depart || '--:--' }}</span>
                   <span class="label">Départ</span>
@@ -291,7 +296,7 @@
 
         <div class="total-section">
           <span class="label">Total à payer</span>
-          <span class="price">10,000 FCFA</span> <!-- Assuming static or from service -->
+          <span class="price">{{ selectedRoute()?.prix | number }} FCFA</span>
         </div>
 
         <div class="card-footer">

@@ -12,6 +12,9 @@
 
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
+        <div class="card-header">
+            <h3>{{ isEditing() ? 'Modifier la Ligne' : 'Créer une Nouvelle Ligne' }}</h3>
+        </div>
         <form [formGroup]="routeForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
                 <div class="form-group">
@@ -46,7 +49,7 @@
             </div>
             <div class="form-actions">
                 <gev-button type="submit" [disabled]="routeForm.invalid" [loading]="isSubmitting()">
-                    Créer la ligne
+                    {{ isEditing() ? 'Mettre à jour' : 'Enregistrer la ligne' }}
                 </gev-button>
             </div>
         </form>
@@ -81,13 +84,14 @@
                         <td>{{ route.distance_km | number }} Km</td>
                         <td><span class="price">{{ route.prix | number }} XAF</span></td>
                         <td><span>{{ route.type_trajet }}</span></td>
-                        <td>
-                            <button class="action-btn"><mat-icon>edit</mat-icon></button>
+                        <td class="actions">
+                            <button class="action-btn" (click)="editRoute(route)" title="Modifier"><mat-icon>edit</mat-icon></button>
+                            <button class="action-btn delete"><mat-icon>delete</mat-icon></button>
                         </td>
                     </tr>
                     } @empty {
                     <tr>
-                        <td colspan="4" class="text-center py-8">Aucune ligne définie.</td>
+                        <td colspan="5" class="text-center py-8">Aucune ligne définie.</td>
                     </tr>
                     }
                 </tbody>

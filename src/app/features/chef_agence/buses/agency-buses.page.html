@@ -18,6 +18,9 @@
 
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
+        <div class="card-header">
+            <h3>{{ isEditing() ? 'Modifier le Bus' : 'Ajouter un Nouveau Bus' }}</h3>
+        </div>
         <form [formGroup]="busForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
                 <div class="form-group">
@@ -60,7 +63,7 @@
             </div>
             <div class="form-actions">
                 <gev-button type="submit" [disabled]="busForm.invalid" [loading]="isSubmitting()">
-                    Enregistrer le bus
+                    {{ isEditing() ? 'Mettre à jour' : 'Enregistrer le bus' }}
                 </gev-button>
             </div>
         </form>
@@ -112,7 +115,7 @@
                             </span>
                         </td>
                         <td>
-                            <button class="action-btn"><mat-icon>edit</mat-icon></button>
+                            <button class="action-btn" (click)="editBus(bus)" title="Modifier"><mat-icon>edit</mat-icon></button>
                         </td>
                     </tr>
                     } @empty {

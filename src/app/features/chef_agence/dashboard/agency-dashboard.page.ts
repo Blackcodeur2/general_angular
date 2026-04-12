@@ -23,18 +23,10 @@ export class AgencyDashboardPage implements OnInit {
   private router = inject(Router);
 
   isLoading = signal(true);
-  buses = signal<Bus[]>([]);
-  staff = signal<User[]>([]);
-  routes = signal<Route[]>([]);
-  voyages = signal<Voyage[]>([]);
-  user = signal<User | null>(this.authService.currentUser());
+  dashboardData = signal<any>(null);
+  user = this.authService.currentUser;
 
-  recentReservations = signal([
-    { id: 823, clientName: 'Aissa N.', route: 'Yaoundé → Douala', amount: 15800, date: '25/04/2026' },
-    { id: 824, clientName: 'Jean Dupont', route: 'Douala → Kribi', amount: 21500, date: '25/04/2026' },
-    { id: 825, clientName: 'Sophie T.', route: 'Bafoussam → Yaoundé', amount: 14200, date: '24/04/2026' },
-    { id: 826, clientName: 'Moussa K.', route: 'Ebolowa → Douala', amount: 17600, date: '24/04/2026' }
-  ]);
+  recentReservations = signal<any[]>([]);
 
   agencyName = computed(() => {
     if (this.user()?.prenom) {
@@ -47,61 +39,65 @@ export class AgencyDashboardPage implements OnInit {
     if (this.isLoading()) {
       return 'Chargement des données de l’agence…';
     }
-    return `${this.totalBuses()} bus · ${this.totalRoutes()} lignes · ${this.activeStaff()} membres actifs`; 
+    return `${this.totalBuses()} bus · ${this.totalRoutes()} lignes · ${this.totalStaff()} membres actifs`; 
   });
 
-  totalBuses = computed(() => this.buses().length);
-  totalStaff = computed(() => this.staff().length);
-  totalRoutes = computed(() => this.routes().length);
-  busesOnRoad = computed(() => this.buses().filter(bus => bus.statut === 'en voyage').length);
-  busUsage = computed(() => this.totalBuses() > 0 ? Math.round((this.busesOnRoad() / this.totalBuses()) * 100) : 0);
-  activeStaff = computed(() => this.staff().filter(member => ['CHAUFFEUR', 'AGENT'].includes(member.role_user)).length);
-  ticketsSoldToday = computed(() => Math.max(0, Math.round(this.dailyRevenue() / 2300)));
-  dailyRevenue = computed(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    return this.voyages().filter(voyage => voyage.date_depart === today).length * 22000;
+  totalBuses = computed(() => this.dashboardData()?.stats?.total_buses ?? 0);
+  totalStaff = computed(() => this.dashboardData()?.stats?.total_staff ?? 0);
+  totalRoutes = computed(() => this.dashboardData()?.stats?.total_trajets ?? 0);
+  ticketsSoldToday = computed(() => this.dashboardData()?.stats?.tickets_today ?? 0);
+  dailyRevenue = computed(() => this.dashboardData()?.stats?.revenue_today ?? 0);
+
+  busesOnRoad = computed(() => {
+    const raw = this.dashboardData()?.fleet_status ?? [];
+    const match = raw.find((r: any) => r.statut === 'en voyage');
+    return match ? parseInt(match.count) : 0;
   });
+
+  busUsage = computed(() => this.totalBuses() > 0 ? Math.round((this.busesOnRoad() / this.totalBuses()) * 100) : 0);
+  activeStaff = computed(() => this.totalStaff());
 
   revenueChart = computed(() => {
-    const today = new Date();
-    const chart = [] as Array<{ day: string; amount: number; height: number }>;
-
-    for (let offset = 6; offset >= 0; offset--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - offset);
-      const dayKey = date.toISOString().slice(0, 10);
+    const history = this.dashboardData()?.revenue_history ?? [];
+    const maxAmount = Math.max(...history.map((h: any) => h.amount), 50000); // Scale relative to max or 50k
+    
+    return history.map((item: any) => {
+      const date = new Date(item.date);
       const label = date.toLocaleDateString('fr-FR', { weekday: 'short' });
-      const amount = this.voyages().filter(v => v.date_depart === dayKey).length * 22000;
-      chart.push({ day: label, amount, height: Math.min(100, Math.max(12, Math.round(amount / 1200))) });
-    }
-
-    return chart;
+      return {
+        day: label,
+        amount: item.amount,
+        height: Math.min(100, Math.max(12, Math.round((item.amount / maxAmount) * 100)))
+      };
+    });
   });
 
   fleetStatus = computed(() => {
+    const raw = this.dashboardData()?.fleet_status ?? [];
     const total = Math.max(this.totalBuses(), 1);
-    const inService = this.buses().filter(bus => bus.statut === 'en voyage').length;
-    const available = this.buses().filter(bus => bus.statut === 'disponible').length;
-    const maintenance = this.buses().filter(bus => bus.statut === 'en maintenance').length;
-    const unavailable = this.buses().filter(bus => bus.statut === 'indisponible').length;
+    
+    const statusConfig: any = {
+      'en voyage': { label: 'En route', color: '#60A5FA' },
+      'disponible': { label: 'Disponible', color: '#34D399' },
+      'en maintenance': { label: 'Maintenance', color: '#FBBF24' },
+      'indisponible': { label: 'Indisponible', color: '#F87171' }
+    };
 
-    return [
-      { label: 'En route', count: inService, percentage: Math.round((inService / total) * 100), color: '#60A5FA' },
-      { label: 'Disponible', count: available, percentage: Math.round((available / total) * 100), color: '#34D399' },
-      { label: 'Maintenance', count: maintenance, percentage: Math.round((maintenance / total) * 100), color: '#FBBF24' },
-      { label: 'Indisponible', count: unavailable, percentage: Math.round((unavailable / total) * 100), color: '#F87171' }
-    ];
+    return Object.keys(statusConfig).map(statut => {
+      const match = raw.find((r: any) => r.statut === statut);
+      const count = match ? parseInt(match.count) : 0;
+      return {
+        label: statusConfig[statut].label,
+        count: count,
+        percentage: Math.round((count / total) * 100),
+        color: statusConfig[statut].color
+      };
+    });
   });
 
   maintenanceCount = computed(() => this.fleetStatus().find(s => s.label === 'Maintenance')?.count ?? 0);
 
-  liveTrips = computed(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    return this.voyages()
-      .filter(v => v.date_depart >= today)
-      .sort((a, b) => (a.date_depart + (a.heure_depart || '')).localeCompare(b.date_depart + (b.heure_depart || '')))
-      .slice(0, 5);
-  });
+  liveTrips = computed(() => this.dashboardData()?.live_trips ?? []);
 
   ngOnInit() {
     this.loadStats();
@@ -114,17 +110,15 @@ export class AgencyDashboardPage implements OnInit {
   private loadStats() {
     this.isLoading.set(true);
 
-    forkJoin({
-      buses: this.agencyService.getBuses().pipe(catchError(() => of([] as Bus[]))),
-      staff: this.agencyService.getStaff().pipe(catchError(() => of([] as User[]))),
-      routes: this.agencyService.getRoutes().pipe(catchError(() => of([] as Route[]))),
-      voyages: this.agencyService.getVoyages().pipe(catchError(() => of([] as Voyage[])))
-    }).subscribe(({ buses, staff, routes, voyages }) => {
-      this.buses.set(buses);
-      this.staff.set(staff);
-      this.routes.set(routes);
-      this.voyages.set(voyages);
-      this.isLoading.set(false);
+    this.agencyService.getDashboardStats().subscribe({
+      next: (data: any) => {
+        this.dashboardData.set(data);
+        this.recentReservations.set(data.recent_reservations);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+      }
     });
   }
 }

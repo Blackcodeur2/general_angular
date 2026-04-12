@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { AgentService } from '../../../services/agent/agent.service';
+import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { TicketService } from '../../../services/agent/ticket.service';
 import { catchError, of } from 'rxjs';
 import Swal from 'sweetalert2';
 
@@ -35,13 +38,13 @@ import Swal from 'sweetalert2';
             </tr>
           </thead>
           <tbody>
-            @for (res of paginatedReservations(); track res.id) {
-              <tr>
-                <td>#{{ res.id }}</td>
-                <td>{{ res.client?.prenom ? (res.client.prenom + ' ' + res.client.nom) : res.client_name || 'N/A' }}</td>
-                <td>{{ res.voyage?.ville_depart ? (res.voyage.ville_depart + ' → ' + res.voyage.ville_arrivee) : res.route_name || 'N/A' }}</td>
-                <td>{{ res.date || res.voyage?.date_depart || 'N/A' }}</td>
-                <td><span class="status-badge" [class]="res.status">{{ res.statusLabel || res.status || 'Inconnu' }}</span></td>
+              @for (res of paginatedReservations(); track res.id) {
+                <tr>
+                  <td>#{{ res.id }}</td>
+                  <td>{{ (res.user?.prenom ? (res.user.prenom + ' ' + res.user.nom) : (res.client?.prenom ? (res.client.prenom + ' ' + res.client.nom) : res.client_name)) || 'N/A' }}</td>
+                  <td>{{ res.voyage?.trajet?.gare_depart?.ville ? (res.voyage.trajet.gare_depart.ville + ' → ' + res.voyage.trajet.gare_arrivee.ville) : (res.voyage?.ville_depart ? (res.voyage.ville_depart + ' → ' + res.voyage.ville_arrivee) : res.route_name || 'N/A') }}</td>
+                  <td>{{ res.date || res.voyage?.date_depart || 'N/A' }}</td>
+                  <td><span class="status-badge" [class]="res.statut || res.status">{{ res.statut || res.statusLabel || res.status || 'Inconnu' }}</span></td>
                 <td>
                   <button class="icon-btn" title="Imprimer" (click)="printReservation(res.id)"><mat-icon>print</mat-icon></button>
                   <button class="icon-btn delete" title="Annuler" (click)="cancelReservation(res.id)"><mat-icon>cancel</mat-icon></button>
@@ -88,6 +91,9 @@ import Swal from 'sweetalert2';
 })
 export class ReservationsPage implements OnInit {
   private agentService = inject(AgentService);
+  private agencyService = inject(AgencyOpsService);
+  private authService = inject(AuthService);
+  private ticketService = inject(TicketService);
 
   reservations = signal<any[]>([]);
   isLoading = signal(true);
@@ -105,9 +111,16 @@ export class ReservationsPage implements OnInit {
   }
 
   private loadReservations() {
-    this.agentService.getReservations()
-      .pipe(catchError(() => of([])))
-      .subscribe(data => {
+    const role = this.authService.currentUser()?.role_user;
+    const request = role === 'CHEF_AGENCE' 
+      ? this.agencyService.getReservations() 
+      : this.agentService.getReservations();
+
+    request.pipe(catchError((err: any) => {
+        console.error('Error loading reservations:', err);
+        return of([]);
+      }))
+      .subscribe((data: any[]) => {
         this.reservations.set(data);
         this.isLoading.set(false);
       });
@@ -123,15 +136,20 @@ export class ReservationsPage implements OnInit {
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Oui, annuler',
       cancelButtonText: 'Fermer'
-    }).then((result) => {
+    }).then((result: any) => {
       if (result.isConfirmed) {
-        this.agentService.cancelReservation(id).subscribe({
+        const role = this.authService.currentUser()?.role_user;
+        const request = role === 'CHEF_AGENCE'
+          ? this.agencyService.cancelReservation(id)
+          : this.agentService.cancelReservation(id);
+
+        request.subscribe({
           next: () => {
-            this.reservations.update(list => list.filter(r => r.id !== id));
+            this.reservations.update((list: any[]) => list.filter((r: any) => r.id !== id));
             Swal.fire('Annulée !', 'La réservation a été annulée.', 'success');
           },
-          error: () => {
-            Swal.fire('Erreur', 'Impossible d\'annuler la réservation.', 'error');
+          error: (err: any) => {
+            Swal.fire('Erreur', err.error?.message || 'Impossible d\'annuler la réservation.', 'error');
           }
         });
       }
@@ -139,28 +157,6 @@ export class ReservationsPage implements OnInit {
   }
 
   printReservation(id: number) {
-    // Basic mock print logic
-    this.agentService.getReservationDetail(id).subscribe({
-      next: (data) => {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(`
-            <html>
-              <head><title>Ticket - GevApp</title></head>
-              <body>
-                <h1>Détails de la Réservation</h1>
-                <p><strong>Reservation ID:</strong> #${data.id}</p>
-                <p><strong>Client:</strong> ${data.client_name || 'N/A'}</p>
-                <p><strong>Route:</strong> ${data.route_name || 'N/A'}</p>
-                <p><strong>Date:</strong> ${data.date || 'N/A'}</p>
-                <p><strong>Status:</strong> ${data.status || 'N/A'}</p>
-              </body>
-            </html>
-          `);
-          printWindow.document.close();
-          printWindow.print();
-        }
-      }
-    });
+    this.ticketService.openTicket(id);
   }
 }

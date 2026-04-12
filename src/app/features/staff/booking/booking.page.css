@@ -214,6 +214,17 @@
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
 }
 
+.voyage-item.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #F9FAFB;
+}
+
+.voyage-item.disabled:hover {
+    border-color: #E5E7EB;
+    background: #F9FAFB;
+}
+
 .voyage-time {
     display: flex;
     flex-direction: column;
@@ -463,7 +474,7 @@
     margin-top: 2rem;
 }
 
-.total-section .label { font-size: 1.1rem; font-weight: 600; color: #4B5563; }
+.total-section .label { font-size: 1.1rem; font-weight: 600; color: #4b6359; }
 .total-section .price { font-size: 1.75rem; font-weight: 800; color: #059669; }
 
 /* Buttons */

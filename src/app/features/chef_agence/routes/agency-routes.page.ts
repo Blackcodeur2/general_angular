@@ -26,6 +26,8 @@ export class AgencyRoutesPage implements OnInit {
   gares = signal<Gare[]>([]);
   showForm = signal(false);
   isSubmitting = signal(false);
+  isEditing = signal(false);
+  editId = signal<number | null>(null);
 
   currentPage = signal(1);
   pageSize = signal(5);
@@ -57,70 +59,76 @@ export class AgencyRoutesPage implements OnInit {
 
   loadGares() {
     this.agencyService.getGares().subscribe({
-      next: (data: any) => {
-        this.gares.set(Array.isArray(data) ? data : (data as any).data ?? []);
+      next: (data: Gare[]) => {
+        this.gares.set(data || []);
       },
-      error: () => {
-        this.gares.set([]);
-      }
+      error: () => this.gares.set([])
     });
   }
 
   loadRoutes() {
     this.agencyService.getRoutes().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.routesList.set(data);
-        } else if (data && typeof data === 'object') {
-          let arrayData = data.data || data.trajets || data.routes;
-          if (!arrayData) {
-            const values = Object.values(data);
-            if (values.length > 0 && typeof values[0] === 'object') {
-              arrayData = values;
-            }
-          }
-          this.routesList.set(Array.isArray(arrayData) ? arrayData : []);
-        } else {
-          this.routesList.set([]);
-        }
+      next: (data: Route[]) => {
+        this.routesList.set(data || []);
       },
-      error: () => {
-        this.routesList.set([]);
-      }
+      error: () => this.routesList.set([])
     });
   }
 
   toggleForm() {
+    if (this.showForm()) {
+      this.isEditing.set(false);
+      this.editId.set(null);
+      this.routeForm.reset({ gare_id: this.authService.currentUser()?.gare_id });
+    }
     this.showForm.update(v => !v);
+  }
+
+  editRoute(route: Route) {
+    this.isEditing.set(true);
+    this.editId.set(route.id || null);
+    this.routeForm.patchValue({
+      depart: route.depart_id as any,
+      arrivee: route.arrivee_id as any,
+      prix: route.prix,
+      type_trajet: route.type_trajet,
+      gare_id: route.gare_id
+    });
+    this.showForm.set(true);
   }
 
   onSubmit() {
     if (this.routeForm.invalid) return;
     this.isSubmitting.set(true);
-    this.agencyService.createRoute(this.routeForm.value as any).subscribe({
-      next: (newRoute) => {
-        this.routesList.update(list => [newRoute, ...list]);
+
+    const routeData = this.routeForm.value as any;
+    const request = this.isEditing() 
+      ? this.agencyService.updateRoute({ ...routeData, id: this.editId() }) 
+      : this.agencyService.createRoute(routeData);
+
+    request.subscribe({
+      next: (res: Route) => {
+        if (this.isEditing()) {
+          this.routesList.update((list: Route[]) => list.map((r: Route) => r.id === this.editId() ? res : r));
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Ligne mise à jour', timer: 2000, showConfirmButton: false });
+        } else {
+          this.routesList.update((list: Route[]) => [res, ...list]);
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Ligne créée', timer: 2000, showConfirmButton: false });
+        }
+
         this.showForm.set(false);
         this.isSubmitting.set(false);
-        this.routeForm.reset();
-        Swal.fire({ icon: 'success', title: 'Succès', text: 'Ligne créée avec succès', timer: 2000, showConfirmButton: false });
+        this.isEditing.set(false);
+        this.editId.set(null);
+        this.routeForm.reset({ gare_id: this.authService.currentUser()?.gare_id });
       },
       error: (error) => {
         this.isSubmitting.set(false);
-        let errorMsg = 'Impossible de créer la ligne';
-
+        let errorMsg = 'Impossible d\'enregistrer la ligne';
         if (error.status === 422 && error.error?.errors) {
           errorMsg = Object.values(error.error.errors).flat().join('\n');
-        } else if (error.error?.message) {
-          errorMsg = error.error.message;
         }
-
-        Swal.fire({
-          icon: 'error',
-          title: 'Erreur de validation',
-          text: errorMsg,
-          confirmButtonColor: '#3b82f6'
-        });
+        Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
       }
     });
   }

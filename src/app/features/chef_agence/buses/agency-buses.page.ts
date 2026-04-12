@@ -20,11 +20,13 @@ export class AgencyBusesPage implements OnInit {
   private agencyService = inject(AgencyOpsService);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-   currentUser = this.authService.currentUser();
+  currentUser = this.authService.currentUser;
 
   buses = signal<Bus[]>([]);
   showForm = signal(false);
   isSubmitting = signal(false);
+  isEditing = signal(false);
+  editId = signal<number | null>(null);
 
   currentPage = signal(1);
   pageSize = signal(5);
@@ -68,65 +70,71 @@ export class AgencyBusesPage implements OnInit {
 
   loadBuses() {
     this.agencyService.getBuses().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.buses.set(data);
-        } else if (data && typeof data === 'object') {
-          let arrayData = data.data || data.buses;
-          if (!arrayData) {
-            const values = Object.values(data);
-            if (values.length > 0 && typeof values[0] === 'object') {
-              arrayData = values;
-            }
-          }
-          this.buses.set(Array.isArray(arrayData) ? arrayData : []);
-        } else {
-          this.buses.set([]);
-        }
+      next: (data: Bus[]) => {
+        this.buses.set(data || []);
       },
-      error: () => {
-        this.buses.set([]);
-      }
+      error: () => this.buses.set([])
     });
   }
 
   toggleForm() {
+    if (this.showForm()) {
+      this.isEditing.set(false);
+      this.editId.set(null);
+      this.busForm.reset({ nb_places: 70, statut: 'disponible', gare_id: this.currentUser()?.gare_id });
+    }
     this.showForm.update(v => !v);
+  }
+
+  editBus(bus: Bus) {
+    this.isEditing.set(true);
+    this.editId.set(bus.id || null);
+    this.busForm.patchValue({
+      immatriculation: bus.immatriculation,
+      code_bus: bus.code_bus,
+      type_bus: bus.type_bus || (bus as any).modele,
+      classe_bus: bus.classe_bus || (bus as any).type,
+      nb_places: bus.nb_places,
+      gare_id: bus.gare_id,
+      statut: bus.statut
+    });
+    this.showForm.set(true);
   }
 
   onSubmit() {
     if (this.busForm.invalid) return;
     this.isSubmitting.set(true);
-    this.agencyService.createBus(this.busForm.value as any).subscribe({
-      next: (newBus) => {
-        this.buses.update(list => [newBus, ...list]);
+
+    const busData = this.busForm.value as any;
+    const request = this.isEditing() 
+      ? this.agencyService.updateBus({ ...busData, id: this.editId() }) 
+      : this.agencyService.createBus(busData);
+
+    request.subscribe({
+      next: (res: Bus) => {
+        if (this.isEditing()) {
+          this.buses.update((list: Bus[]) => list.map((b: Bus) => b.id === this.editId() ? res : b));
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Bus mis à jour', timer: 2000, showConfirmButton: false });
+        } else {
+          this.buses.update((list: Bus[]) => [res, ...list]);
+          Swal.fire({ icon: 'success', title: 'Succès', text: 'Bus ajouté', timer: 2000, showConfirmButton: false });
+        }
+        
         this.showForm.set(false);
         this.isSubmitting.set(false);
-        this.busForm.reset({ nb_places: 70, statut: 'disponible' });
-        Swal.fire({ icon: 'success', title: 'Succès', text: 'Bus ajouté avec succès', timer: 2000, showConfirmButton: false });
+        this.isEditing.set(false);
+        this.editId.set(null);
+        this.busForm.reset({ nb_places: 70, statut: 'disponible', gare_id: this.currentUser()?.gare_id });
       },
       error: (error) => {
         this.isSubmitting.set(false);
-        console.error('Bus creation error', error);
-        console.log('Data sent:', this.busForm.getRawValue());
-        
-        let errorMsg = 'Impossible d\'ajouter le bus';
-        
+        let errorMsg = this.isEditing() ? 'Impossible de modifier le bus' : 'Impossible d\'ajouter le bus';
         if (error.status === 422 && error.error?.errors) {
-            // Extract Laravel-style validation errors WITH field names
             errorMsg = Object.entries(error.error.errors)
                 .map(([key, value]: [string, any]) => `${key}: ${value.join(', ')}`)
                 .join('\n');
-        } else if (error.error?.message) {
-            errorMsg = error.error.message;
         }
-
-        Swal.fire({ 
-            icon: 'error', 
-            title: 'Erreur de validation', 
-            text: errorMsg,
-            confirmButtonColor: '#3b82f6'
-        });
+        Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
       }
     });
   }

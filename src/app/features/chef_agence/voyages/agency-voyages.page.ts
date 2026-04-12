@@ -31,6 +31,8 @@ export class AgencyVoyagesPage implements OnInit {
   showForm = signal(false);
   isLoading = signal(true);
   isSubmitting = signal(false);
+  isEditing = signal(false);
+  editId = signal<number | null>(null);
 
   currentPage = signal(1);
   pageSize = signal(5);
@@ -43,10 +45,10 @@ export class AgencyVoyagesPage implements OnInit {
 
   voyageForm = this.fb.group({
     date_depart: ['', Validators.required],
-    trajet_id: ['', Validators.required],
-    bus_id: ['', Validators.required],
+    trajet_id: [null as number | null, Validators.required],
+    bus_id: [null as number | null, Validators.required],
     prix: [0, Validators.required],
-    chauffeur_id: ['', Validators.required],
+    chauffeur_id: [null as number | null, Validators.required],
     statut: ['en attente'],
     gare_id: [null as number | null],
   });
@@ -70,82 +72,37 @@ export class AgencyVoyagesPage implements OnInit {
 
   loadBuses() {
     this.agencyService.getBusesDispo().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.buses.set(data);
-        } else if (data && typeof data === 'object') {
-          let arrayData = data.data || data.buses;
-          if (!arrayData) {
-            const values = Object.values(data);
-            if (values.length > 0 && typeof values[0] === 'object') {
-              arrayData = values;
-            }
-          }
-          this.buses.set(Array.isArray(arrayData) ? arrayData : []);
-        } else {
-          this.buses.set([]);
-        }
+      next: (data: Bus[]) => {
+        this.buses.set(data || []);
       },
-      error: () => {
-        this.buses.set([]);
-      }
+      error: () => this.buses.set([])
     });
   }
- loadChauffeurs() {
+
+  loadChauffeurs() {
     this.agencyService.getChauffeurs().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.chauffeurs.set(data);
-        } else if (data && typeof data === 'object') {
-          let arrayData = data.data || data.users;
-
-          if (!arrayData) {
-            const values = Object.values(data);
-            if (values.length > 0 && typeof values[0] === 'object') {
-              arrayData = values;
-            }
-          }
-
-          this.chauffeurs.set(Array.isArray(arrayData) ? arrayData : []);
-        } else {
-          this.chauffeurs.set([]);
-        }
+      next: (data: User[]) => {
+        this.chauffeurs.set(data || []);
       },
-      error: () => {
-        this.chauffeurs.set([]);
-      }
+      error: () => this.chauffeurs.set([])
     });
   }
 
   loadRoutes() {
     this.agencyService.getRoutes().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.routesList.set(data);
-        } else if (data && typeof data === 'object') {
-          let arrayData = data.data || data.trajets || data.routes;
-          if (!arrayData) {
-            const values = Object.values(data);
-            if (values.length > 0 && typeof values[0] === 'object') {
-              arrayData = values;
-            }
-          }
-          this.routesList.set(Array.isArray(arrayData) ? arrayData : []);
-        } else {
-          this.routesList.set([]);
-        }
+      next: (data: Route[]) => {
+        this.routesList.set(data || []);
       },
-      error: () => {
-        this.routesList.set([]);
-      }
+      error: () => this.routesList.set([])
     });
   }
 
   loadVoyages() {
     this.isLoading.set(true);
     this.agencyService.getVoyages().subscribe({
-      next: (data) => {
-        this.voyages.set(data.sort((a,b) => new Date(b.date_depart).getTime() - new Date(a.date_depart).getTime()));
+      next: (data: Voyage[]) => {
+        const sorted = (data || []).sort((a, b) => new Date(b.date_depart).getTime() - new Date(a.date_depart).getTime());
+        this.voyages.set(sorted);
         this.isLoading.set(false);
       },
       error: () => {
@@ -156,28 +113,76 @@ export class AgencyVoyagesPage implements OnInit {
   }
 
   toggleForm() {
+    if (this.showForm()) {
+        this.isEditing.set(false);
+        this.editId.set(null);
+        this.voyageForm.reset({ statut: 'en attente', prix: 0 });
+        this.loadBuses(); // Reset to dispo buses
+    }
     this.showForm.update(v => !v);
+  }
+
+  editVoyage(voyage: Voyage) {
+    this.isEditing.set(true);
+    this.editId.set(voyage.id || null);
+    
+    // Load all buses so we can see the current one even if it's not "disponible"
+    this.agencyService.getBuses().subscribe(data => {
+        this.buses.set(data);
+        this.voyageForm.patchValue({
+            date_depart: voyage.date_depart,
+            trajet_id: voyage.trajet_id ?? voyage.trajet?.id,
+            bus_id: voyage.bus_id ?? voyage.bus?.id,
+            prix: voyage.prix,
+            chauffeur_id: voyage.chauffeur_id ?? voyage.chauffeur?.id,
+            statut: voyage.statut,
+            gare_id: voyage.gare_id
+        });
+        this.showForm.set(true);
+    });
   }
 
   onSubmit() {
     if (this.voyageForm.invalid) return;
     this.isSubmitting.set(true);
+    
+    const formValue = this.voyageForm.getRawValue();
     const payload = {
-      ...this.voyageForm.getRawValue(),
-      gare_id: this.authService.currentUser()?.gare_id,
+      ...formValue,
+      id: this.editId(),
+      gare_id: this.editId() ? formValue.gare_id : this.authService.currentUser()?.gare_id,
     };
 
-    this.agencyService.createVoyage(payload as any).subscribe({
+    const request = this.isEditing() 
+        ? this.agencyService.updateVoyage(payload as any)
+        : this.agencyService.createVoyage(payload as any);
+
+    const wasEditing = this.isEditing();
+
+    request.subscribe({
       next: () => {
-        this.loadVoyages(); // Refresh to get joined data
+        this.loadVoyages(); 
         this.showForm.set(false);
         this.isSubmitting.set(false);
+        this.isEditing.set(false);
+        this.editId.set(null);
         this.voyageForm.reset({ statut: 'en attente', prix: 0 });
-        Swal.fire({ icon: 'success', title: 'Succès', text: 'Voyage programmé', timer: 2000, showConfirmButton: false });
+        this.loadBuses(); // Back to dispo buses
+        Swal.fire({ 
+          icon: 'success', 
+          title: 'Succès', 
+          text: wasEditing ? 'Voyage mis à jour' : 'Voyage programmé', 
+          timer: 2000, 
+          showConfirmButton: false 
+        });
       },
-      error: () => {
+      error: (error) => {
         this.isSubmitting.set(false);
-        Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de programmer le voyage' });
+        let errorMsg = 'Impossible d\'enregistrer le voyage';
+        if (error.status === 422 && error.error?.errors) {
+          errorMsg = Object.values(error.error.errors).flat().join('\n');
+        }
+        Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
       }
     });
   }

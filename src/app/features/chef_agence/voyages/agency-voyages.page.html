@@ -12,6 +12,9 @@
 
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
+        <div class="card-header">
+            <h3>{{ isEditing() ? 'Modifier le Voyage' : 'Programmer un Nouveau Voyage' }}</h3>
+        </div>
         <form [formGroup]="voyageForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
                 <div class="form-group">
@@ -47,10 +50,18 @@
                     <label>Date de depart</label>
                     <input type="datetime-local" formControlName="date_depart" class="form-control" />
                 </div>
+                <div class="form-group" *ngIf="isEditing()">
+                    <label>Statut</label>
+                    <select formControlName="statut" class="form-control">
+                        <option value="en attente">En attente</option>
+                        <option value="en cours">En cours</option>
+                        <option value="annule">Annulé</option>
+                    </select>
+                </div>
             </div>
             <div class="form-actions">
                 <gev-button type="submit" [disabled]="voyageForm.invalid" [loading]="isSubmitting()">
-                    Programmer le voyage
+                    {{ isEditing() ? 'Mettre à jour' : 'Programmer le voyage' }}
                 </gev-button>
             </div>
         </form>
@@ -77,27 +88,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (v of voyages(); track v.id) {
+                    @for (voyage of paginatedVoyages(); track voyage.id) {
                     <tr>
                         <td>
                             <div class="date-cell">
-                                <div class="day">{{ v.date_depart | date:'dd/MM' }}</div>
-                                <div class="time">{{ v.heure_depart }}</div>
+                                <div class="day">{{ voyage.date_depart | date:'dd/MM' }}</div>
+                                <div class="time">{{ voyage.heure_depart }}</div>
                             </div>
                         </td>
                         <td>
                             <div class="path">
-                                {{ v.ville_depart }} <mat-icon>arrow_forward</mat-icon> {{ v.ville_arrivee }}
+                                {{ voyage.ville_depart }} <mat-icon>arrow_forward</mat-icon> {{ voyage.ville_arrivee }}
                             </div>
                         </td>
-                        <td>{{ v.vehicule_immatriculation }}</td>
+                        <td>{{ voyage.vehicule_immatriculation }}</td>
                         <td>
-                            <span class="status-badge" [class]="v.statut.toLowerCase()">
-                                {{ v.statut }}
+                            <span class="status-badge" [class]="(voyage.statut.toLowerCase()|| 'unknown').replace(' ', '-')">
+                                {{ voyage.statut || 'En attente' }}
                             </span>
                         </td>
-                        <td>
-                            <button class="action-btn"><mat-icon>visibility</mat-icon></button>
+                        <td class="actions">
+                            <button class="action-btn" (click)="editVoyage(voyage)" title="Modifier"><mat-icon>edit</mat-icon></button>
+                            <button class="action-btn delete"><mat-icon>delete</mat-icon></button>
                         </td>
                     </tr>
                     } @empty {
