@@ -16,7 +16,7 @@ export class ClientAgenceService {
    * Récupère toutes les agences
    */
   getAgencies(): Observable<Agence[]> {
-    return this.http.get<Agence[]>(`${this.API}/agencies`);
+    return this.http.get<Agence[]>(`${this.API}/client/agences`);
   }
 
   /**

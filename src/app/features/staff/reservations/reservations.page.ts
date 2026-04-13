@@ -42,8 +42,8 @@ import Swal from 'sweetalert2';
                 <tr>
                   <td>#{{ res.id }}</td>
                   <td>{{ (res.user?.prenom ? (res.user.prenom + ' ' + res.user.nom) : (res.client?.prenom ? (res.client.prenom + ' ' + res.client.nom) : res.client_name)) || 'N/A' }}</td>
-                  <td>{{ res.voyage?.trajet?.gare_depart?.ville ? (res.voyage.trajet.gare_depart.ville + ' → ' + res.voyage.trajet.gare_arrivee.ville) : (res.voyage?.ville_depart ? (res.voyage.ville_depart + ' → ' + res.voyage.ville_arrivee) : res.route_name || 'N/A') }}</td>
-                  <td>{{ res.date || res.voyage?.date_depart || 'N/A' }}</td>
+                  <td>{{ res.voyage?.num_voyage || 'N/A' }}</td>
+                  <td>{{ res.date || res.voyage?.date_depart || 'N/A' | date }}</td>
                   <td><span class="status-badge" [class]="res.statut || res.status">{{ res.statut || res.statusLabel || res.status || 'Inconnu' }}</span></td>
                 <td>
                   <button class="icon-btn" title="Imprimer" (click)="printReservation(res.id)"><mat-icon>print</mat-icon></button>
@@ -75,8 +75,8 @@ import Swal from 'sweetalert2';
     .data-table td { padding: 1.25rem 1.5rem; font-size: 0.9rem; color: #374151; border-bottom: 1px solid #F3F4F6; }
     
     .status-badge { padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
-    .status-badge.confirmed { background: #DCFCE7; color: #166534; }
-    .status-badge.pending { background: #FEF3C7; color: #92400E; }
+    .status-badge.validee { background: #DCFCE7; color: #166534; }
+    .status-badge.annulee { background: #FEF3C7; color: #92400E; }
     
     .icon-btn { background: none; border: none; cursor: pointer; color: #9CA3AF; padding: 6px; border-radius: 8px; transition: all 0.2s; margin-right: 0.5rem; }
     .icon-btn:hover { background: #EEF2FF; color: #3B82F6; }

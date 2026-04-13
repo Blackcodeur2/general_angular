@@ -11,6 +11,7 @@ import { Route } from '../../../models/route';
 import { Bus } from '../../../models/bus';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../models/user';
+import { min } from 'rxjs';
 
 @Component({
   selector: 'app-agency-voyages',
@@ -45,6 +46,7 @@ export class AgencyVoyagesPage implements OnInit {
 
   voyageForm = this.fb.group({
     date_depart: ['', Validators.required],
+    duree_heure: ['', Validators.required,],
     trajet_id: [null as number | null, Validators.required],
     bus_id: [null as number | null, Validators.required],
     prix: [0, Validators.required],

@@ -41,7 +41,14 @@ export class AgentService {
   }
 
   validateTicket(code: string): Observable<any> {
-    return this.http.post<{ statut: boolean; data: any }>(`${this.API}/agent/tickets/validate`, { code })
+    let user = this.authService.currentUser();
+    let role= "";
+    if(user?.role_user === "AGENT"){
+      role = "agent";
+    }else{
+      role = "chef-agence";
+    }
+    return this.http.post<{ statut: boolean; data: any }>(`${this.API}/${ role }/tickets/validate`, { code })
       .pipe(map((response: { statut: boolean; data: any }) => response.data));
   }
 
