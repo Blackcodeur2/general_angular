@@ -75,6 +75,26 @@ export class AgencyOpsService {
         return this.http.put<User>(`${this.API}/chef-agence/staff/${staff.id}`, staff);
     }
 
+    exportPersonnelPdf(): Observable<Blob> {
+        return this.http.get(`${this.API}/chef-agence/export-personnel`, { responseType: 'blob' });
+    }
+
+    exportBusesPdf(): Observable<Blob> {
+        return this.http.get(`${this.API}/chef-agence/export-buses`, { responseType: 'blob' });
+    }
+
+    exportRoutesPdf(): Observable<Blob> {
+        return this.http.get(`${this.API}/chef-agence/export-trajets`, { responseType: 'blob' });
+    }
+
+    exportVoyagesPdf(): Observable<Blob> {
+        return this.http.get(`${this.API}/chef-agence/export-voyages`, { responseType: 'blob' });
+    }
+
+    exportReservationsPdf(): Observable<Blob> {
+        return this.http.get(`${this.API}/chef-agence/export-reservations`, { responseType: 'blob' });
+    }
+
     // Voyages
     getVoyages(): Observable<Voyage[]> {
         return this.http.get<{ statut: boolean; data: Voyage[] }>(`${this.API}/chef-agence/voyages`)

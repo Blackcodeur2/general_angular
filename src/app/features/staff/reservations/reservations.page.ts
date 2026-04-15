@@ -26,6 +26,12 @@ import Swal from 'sweetalert2';
             <span class="value">{{ reservations().length }}</span>
           </div>
         </div>
+        <div class="header-actions" *ngIf="isChefAgence()" style="display: flex; gap: 10px; margin-left: 20px;">
+            <button class="btn-secondary action-btn" (click)="downloadPdf()" [disabled]="isExporting()" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; background-color: #f3f4f6; color: #374151; border: 1px solid #d1d5db; cursor: pointer;">
+                <mat-icon style="font-size: 20px; width: 20px; height: 20px;">{{ isExporting() ? 'hourglass_empty' : 'picture_as_pdf' }}</mat-icon>
+                <span>{{ isExporting() ? 'Export...' : 'Exporter PDF' }}</span>
+            </button>
+        </div>
       </header>
 
       <div *ngIf="isLoading()" class="loading-state">
@@ -188,8 +194,11 @@ export class ReservationsPage implements OnInit {
 
   reservations = signal<any[]>([]);
   isLoading = signal(true);
+  isExporting = signal(false);
   currentPage = signal(1);
   pageSize = signal(6);
+
+  isChefAgence = computed(() => this.authService.currentUser()?.role_user === 'CHEF_AGENCE');
 
   paginatedReservations = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
@@ -249,5 +258,33 @@ export class ReservationsPage implements OnInit {
 
   printReservation(id: number) {
     this.ticketService.openTicket(id);
+  }
+
+  downloadPdf() {
+    if (this.isExporting() || !this.isChefAgence()) return;
+    this.isExporting.set(true);
+
+    this.agencyService.exportReservationsPdf().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}`;
+        link.download = `reservations_agence_${dateStr}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        this.isExporting.set(false);
+        Swal.fire({ icon: 'success', title: 'Succès', text: 'Téléchargement réussi', timer: 2000, showConfirmButton: false });
+      },
+      error: () => {
+        this.isExporting.set(false);
+        Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de télécharger le document PDF' });
+      }
+    });
   }
 }

@@ -26,6 +26,7 @@ export class AgencyBusesPage implements OnInit {
   showForm = signal(false);
   isSubmitting = signal(false);
   isEditing = signal(false);
+  isExporting = signal(false);
   editId = signal<number | null>(null);
 
   currentPage = signal(1);
@@ -135,6 +136,34 @@ export class AgencyBusesPage implements OnInit {
                 .join('\n');
         }
         Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
+      }
+    });
+  }
+
+  downloadPdf() {
+    if (this.isExporting()) return;
+    this.isExporting.set(true);
+
+    this.agencyService.exportBusesPdf().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getDate().toString().padStart(2, '0')}`;
+        link.download = `buses_agence_${dateStr}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        this.isExporting.set(false);
+        Swal.fire({ icon: 'success', title: 'Succès', text: 'Téléchargement réussi', timer: 2000, showConfirmButton: false });
+      },
+      error: () => {
+        this.isExporting.set(false);
+        Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de télécharger le document PDF' });
       }
     });
   }

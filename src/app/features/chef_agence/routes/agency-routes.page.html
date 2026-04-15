@@ -4,10 +4,16 @@
             <h1 class="page-title">Gestion des Lignes</h1>
             <p class="page-subtitle">Définissez vos trajets et les prix associés.</p>
         </div>
-        <button class="btn-primary" (click)="toggleForm()">
-            <mat-icon>{{ showForm() ? 'close' : 'add_road' }}</mat-icon>
-            <span>{{ showForm() ? 'Annuler' : 'Nouvelle Ligne' }}</span>
-        </button>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-secondary" (click)="downloadPdf()" [disabled]="isExporting()" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; background-color: #f3f4f6; color: #374151; border: 1px solid #d1d5db; cursor: pointer;">
+                <mat-icon style="font-size: 20px; width: 20px; height: 20px;">{{ isExporting() ? 'hourglass_empty' : 'picture_as_pdf' }}</mat-icon>
+                <span>{{ isExporting() ? 'Export...' : 'Exporter PDF' }}</span>
+            </button>
+            <button class="btn-primary" (click)="toggleForm()">
+                <mat-icon>{{ showForm() ? 'close' : 'add_road' }}</mat-icon>
+                <span>{{ showForm() ? 'Annuler' : 'Nouvelle Ligne' }}</span>
+            </button>
+        </div>
     </div>
 
     <div class="stats-bar animate-fade-in">
