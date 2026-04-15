@@ -1,329 +1,321 @@
-.client-dashboard {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+.dashboard-wrap {
+  padding: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
   min-height: 100vh;
-  padding: 2rem;
+  background: radial-gradient(at top left, #f8fafc 0%, #f1f5f9 100%);
 }
 
-/* Section de bienvenue */
-.welcome-section {
+/* Welcome Hero */
+.welcome-hero {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  margin-bottom: 3.5rem;
 }
 
-.welcome-content h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
-}
-
-.user-name {
-  font-weight: 700;
-  text-transform: capitalize;
-}
-
-.welcome-content p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 1rem;
-}
-
-.btn-logout {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-logout:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
-
-/* Grille de statistiques */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+.hero-main {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
 }
 
-.stat-card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+.user-avatar-wrap {
+  position: relative;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background: #22c55e;
+  border: 4px solid white;
+  border-radius: 50%;
+}
+
+.welcome-text h1 {
+  font-size: 2.75rem;
+  font-weight: 900;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.welcome-text .highlight {
+  color: #2563eb;
+  background: linear-gradient(120deg, #2563eb 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-text p {
+  color: #64748b;
+  font-size: 1.15rem;
+  margin: 0.25rem 0 0 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-logout-pill {
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 14px;
+  color: #ef4444;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.btn-logout-pill:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
   transform: translateY(-2px);
 }
 
-.stat-icon {
-  font-size: 2.5rem;
-  min-width: 60px;
-  text-align: center;
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-label {
-  color: #64748b;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  margin-bottom: 0.3rem;
-}
-
-.stat-value {
-  color: #1e3a8a;
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-
-/* Section menu */
-.menu-section {
-  margin-bottom: 3rem;
-}
-
-.menu-section h2 {
-  color: #1e3a8a;
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.menu-grid {
+/* Stats Grid */
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 3.5rem;
 }
 
-.menu-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+.stat-item {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 28px;
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
-.menu-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  transform: translateY(-4px);
-  border-color: #3b82f6;
+.stat-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.menu-icon {
-  font-size: 2.5rem;
-  min-width: 60px;
-  text-align: center;
+.stat-icon-box mat-icon { font-size: 26px; width: 26px; height: 26px; }
+
+.stat-item.active .stat-icon-box { background: #eff6ff; color: #2563eb; }
+.stat-item.confirmed .stat-icon-box { background: #f0fdf4; color: #16a34a; }
+.stat-item.pending .stat-icon-box { background: #fff7ed; color: #ea580c; }
+.stat-item.spent .stat-icon-box { background: #faf5ff; color: #9333ea; }
+
+.stat-info .val {
+  display: block;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.1;
 }
 
-.menu-content {
-  flex-grow: 1;
+.stat-info .val small { font-size: 0.9rem; color: #94a3b8; }
+.stat-info .lab { font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.trend {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: #22c55e;
 }
 
-.menu-content h3 {
-  margin: 0 0 0.3rem 0;
-  color: #1e3a8a;
-  font-size: 1.1rem;
-}
-
-.menu-content p {
-  margin: 0;
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-.menu-arrow {
-  color: #3b82f6;
-  font-size: 1.5rem;
-  font-weight: 700;
-  transition: transform 0.3s ease;
-}
-
-.menu-card:hover .menu-arrow {
-  transform: translateX(4px);
-}
-
-/* Section prochains voyages */
-.upcoming-section {
-  margin-bottom: 3rem;
-}
-
-.upcoming-section h2 {
-  color: #1e3a8a;
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.upcoming-list {
+/* Main Layout Grid */
+.main-content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 320px 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
 }
 
-.upcoming-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+.section-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #22c55e;
+  gap: 0.75rem;
 }
 
-.upcoming-date {
-  text-align: center;
-  color: #1e3a8a;
-  font-weight: 700;
-  min-width: 50px;
-}
-
-.upcoming-date span {
-  font-size: 0.85rem;
-  color: #64748b;
-}
-
-.upcoming-info {
+/* Quick Menu */
+.quick-menu {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  flex-grow: 1;
+  gap: 1.25rem;
 }
 
-.upcoming-info .route {
-  color: #1e3a8a;
-  font-weight: 600;
-}
-
-.upcoming-info .time {
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-.upcoming-info .seat {
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-.btn-view {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
+.menu-item {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f1f5f9;
 }
 
-.btn-view:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
+.menu-item:hover {
+  transform: translateX(8px);
+  box-shadow: 10px 10px 30px -10px rgba(0, 0, 0, 0.08);
+  border-color: #2563eb;
 }
 
-/* Section rappels */
-.reminders-section {
-  margin-bottom: 2rem;
+.m-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  color: #64748b;
+  transition: all 0.3s;
 }
 
-.reminders-section h2 {
-  color: #1e3a8a;
-  font-size: 1.5rem;
+.menu-item:hover .m-icon { background: #2563eb; color: white; }
+
+.m-text h4 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+.m-text p { margin: 2px 0 0 0; font-size: 0.85rem; color: #64748b; }
+
+/* Upcoming Trips Section */
+.central-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.reminder-box {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+.upcoming-container {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  border-left: 4px solid #f59e0b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.reminder-icon {
-  font-size: 1.5rem;
-  min-width: 30px;
+.mini-trip-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  cursor: pointer;
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s;
 }
 
-.reminder-content p {
-  margin: 0;
-  color: #1e3a8a;
-  line-height: 1.5;
+.mini-trip-card:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.trip-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1e293b;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 14px;
+  min-width: 65px;
+}
+
+.trip-date .day { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+.trip-date .month { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; margin-top: 2px; }
+
+.trip-path { flex: 1; }
+.path-visual { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; }
+.path-visual .code { font-size: 1.25rem; font-weight: 900; color: #1e293b; }
+.path-visual .line { color: #d1d5db; position: relative; top: 2px; }
+.path-names { font-size: 0.9rem; color: #64748b; font-weight: 600; }
+
+.trip-time { display: flex; align-items: center; gap: 0.5rem; color: #2563eb; font-weight: 700; white-space: nowrap; }
+.trip-time mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+.trip-arrow { color: #cbd5e1; }
+
+/* Tips Footer */
+.tips-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.tip-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 24px;
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  border: 1px dashed #e2e8f0;
+}
+
+.tip-card mat-icon { color: #2563eb; font-size: 32px; width: 32px; height: 32px; }
+.tip-content h5 { margin: 0 0 0.25rem 0; font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+.tip-content p { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+
+.btn-tiny { margin-top: 0.75rem; background: #1e293b; color: white; border: none; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+
+/* Animations */
+.animate-in {
+  animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-in:nth-child(2) { animation-delay: 0.1s; }
+.animate-in:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .client-dashboard {
-    padding: 1rem;
-  }
-
-  .welcome-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .welcome-section h1 {
-    font-size: 1.5rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .menu-grid, .upcoming-list {
-    grid-template-columns: 1fr;
-  }
-
-  .menu-card, .upcoming-card {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .menu-arrow {
-    transform: rotate(90deg);
-  }
-
-  .menu-card:hover .menu-arrow {
-    transform: rotate(90deg) translateX(4px);
-  }
+@media (max-width: 1024px) {
+  .main-content-grid { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    flex-direction: column;
-    text-align: center;
-  }
+@media (max-width: 768px) {
+  .welcome-hero { flex-direction: column; align-items: flex-start; gap: 2rem; }
+  .tips-section { grid-template-columns: 1fr; }
+  .welcome-text h1 { font-size: 2rem; }
 }

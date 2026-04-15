@@ -1,7 +1,25 @@
 <div class="client-layout">
-  <div class="client-content">
+  <header class="client-header">
+    <div class="header-content">
+      <div class="user-info">
+        <div class="user-avatar">
+          {{ currentUser()?.prenom?.[0] }}{{ currentUser()?.nom?.[0] }}
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ currentUser()?.prenom }} {{ currentUser()?.nom }}</span>
+          <span class="user-role">Passager GEV</span>
+        </div>
+      </div>
+      <button class="btn-logout" (click)="onLogout()" title="Se déconnecter">
+        <div class="logout-icon">🚪</div>
+        <span>Quitter</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="client-content">
     <router-outlet></router-outlet>
-  </div>
+  </main>
   
   <!-- Bottom Navigation Bar - Visible only on mobile -->
   <nav class="bottom-nav">

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
 import { Agence } from '../../models/agence';
 import { Gare } from '../../models/gare';
 import { environment } from '../../../environments/environment';
@@ -16,7 +16,18 @@ export class ClientAgenceService {
    * Récupère toutes les agences
    */
   getAgencies(): Observable<Agence[]> {
-    return this.http.get<Agence[]>(`${this.API}/client/agences`);
+    return this.http.get<{ statut: boolean; data: Agence[] }>(`${this.API}/client/agences`).pipe(
+      map(res => {
+        if (res && res.data && Array.isArray(res.data)) {
+          return res.data;
+        }
+        return [];
+      }),
+      catchError(err => {
+        console.error('Error fetching agences:', err);
+        return of([]);
+      })
+    );
   }
 
   /**

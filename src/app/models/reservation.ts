@@ -1,30 +1,70 @@
 export interface Reservation {
   id: number;
-  client_id: number;
-  voyage_id: number;
-  numero_siege: string;
-  montant: number;
-  statut: 'confirmee' | 'en_attente' | 'annulee';
-  date_reservation: string;
-  reference: string;
+  num_reservation: string;
+  place: number | string;
+  prix: number | number;
+  statut: 'validee' | 'en_attente' | 'annule' | string;
+  created_at: string;
   voyage: {
     id: number;
-    chauffeur_id?: number;
-    vehicule_immatriculation: string;
+    date_depart: string;
     ville_depart: string;
     ville_arrivee: string;
-    date_depart: string;
     heure_depart: string;
+    promo: number | boolean;
+    numVoyage: string;
     statut: string;
-    agence?: {
+    bus: {
+      immatriculation: string;
+      nb_places: number;
+      modele: string;
+      code_bus: string;
+    };
+    driver?: {
+      name: string;
+      phone: string;
+    };
+    trajet: {
+      prix: string | number;
+      depart: {
+        nom: string;
+        ville: string;
+      };
+      arrivee: {
+        nom: string;
+        ville: string;
+      };
+    };
+    gare: {
       id: number;
       nom: string;
-      telephone: string;
+      ville: string;
       adresse: string;
+      agence: {
+        nom: string;
+      };
     };
   };
-  created_at?: string;
-  updated_at?: string;
+  gare: {
+    id: number;
+    nom: string;
+    ville: string;
+    agence: {
+      nom: string;
+    };
+  };
+  user: {
+    id: number;
+    name: string | null;
+    email: string;
+  };
+  paiements: Array<{
+    id: number;
+    reference: string;
+    montant: string | number;
+    statut: string;
+    created_at: string;
+  }>;
 }
 
 export interface ReservationRequest {

@@ -64,7 +64,46 @@ export class ClientVoyageService {
   }
 
   /**
-   * Récupère les sièges disponibles pour un voyage
+   * Récupère les sièges déjà occupés pour un voyage donné
+   */
+  getOccupiedSeats(voyageId: number): Observable<string[]> {
+    return this.http.get<{ statut: boolean; occupied: string[] }>(`${this.API}/client/voyages/${voyageId}/occupations`).pipe(
+      map(res => res.occupied || [])
+    );
+  }
+
+  /**
+   * Crée une nouvelle réservation pour le client connecté (Nouveau flow avec siège)
+   */
+  createReservation(payload: { voyage_id: number; place: number; gare_id?: number }): Observable<any> {
+    return this.http.post<{ statut: boolean; message: string; data: any }>(`${this.API}/client/reserve-seat`, payload);
+  }
+
+  /**
+   * Initie le paiement CamPay
+   */
+  initiatePayment(reservationId: number, phone: string): Observable<any> {
+    return this.http.post(`${this.API}/client/payments/initiate`, { reservation_id: reservationId, phone });
+  }
+
+  /**
+   * Vérifie le statut du paiement (Polling)
+   */
+  checkPaymentStatus(reference: string): Observable<any> {
+    return this.http.get(`${this.API}/client/payments/status/${reference}`);
+  }
+
+  /**
+   * Télécharge le ticket de réservation en PDF
+   */
+  downloadTicket(reservationId: number): Observable<Blob> {
+    return this.http.get(`${this.API}/client/reservations/${reservationId}/ticket`, {
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Récupère les sièges disponibles (Ancien endpoint, gardé pour compatibilité si besoin)
    */
   getAvailableSeats(voyageId: number): Observable<string[]> {
     return this.http.get<string[]>(`${this.API}/voyages/${voyageId}/available-seats`);

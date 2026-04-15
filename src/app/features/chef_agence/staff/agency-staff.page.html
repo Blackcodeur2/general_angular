@@ -10,6 +10,30 @@
         </button>
     </div>
 
+    <div class="stats-bar animate-fade-in">
+        <div class="stat-card">
+            <div class="icon agent"><mat-icon>person</mat-icon></div>
+            <div class="info">
+                <span class="label">Agents</span>
+                <span class="value">{{ totalAgents() }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon chauffeur"><mat-icon>minor_edit</mat-icon></div>
+            <div class="info">
+                <span class="label">Chauffeurs</span>
+                <span class="value">{{ totalChauffeurs() }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon total"><mat-icon>groups</mat-icon></div>
+            <div class="info">
+                <span class="label">Effectif Total</span>
+                <span class="value">{{ staffMembers().length }}</span>
+            </div>
+        </div>
+    </div>
+
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
         <div class="form-header">
@@ -67,43 +91,79 @@
     </div>
     }
 
-    <div class="card">
+    <div class="card table-card">
         <div class="table-responsive">
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>Membre</th>
+                        <th>Sexe</th>
                         <th>Poste</th>
+                        <th>Statut</th>
                         <th>Contact</th>
+                        <th>Info</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @for (member of paginatedStaff(); track member.id) {
-                    <tr>
+                    <tr class="staff-row">
                         <td>
                             <div class="user-cell">
-                                <div class="avatar">{{ member?.nom?.substring(0,2) || 'S' }}</div>
-                                <div>
+                                <div class="avatar-container">
+                                    <div class="avatar">{{ member?.nom?.substring(0,1) || 'S' }}{{ member?.prenom?.substring(0,1) || '' }}</div>
+                                    <span class="gender-dot" [class]="member?.sexe === 'F' ? 'female' : 'male'"></span>
+                                </div>
+                                <div class="member-meta">
                                     <div class="name">{{ member?.nom }} {{ member?.prenom }}</div>
-                                    <div class="email">{{ member?.email }}</div>
+                                    <div class="email-sub">{{ member?.email }}</div>
                                 </div>
                             </div>
+                        </td>
+                        <td class="center">
+                            <mat-icon [class]="'gender-icon ' + (member?.sexe === 'F' ? 'female' : 'male')">
+                                {{ member?.sexe === 'F' ? 'female' : 'male' }}
+                            </mat-icon>
                         </td>
                         <td>
                             <span class="role-badge" [class]="member?.role_user?.toLowerCase()">
                                 {{ member?.role_user }}
                             </span>
                         </td>
-                        <td>{{ member?.telephone || '--' }}</td>
+                        <td>
+                            <span class="status-badge" [class]="member?.statut === 'approuve' ? 'approuve' : (member?.statut === 'en attente' ? 'attente' : 'inactif')">
+                                {{ member?.statut || 'Inconnu' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="contact-cell">
+                                <span class="phone-link">
+                                    <mat-icon>call</mat-icon>
+                                    {{ member?.telephone || '--' }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="info-cell">
+                                <span class="birth">{{ member?.date_naissance | date:'dd/MM/yyyy' }}</span>
+                                <span class="joined">Dernière MAJ: {{ member?.updated_at | date:'shortDate' }}</span>
+                            </div>
+                        </td>
                         <td class="actions">
-                            <button class="action-btn" (click)="editStaff(member)" title="Modifier"><mat-icon>edit</mat-icon></button>
-                            <button class="action-btn delete"><mat-icon>delete</mat-icon></button>
+                            <div class="action-group">
+                                <button class="action-btn edit" (click)="editStaff(member)" title="Modifier"><mat-icon>edit_note</mat-icon></button>
+                                <button class="action-btn delete" title="Supprimer"><mat-icon>delete_outline</mat-icon></button>
+                            </div>
                         </td>
                     </tr>
                     } @empty {
                     <tr>
-                        <td colspan="4" class="text-center py-8">Aucun membre enregistré.</td>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <mat-icon>group_off</mat-icon>
+                                <span>Aucun membre enregistré dans l'agence.</span>
+                            </div>
+                        </td>
                     </tr>
                     }
                 </tbody>

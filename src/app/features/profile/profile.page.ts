@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, TitleCasePipe, DatePipe } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +20,51 @@ export class ProfilePage implements OnInit {
     user = this.authService.currentUser;
     isChangingPassword = signal(false);
     isSubmitting = signal(false);
+
+    // Toggles pour la visibilité du mot de passe
+    showCurrentPassword = signal(false);
+    showNewPassword = signal(false);
+    showConfirmPassword = signal(false);
+
+    // Calcul de la force du mot de passe
+    passwordStrength = computed(() => {
+        const password = this.changePasswordForm.get('new_password')?.value || '';
+        if (!password) return 0;
+
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+        return strength;
+    });
+
+    passwordStrengthLabel = computed(() => {
+        const score = this.passwordStrength();
+        switch (score) {
+            case 0: return 'Aucun';
+            case 1: return 'Très faible';
+            case 2: return 'Faible';
+            case 3: return 'Moyen';
+            case 4: return 'Fort';
+            case 5: return 'Très fort';
+            default: return 'Aucun';
+        }
+    });
+
+    passwordStrengthColor = computed(() => {
+        const score = this.passwordStrength();
+        switch (score) {
+            case 1: return '#ef4444'; // rouge
+            case 2: return '#f97316'; // orange
+            case 3: return '#facc15'; // jaune
+            case 4: return '#4ade80'; // vert clair
+            case 5: return '#22c55e'; // vert
+            default: return '#e5e7eb';
+        }
+    });
 
     changePasswordForm = this.fb.nonNullable.group({
         current_password: ['', [Validators.required]],

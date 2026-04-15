@@ -173,30 +173,48 @@
             <div class="form-grid">
               <div class="field">
                 <label>Nom</label>
-                <input type="text" formControlName="nom" placeholder="Ex: NDEDI">
+                <div class="input-wrapper">
+                  <mat-icon>person</mat-icon>
+                  <input type="text" formControlName="nom" placeholder="Ex: NDEDI">
+                </div>
               </div>
               <div class="field">
                 <label>Prénom</label>
-                <input type="text" formControlName="prenom" placeholder="Ex: Jean">
+                <div class="input-wrapper">
+                  <mat-icon>person_outline</mat-icon>
+                  <input type="text" formControlName="prenom" placeholder="Ex: Jean">
+                </div>
               </div>
               <div class="field">
                 <label>Téléphone</label>
-                <input type="tel" formControlName="telephone" placeholder="6XXXXXXXX">
+                <div class="input-wrapper">
+                  <mat-icon>phone</mat-icon>
+                  <input type="tel" formControlName="telephone" placeholder="6XXXXXXXX">
+                </div>
               </div>
               <div class="field">
                 <label>Numéro CNI</label>
-                <input type="text" formControlName="num_cni" placeholder="ID Card No">
+                <div class="input-wrapper">
+                  <mat-icon>badge</mat-icon>
+                  <input type="text" formControlName="num_cni" placeholder="ID Card No">
+                </div>
               </div>
               <div class="field">
                 <label>Sexe</label>
-                <select formControlName="sexe">
-                  <option value="M">Masculin</option>
-                  <option value="F">Féminin</option>
-                </select>
+                <div class="select-wrapper">
+                  <mat-icon>wc</mat-icon>
+                  <select formControlName="sexe">
+                    <option value="M">Masculin</option>
+                    <option value="F">Féminin</option>
+                  </select>
+                </div>
               </div>
               <div class="field">
                 <label>Date de Naissance</label>
-                <input type="date" formControlName="date_naissance">
+                <div class="input-wrapper">
+                  <mat-icon>cake</mat-icon>
+                  <input type="date" formControlName="date_naissance">
+                </div>
               </div>
             </div>
             

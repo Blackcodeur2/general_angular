@@ -40,6 +40,9 @@ export class AgencyRoutesPage implements OnInit {
     return list.slice(start, end);
   });
 
+  totalVIP = computed(() => this.routesList().filter(r => r.type_trajet === 'vip').length);
+  totalClassique = computed(() => this.routesList().filter(r => r.type_trajet === 'classique').length);
+
   routeForm = this.fb.group({
     depart: ['', Validators.required],
     arrivee: ['', Validators.required],

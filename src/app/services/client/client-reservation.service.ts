@@ -43,13 +43,29 @@ export class ClientReservationService {
    * Annule une réservation
    */
   cancelReservation(reservationId: number): Observable<any> {
-    return this.http.put(`${this.API}/client/reservations/${reservationId}/cancel`, {});
+    return this.http.delete(`${this.API}/client/reservations/${reservationId}`);
   }
 
   /**
-   * Récupère le reçu/document de réservation
+   * Récupère le ticket de réservation (PDF)
    */
-  getReservationReceipt(reservationId: number): Observable<any> {
-    return this.http.get(`${this.API}/client/reservations/${reservationId}/receipt`, { responseType: 'blob' });
+  getReservationTicket(reservationId: number): Observable<Blob> {
+    return this.http.get(`${this.API}/client/reservations/${reservationId}/ticket`, { 
+      responseType: 'blob' 
+    });
+  }
+
+  /**
+   * Initie le paiement CamPay
+   */
+  initiatePayment(reservationId: number, phone: string): Observable<any> {
+    return this.http.post(`${this.API}/client/payments/initiate`, { reservation_id: reservationId, phone });
+  }
+
+  /**
+   * Vérifie le statut du paiement (Polling)
+   */
+  checkPaymentStatus(reference: string): Observable<any> {
+    return this.http.get(`${this.API}/client/payments/status/${reference}`);
   }
 }

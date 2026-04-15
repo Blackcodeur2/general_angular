@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ClientAgenceService } from '../../../services/client/client-agence.service';
 import { Agence } from '../../../models/agence';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-agences',
@@ -16,53 +17,42 @@ export class AgencesPage implements OnInit {
   private agenceService = inject(ClientAgenceService);
   private router = inject(Router);
 
-  agencies: Agence[] = [];
-  filteredAgencies: Agence[] = [];
-  searchTerm = '';
-  isLoading = false;
+  // States using Signals
+  agencies = signal<Agence[]>([]);
+  searchTerm = signal<string>('');
+  isLoading = signal<boolean>(false);
+
+  // Derived filtered list
+  filteredAgencies = computed(() => {
+    const list = this.agencies();
+    const term = this.searchTerm().toLowerCase().trim();
+
+    if (!term) return list;
+
+    return list.filter(agence =>
+      agence.nom?.toLowerCase().includes(term) ||
+      agence.adresse?.toLowerCase().includes(term) ||
+      agence.email?.toLowerCase().includes(term)
+    );
+  });
 
   ngOnInit(): void {
     this.loadAgencies();
   }
 
   loadAgencies(): void {
-    this.isLoading = true;
-    this.agenceService.getAgencies().subscribe({
-      next: (agencies) => {
-        this.agencies = agencies;
-        this.filteredAgencies = agencies;
-        // Charger les gares pour chaque agence
-        agencies.forEach(agence => {
-          this.agenceService.getAgencyGares(agence.id).subscribe({
-            next: (gares) => {
-              agence.gares = gares;
-            },
-            error: (err) => {
-              console.error(`Erreur lors du chargement des gares pour l'agence ${agence.id}:`, err);
-            }
-          });
-        });
-        this.isLoading = false;
+    this.isLoading.set(true);
+    this.agenceService.getAgencies().pipe(
+      finalize(() => this.isLoading.set(false))
+    ).subscribe({
+      next: (data) => {
+        console.log('Agencies loaded:', data);
+        this.agencies.set(data);
       },
       error: (err) => {
         console.error('Erreur lors du chargement des agences:', err);
-        this.isLoading = false;
       }
     });
-  }
-
-  onSearchAgency(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredAgencies = this.agencies;
-      return;
-    }
-
-    const term = this.searchTerm.toLowerCase();
-    this.filteredAgencies = this.agencies.filter(agence =>
-      agence.nom.toLowerCase().includes(term) ||
-      agence.adresse.toLowerCase().includes(term) ||
-      agence.email.toLowerCase().includes(term)
-    );
   }
 
   onViewAgencyVoyages(agencyId: number): void {

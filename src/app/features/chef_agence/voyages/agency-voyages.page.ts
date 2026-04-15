@@ -35,13 +35,41 @@ export class AgencyVoyagesPage implements OnInit {
   isEditing = signal(false);
   editId = signal<number | null>(null);
 
+  searchTerm = signal('');
   currentPage = signal(1);
   pageSize = signal(5);
+  
+  statsTotalToday = computed(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return this.voyages().filter(v => v.date_depart.startsWith(today)).length;
+  });
+
+  statsEnCours = computed(() => {
+    return this.voyages().filter(v => v.statut === 'en cours' || v.statut === 'en voyage').length;
+  });
+
+  statsAttente = computed(() => {
+    return this.voyages().filter(v => v.statut === 'en attente').length;
+  });
+
+  filteredVoyages = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.voyages();
+    
+    return this.voyages().filter(v => 
+      v.num_voyage?.toLowerCase().includes(term) ||
+      v.ville_depart?.toLowerCase().includes(term) ||
+      v.ville_arrivee?.toLowerCase().includes(term) ||
+      v.chauffeur?.nom?.toLowerCase().includes(term) ||
+      v.chauffeur?.prenom?.toLowerCase().includes(term) ||
+      v.vehicule_immatriculation?.toLowerCase().includes(term)
+    );
+  });
 
   paginatedVoyages = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
     const end = start + this.pageSize();
-    return this.voyages().slice(start, end);
+    return this.filteredVoyages().slice(start, end);
   });
 
   voyageForm = this.fb.group({

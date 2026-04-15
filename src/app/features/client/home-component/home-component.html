@@ -1,125 +1,167 @@
-<div class="client-dashboard">
-  <!-- En-tête de bienvenue -->
-  <div class="welcome-section">
-    <div class="welcome-content">
-      <h1>Bienvenue, <span class="user-name">{{ currentUser?.prenom }} {{ currentUser?.nom }}</span></h1>
-      <p>Gérez vos réservations et explorez nos voyages</p>
+<div class="dashboard-wrap">
+  <!-- Top Welcome Hero -->
+  <header class="welcome-hero animate-in">
+    <div class="hero-main">
+      <div class="user-avatar-wrap">
+        <div class="avatar">
+          {{ currentUser()?.prenom?.charAt(0) }}{{ currentUser()?.nom?.charAt(0) }}
+        </div>
+        <div class="status-indicator"></div>
+      </div>
+      <div class="welcome-text">
+        <h1>{{ greeting() }}, <span class="highlight">{{ currentUser()?.prenom }}</span></h1>
+        <p>Prêt pour votre prochain voyage avec Genenral Express ?</p>
+      </div>
     </div>
-    <button (click)="onLogout()" class="btn-logout">Déconnexion</button>
+    <div class="header-actions">
+      <button class="btn-icon" (click)="navigate('/client/profile')">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button class="btn-logout-pill" (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        <span>Déconnexion</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Stats Grid -->
+  <section class="stats-grid animate-in">
+    <div class="card stat-item active">
+      <div class="stat-icon-box">
+        <mat-icon>directions_bus</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="val">{{ stats().active }}</span>
+        <span class="lab">Voyages Actifs</span>
+      </div>
+      <div class="trend up">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+    </div>
+    <div class="card stat-item confirmed">
+      <div class="stat-icon-box">
+        <mat-icon>verified</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="val">{{ stats().confirmed }}</span>
+        <span class="lab">Confirmés</span>
+      </div>
+    </div>
+    <div class="card stat-item pending">
+      <div class="stat-icon-box">
+        <mat-icon>hourglass_top</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="val">{{ stats().pending }}</span>
+        <span class="lab">En Attente</span>
+      </div>
+    </div>
+    <div class="card stat-item spent">
+      <div class="stat-icon-box">
+        <mat-icon>payments</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="val">{{ stats().spent | number }} <small>FCFA</small></span>
+        <span class="lab">Total Dépensé</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="main-content-grid">
+    <!-- Quick Actions Menu -->
+    <div class="sidebar-section animate-in">
+      <h2 class="section-title">Actions Rapides</h2>
+      <div class="quick-menu">
+        <div class="menu-item book" (click)="navigate('/client/voyages')">
+          <div class="m-icon"><mat-icon>add_location_alt</mat-icon></div>
+          <div class="m-text">
+            <h4>Nouvelle Réservation</h4>
+            <p>Réserver un billet</p>
+          </div>
+        </div>
+        <div class="menu-item history" (click)="navigate('/client/mes-reservations')">
+          <div class="m-icon"><mat-icon>history</mat-icon></div>
+          <div class="m-text">
+            <h4>Mes Réservations</h4>
+            <p>Historique & Reçus</p>
+          </div>
+        </div>
+        <div class="menu-item agences" (click)="navigate('/client/agences')">
+          <div class="m-icon"><mat-icon>business</mat-icon></div>
+          <div class="m-text">
+            <h4>Nos Agences</h4>
+            <p>Trouver un point de vente</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Trips Carousel/List -->
+    <div class="central-section animate-in">
+      <div class="section-header">
+        <h2 class="section-title">Vos prochains départs</h2>
+        <button class="btn-text" (click)="navigate('/client/mes-reservations')">Voir tout</button>
+      </div>
+
+      <div class="upcoming-container">
+        @if (isLoading()) {
+          <div class="loading-placeholder">
+            <div class="shimmer"></div>
+          </div>
+        } @else {
+          @for (trip of upcomingTrips(); track trip.id) {
+            <div class="mini-trip-card" (click)="navigate('/client/mes-reservations')">
+              <div class="trip-date">
+                <span class="day">{{ trip.voyage.date_depart | date:'dd' }}</span>
+                <span class="month">{{ trip.voyage.date_depart | date:'MMM' }}</span>
+              </div>
+              <div class="trip-path">
+                <div class="path-visual">
+                  <span class="code">{{ trip.voyage.ville_depart.substring(0,3).toUpperCase() }}</span>
+                  <div class="line"><mat-icon>east</mat-icon></div>
+                  <span class="code">{{ trip.voyage.ville_arrivee.substring(0,3).toUpperCase() }}</span>
+                </div>
+                <div class="path-names">
+                  {{ trip.voyage.ville_depart }} → {{ trip.voyage.ville_arrivee }}
+                </div>
+              </div>
+              <div class="trip-time">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ trip.voyage.heure_depart }}</span>
+              </div>
+              <div class="trip-arrow">
+                <mat-icon>chevron_right</mat-icon>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-upcoming">
+              <mat-icon>event_busy</mat-icon>
+              <p>Aucun voyage prévu prochainement.</p>
+              <button class="btn-outline-sm" (click)="navigate('/client/voyages')">Réserver maintenant</button>
+            </div>
+          }
+        }
+      </div>
+    </div>
   </div>
 
-  <!-- Statistiques rapides -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">📅</div>
-      <div class="stat-content">
-        <span class="stat-label">Réservations actives</span>
-        <span class="stat-value">{{ activeReservations }}</span>
+  <!-- Reminders & Tips Footer -->
+  <footer class="tips-section animate-in">
+    <div class="tip-card help">
+      <mat-icon>contact_support</mat-icon>
+      <div class="tip-content">
+        <h5>Besoin d'assistance ?</h5>
+        <p>Notre support client est disponible 24/7 pour vous accompagner.</p>
+        <button class="btn-tiny">Contacter</button>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">✅</div>
-      <div class="stat-content">
-        <span class="stat-label">Confirmées</span>
-        <span class="stat-value">{{ confirmedReservations }}</span>
+    <div class="tip-card security">
+      <mat-icon>security</mat-icon>
+      <div class="tip-content">
+        <h5>Voyagez serein</h5>
+        <p>N'oubliez pas votre CNI et présentez-vous 30min avant le départ.</p>
       </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon">⏳</div>
-      <div class="stat-content">
-        <span class="stat-label">En attente</span>
-        <span class="stat-value">{{ pendingReservations }}</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">💳</div>
-      <div class="stat-content">
-        <span class="stat-label">Total dépensé</span>
-        <span class="stat-value">{{ totalSpent | currency: 'CDF' }}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Menu principal -->
-  <div class="menu-section">
-    <h2>Menu Principal</h2>
-    <div class="menu-grid">
-      <!-- Voyages disponibles -->
-      <div class="menu-card" (click)="navigate('/client/voyages')">
-        <div class="menu-icon">✈️</div>
-        <div class="menu-content">
-          <h3>Voyages Disponibles</h3>
-          <p>Parcourez et réservez vos voyages</p>
-        </div>
-        <div class="menu-arrow">→</div>
-      </div>
-
-      <!-- Agences -->
-      <div class="menu-card" (click)="navigate('/client/agences')">
-        <div class="menu-icon">🏢</div>
-        <div class="menu-content">
-          <h3>Agences</h3>
-          <p>Découvrez nos partenaires et leurs services</p>
-        </div>
-        <div class="menu-arrow">→</div>
-      </div>
-
-      <!-- Mes réservations -->
-      <div class="menu-card" (click)="navigate('/client/mes-reservations')">
-        <div class="menu-icon">📋</div>
-        <div class="menu-content">
-          <h3>Mes Réservations</h3>
-          <p>Consultez et gérez vos réservations</p>
-        </div>
-        <div class="menu-arrow">→</div>
-      </div>
-
-      <!-- Mon profil -->
-      <div class="menu-card" (click)="navigate('/client/profile')">
-        <div class="menu-icon">👤</div>
-        <div class="menu-content">
-          <h3>Mon Profil</h3>
-          <p>Modifiez votre profil et vos préférences</p>
-        </div>
-        <div class="menu-arrow">→</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Prochains voyages -->
-  <div class="upcoming-section" *ngIf="upcomingReservations.length > 0">
-    <h2>Vos prochains voyages</h2>
-    <div class="upcoming-list">
-      <div class="upcoming-card" *ngFor="let reservation of upcomingReservations.slice(0, 3)">
-        <div class="upcoming-date">
-          {{ reservation.voyage.date_depart | date: 'dd' }}<br>
-          <span>{{ reservation.voyage.date_depart | date: 'MMM' }}</span>
-        </div>
-        <div class="upcoming-info">
-          <span class="route">{{ reservation.voyage.ville_depart }} → {{ reservation.voyage.ville_arrivee }}</span>
-          <span class="time">{{ reservation.voyage.heure_depart }}</span>
-          <span class="seat">Siège: {{ reservation.numero_siege }}</span>
-        </div>
-        <button class="btn-view" (click)="navigate('/client/mes-reservations')">Voir</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rappels importants -->
-  <div class="reminders-section">
-    <h2>Rappels Importants</h2>
-    <div class="reminder-box">
-      <div class="reminder-icon">ℹ️</div>
-      <div class="reminder-content">
-        <p><strong>Conseil:</strong> Présentez-vous 30 minutes avant l'heure de départ avec votre numéro de réservation.</p>
-      </div>
-    </div>
-    <div class="reminder-box">
-      <div class="reminder-icon">📞</div>
-      <div class="reminder-content">
-        <p><strong>Support:</strong> Contactez notre équipe en cas de besoin. Nous sommes disponibles 24/7.</p>
-      </div>
-    </div>
-  </div>
+  </footer>
 </div>
 

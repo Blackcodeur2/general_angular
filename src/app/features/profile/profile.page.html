@@ -108,7 +108,11 @@
                         <label>Mot de passe actuel</label>
                         <div class="input-wrapper">
                             <mat-icon>lock_open</mat-icon>
-                            <input type="password" formControlName="current_password" placeholder="••••••••">
+                            <input [type]="showCurrentPassword() ? 'text' : 'password'" 
+                                   formControlName="current_password" placeholder="••••••••">
+                            <button type="button" class="visibility-toggle" (click)="showCurrentPassword.set(!showCurrentPassword())">
+                                <mat-icon>{{ showCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                            </button>
                         </div>
                         @if (shouldShowError('current_password')) {
                             <span class="error-msg">Ce champ est obligatoire</span>
@@ -117,10 +121,37 @@
 
                     <div class="field">
                         <label>Nouveau mot de passe</label>
-                        <div class="input-wrapper">
+                        <div class="input-wrapper" [style.border-bottom-color]="passwordStrengthColor()">
                             <mat-icon>lock</mat-icon>
-                            <input type="password" formControlName="new_password" placeholder="••••••••">
+                            <input [type]="showNewPassword() ? 'text' : 'password'" 
+                                   formControlName="new_password" placeholder="••••••••">
+                            <button type="button" class="visibility-toggle" (click)="showNewPassword.set(!showNewPassword())">
+                                <mat-icon>{{ showNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                            </button>
                         </div>
+                        
+                        <div class="strength-meter-container">
+                            <div class="strength-bar">
+                                <div class="fill" [style.width]="(passwordStrength() * 20) + '%'" 
+                                     [style.background-color]="passwordStrengthColor()"></div>
+                            </div>
+                            <span class="strength-label" [style.color]="passwordStrengthColor()">
+                                Force: {{ passwordStrengthLabel() }}
+                            </span>
+                        </div>
+
+                        <div class="password-requirements">
+                            <span [class.valid]="(changePasswordForm.get('new_password')?.value?.length || 0) >= 8">
+                                <mat-icon>check_circle</mat-icon> 8+ caractères
+                            </span>
+                            <span [class.valid]="/[0-9]/.test(changePasswordForm.get('new_password')?.value || '')">
+                                <mat-icon>check_circle</mat-icon> Chiffre
+                            </span>
+                            <span [class.valid]="/[^a-zA-Z0-9]/.test(changePasswordForm.get('new_password')?.value || '')">
+                                <mat-icon>check_circle</mat-icon> Caractère spécial
+                            </span>
+                        </div>
+
                         @if (shouldShowError('new_password')) {
                             <span class="error-msg">
                                 @if (changePasswordForm.get('new_password')?.errors?.['required']) {
@@ -136,7 +167,11 @@
                         <label>Confirmer le nouveau mot de passe</label>
                         <div class="input-wrapper">
                             <mat-icon>enhanced_encryption</mat-icon>
-                            <input type="password" formControlName="confirm_password" placeholder="••••••••">
+                            <input [type]="showConfirmPassword() ? 'text' : 'password'" 
+                                   formControlName="confirm_password" placeholder="••••••••">
+                            <button type="button" class="visibility-toggle" (click)="showConfirmPassword.set(!showConfirmPassword())">
+                                <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                            </button>
                         </div>
                         @if (shouldShowError('confirm_password')) {
                             <span class="error-msg">

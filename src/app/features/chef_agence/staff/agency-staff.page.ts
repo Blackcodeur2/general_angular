@@ -39,6 +39,9 @@ export class AgencyStaffPage implements OnInit {
     return list.slice(start, end);
   });
 
+  totalAgents = computed(() => this.staffMembers().filter(m => m.role_user === 'AGENT').length);
+  totalChauffeurs = computed(() => this.staffMembers().filter(m => m.role_user === 'CHAUFFEUR').length);
+
   staffForm = this.fb.group({
     nom: ['', Validators.required],
     prenom: ['', Validators.required],

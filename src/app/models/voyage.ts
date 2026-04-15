@@ -24,6 +24,8 @@ export interface Voyage {
     id: number;
     immatriculation: string;
     code_bus: string;
+    nb_places: number;
+    classe_bus: string;
   };
   trajet?: {
     id: number;

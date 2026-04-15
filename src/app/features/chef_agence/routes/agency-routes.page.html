@@ -10,10 +10,34 @@
         </button>
     </div>
 
+    <div class="stats-bar animate-fade-in">
+        <div class="stat-card">
+            <div class="icon vip"><mat-icon>star</mat-icon></div>
+            <div class="info">
+                <span class="label">Lignes VIP</span>
+                <span class="value">{{ totalVIP() }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon classique"><mat-icon>directions_bus</mat-icon></div>
+            <div class="info">
+                <span class="label">Lignes Classiques</span>
+                <span class="value">{{ totalClassique() }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon total"><mat-icon>map</mat-icon></div>
+            <div class="info">
+                <span class="label">Total Lignes</span>
+                <span class="value">{{ routesList().length }}</span>
+            </div>
+        </div>
+    </div>
+
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
-        <div class="card-header">
-            <h3>{{ isEditing() ? 'Modifier la Ligne' : 'Créer une Nouvelle Ligne' }}</h3>
+        <div class="form-header">
+            <h2>{{ isEditing() ? 'Modifier la Ligne' : 'Créer une Nouvelle Ligne' }}</h2>
         </div>
         <form [formGroup]="routeForm" (ngSubmit)="onSubmit()">
             <div class="form-grid">
@@ -22,7 +46,7 @@
                     <select formControlName="depart" class="form-control">
                         <option value="">-- Sélectionnez une gare --</option>
                         @for (gare of gares(); track gare.id) {
-                        <option [value]="gare.id">{{ gare.ville }} - {{ gare.quartier }}</option>
+                        <option [value]="gare.id">{{ gare.ville }} - {{ gare.nom }}</option>
                         }
                     </select>
                 </div>
@@ -31,7 +55,7 @@
                     <select formControlName="arrivee" class="form-control">
                         <option value="">-- Sélectionnez une gare --</option>
                         @for (gare of gares(); track gare.id) {
-                        <option [value]="gare.id">{{ gare.ville }} - {{ gare.quartier }}</option>
+                        <option [value]="gare.id">{{ gare.ville }} - {{ gare.nom }}</option>
                         }
                     </select>
                 </div>
@@ -56,12 +80,13 @@
     </div>
     }
 
-    <div class="card">
+    <div class="card table-card">
         <div class="table-responsive">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Ligne</th>
+                        <th class="center">Réf</th>
+                        <th>Trajet</th>
                         <th>Distance</th>
                         <th>Prix</th>
                         <th>Type</th>
@@ -70,28 +95,60 @@
                 </thead>
                 <tbody>
                     @for (route of paginatedRoutes(); track route.id) {
-                    <tr>
+                    <tr class="route-row">
+                        <td class="center ref-cell">#{{ route.id }}</td>
                         <td>
-                            <div class="route-cell">
-                                <div class="icon-circle"><mat-icon>map</mat-icon></div>
-                                <div class="path">
-                                    <span class="from">{{ route.depart }}</span>
-                                    <mat-icon class="arrow">arrow_forward</mat-icon>
-                                    <span class="to">{{ route.arrivee }}</span>
+                            <div class="route-display">
+                                <div class="city from">
+                                    <span class="label">Départ</span>
+                                    <span class="name">{{ route.depart }}</span>
+                                </div>
+                                <div class="path-visual">
+                                    <div class="line"></div>
+                                    <mat-icon>east</mat-icon>
+                                </div>
+                                <div class="city to">
+                                    <span class="label">Arrivée</span>
+                                    <span class="name">{{ route.arrivee }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ route.distance_km | number }} Km</td>
-                        <td><span class="price">{{ route.prix | number }} XAF</span></td>
-                        <td><span>{{ route.type_trajet }}</span></td>
+                        <td>
+                            <div class="distance-info">
+                                <mat-icon>more_horiz</mat-icon>
+                                <span>{{ route.distance_km || '--' }} Km</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="price-info">
+                                <span class="amount">{{ route.prix | number }}</span>
+                                <span class="currency">XAF</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="type-badge" [class]="route.type_trajet.toLowerCase()">
+                                {{ route.type_trajet }}
+                            </span>
+                        </td>
                         <td class="actions">
-                            <button class="action-btn" (click)="editRoute(route)" title="Modifier"><mat-icon>edit</mat-icon></button>
-                            <button class="action-btn delete"><mat-icon>delete</mat-icon></button>
+                            <div class="action-group">
+                                <button class="action-btn edit" (click)="editRoute(route)" title="Modifier">
+                                    <mat-icon>edit_calendar</mat-icon>
+                                </button>
+                                <button class="action-btn delete" title="Supprimer">
+                                    <mat-icon>delete_forever</mat-icon>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     } @empty {
                     <tr>
-                        <td colspan="5" class="text-center py-8">Aucune ligne définie.</td>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <mat-icon>no_roads</mat-icon>
+                                <p>Aucune ligne n'a été configurée pour le moment.</p>
+                            </div>
+                        </td>
                     </tr>
                     }
                 </tbody>

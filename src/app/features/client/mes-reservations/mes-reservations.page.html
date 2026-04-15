@@ -1,125 +1,174 @@
-<div class="reservations-container">
-  <div class="header">
-    <h1>Mes Réservations</h1>
-    <p>Consultez et gérez vos réservations</p>
-  </div>
-
-  <!-- Filtres de statut -->
-  <div class="filters">
-    <button class="filter-btn" 
-            [class.active]="activeFilter === 'all'"
-            (click)="setFilter('all')">
-      Tous ({{ reservations.length }})
-    </button>
-    <button class="filter-btn" 
-            [class.active]="activeFilter === 'confirmee'"
-            (click)="setFilter('confirmee')">
-      Confirmées ({{ getCountByStatus('confirmee') }})
-    </button>
-    <button class="filter-btn" 
-            [class.active]="activeFilter === 'en_attente'"
-            (click)="setFilter('en_attente')">
-      En attente ({{ getCountByStatus('en_attente') }})
-    </button>
-    <button class="filter-btn" 
-            [class.active]="activeFilter === 'annulee'"
-            (click)="setFilter('annulee')">
-      Annulées ({{ getCountByStatus('annulee') }})
-    </button>
-  </div>
-
-  <!-- État de chargement -->
-  <div *ngIf="isLoading" class="loading">
-    <div class="spinner"></div>
-    <p>Chargement de vos réservations...</p>
-  </div>
-
-  <!-- État vide -->
-  <div *ngIf="!isLoading && filteredReservations.length === 0" class="empty-state">
-    <p>Aucune réservation trouvée.</p>
-    <button class="btn-primary" (click)="goToVoyages()">Faire une réservation</button>
-  </div>
-
-  <!-- Liste des réservations -->
-  <div class="reservations-list">
-    <div class="reservation-card" *ngFor="let reservation of filteredReservations">
-      <!-- En-tête de la réservation -->
-      <div class="reservation-header">
-        <div class="route-info">
-          <span class="ville-depart">{{ reservation.voyage.ville_depart }}</span>
-          <span class="arrow">→</span>
-          <span class="ville-arrivee">{{ reservation.voyage.ville_arrivee }}</span>
+<div class="dashboard-container">
+    <header class="dashboard-header animate-in">
+        <div class="header-text">
+            <h1>Tableau de bord</h1>
+            <p>Bienvenue ! Retrouvez ici tous vos voyages et réservations.</p>
         </div>
-        <div class="statut-badge" [ngClass]="'statut-' + reservation.statut">
-          {{ reservation.statut | uppercase }}
-        </div>
-      </div>
-
-      <!-- Détails de la réservation -->
-      <div class="reservation-details">
-        <div class="detail-row">
-          <div class="detail-item">
-            <label>Référence</label>
-            <span class="reference">{{ reservation.reference }}</span>
-          </div>
-          <div class="detail-item">
-            <label>Siège</label>
-            <span>{{ reservation.numero_siege }}</span>
-          </div>
-          <div class="detail-item">
-            <label>Montant</label>
-            <span class="montant">{{ reservation.montant | currency: 'CDF' }}</span>
-          </div>
-        </div>
-
-        <div class="detail-row">
-          <div class="detail-item">
-            <label>Date de départ</label>
-            <span>{{ reservation.voyage.date_depart | date: 'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="detail-item">
-            <label>Heure de départ</label>
-            <span>{{ reservation.voyage.heure_depart || '--:--' }}</span>
-          </div>
-          <div class="detail-item">
-            <label>Véhicule</label>
-            <span>{{ reservation.voyage.vehicule_immatriculation }}</span>
-          </div>
-        </div>
-
-        <div class="detail-row" *ngIf="reservation.voyage.agence">
-          <div class="detail-item">
-            <label>Agence</label>
-            <span>{{ reservation.voyage.agence.nom }}</span>
-          </div>
-          <div class="detail-item">
-            <label>Téléphone Agence</label>
-            <span>{{ reservation.voyage.agence.telephone }}</span>
-          </div>
-        </div>
-
-        <div class="detail-row">
-          <div class="detail-item">
-            <label>Date de réservation</label>
-            <span>{{ reservation.date_reservation | date: 'dd/MM/yyyy HH:mm' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="reservation-actions">
-        <button class="btn-secondary" (click)="onViewDetails(reservation.id)">
-          Détails complets
+        <button class="btn-primary-glow" (click)="goToVoyages()">
+            <mat-icon>add_circle</mat-icon>
+            Nouvelle Réservation
         </button>
-        <button class="btn-download" (click)="onDownloadReceipt(reservation.id)">
-          📥 Télécharger
-        </button>
-        <button class="btn-danger" 
-                (click)="onCancelReservation(reservation.id)"
-                [disabled]="reservation.statut === 'annulee' || reservation.statut === 'confirmee'">
-          Annuler
-        </button>
-      </div>
+    </header>
+
+    <!-- Statistics Bar -->
+    <section class="stats-bar animate-in">
+        <div class="stat-card total">
+            <div class="stat-icon">
+                <mat-icon>receipt_long</mat-icon>
+            </div>
+            <div class="stat-content">
+                <span class="label">Total Réservations</span>
+                <span class="value">{{ stats().total }}</span>
+            </div>
+        </div>
+        <div class="stat-card upcoming">
+            <div class="stat-icon">
+                <mat-icon>event_available</mat-icon>
+            </div>
+            <div class="stat-content">
+                <span class="label">Prochains Voyages</span>
+                <span class="value">{{ stats().upcoming }}</span>
+            </div>
+        </div>
+        <div class="stat-card spent">
+            <div class="stat-icon">
+                <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+            <div class="stat-content">
+                <span class="label">Total Dépensé</span>
+                <span class="value">{{ stats().spent | number }} <small>FCFA</small></span>
+            </div>
+        </div>
+        <div class="stat-card pending">
+            <div class="stat-icon">
+                <mat-icon>hourglass_empty</mat-icon>
+            </div>
+            <div class="stat-content">
+                <span class="label">En Attente</span>
+                <span class="value">{{ stats().pending }}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Controls Row -->
+    <div class="controls-row animate-in">
+        <div class="tabs">
+            <button class="tab-btn" [class.active]="activeFilter() === 'all'" (click)="setFilter('all')">
+                Tous
+            </button>
+            <button class="tab-btn" [class.active]="activeFilter() === 'validee'" (click)="setFilter('validee')">
+                Validées
+            </button>
+            <button class="tab-btn" [class.active]="activeFilter() === 'en_attente'" (click)="setFilter('en_attente')">
+                En Attente
+            </button>
+            <button class="tab-btn" [class.active]="activeFilter() === 'annule'" (click)="setFilter('annule')">
+                Annulées
+            </button>
+        </div>
+
+        <div class="search-box">
+            <mat-icon>search</mat-icon>
+            <input type="text" 
+                   [ngModel]="searchTerm()" 
+                   (ngModelChange)="searchTerm.set($event)" 
+                   placeholder="Ville ou N° Réservation...">
+        </div>
     </div>
-  </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Chargement de vos données...</p>
+        </div>
+    }
+
+    <!-- Content Area -->
+    <div class="reservations-grid" *ngIf="!isLoading()">
+        @for (reservation of filteredReservations(); track reservation.id) {
+            <div class="trip-card" [class.cancelled]="reservation.statut === 'annule'">
+                <div class="card-header">
+                    <div class="reservation-meta">
+                        <span class="ref">{{ reservation.num_reservation }}</span>
+                        <span class="date">{{ reservation.created_at | date:'dd MMM yyyy' }}</span>
+                    </div>
+                    <span class="status-badge" [class]="getStatusClass(reservation.statut)">
+                        {{ reservation.statut }}
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <div class="trip-timeline">
+                        <div class="town-block">
+                            <span class="town-code">{{ reservation.voyage.trajet.depart.ville.substring(0, 3).toUpperCase() }}</span>
+                            <span class="town-name">{{ reservation.voyage.trajet.depart.ville }}</span>
+                        </div>
+                        <div class="journey-line">
+                            <div class="dot start"></div>
+                            <div class="line">
+                                <mat-icon>directions_bus</mat-icon>
+                            </div>
+                            <div class="dot end"></div>
+                        </div>
+                        <div class="town-block arrivee">
+                            <span class="town-code">{{ reservation.voyage.trajet.arrivee.ville.substring(0, 3).toUpperCase() }}</span>
+                            <span class="town-name">{{ reservation.voyage.trajet.arrivee.ville }}</span>
+                        </div>
+                    </div>
+
+                    <div class="trip-details">
+                        <div class="detail">
+                            <mat-icon>event</mat-icon>
+                            <span>{{ reservation.voyage.date_depart | date:'E dd MMM, HH:mm' }}</span>
+                        </div>
+                        <div class="detail">
+                            <mat-icon>airline_seat_recline_normal</mat-icon>
+                            <span>Siège N° {{ reservation.place }}</span>
+                        </div>
+                        <div class="detail">
+                            <mat-icon>business</mat-icon>
+                            <span>{{ reservation.voyage.trajet.depart.ville || 'GEV' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="price-tag">
+                        <span class="label">Prix</span>
+                        <span class="value">{{ reservation.prix | number }} FCFA</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-icon" title="Détails" (click)="onViewDetails(reservation.id)">
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button class="btn-icon payment" 
+                                *ngIf="reservation.statut === 'en attente' || reservation.statut === 'en_attente'"
+                                (click)="onPayReservation(reservation)"
+                                title="Payer">
+                            <mat-icon>payments</mat-icon>
+                        </button>
+                        <button class="btn-icon download" title="Télécharger Ticket" (click)="onDownloadTicket(reservation)">
+                            <mat-icon>confirmation_number</mat-icon>
+                        </button>
+                        <button class="btn-icon cancel" 
+                                *ngIf="reservation.statut === 'en attente' || reservation.statut === 'en_attente'"
+                                (click)="onCancelReservation(reservation.id)"
+                                title="Annuler">
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        } @empty {
+            <div class="empty-state animate-in">
+                <div class="scene">
+                    <mat-icon>history_edu</mat-icon>
+                </div>
+                <h3>Aucune réservation</h3>
+                <p>Vos réservations apparaîtront ici quand vous en ferez une.</p>
+                <button class="btn-primary" (click)="goToVoyages()">Commencer un voyage</button>
+            </div>
+        }
+    </div>
 </div>

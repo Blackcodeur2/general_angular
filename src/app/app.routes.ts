@@ -113,6 +113,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/chef_agence/voyages/agency-voyages.page').then(m => m.AgencyVoyagesPage),
       },
       {
+        path: 'booking',
+        loadComponent: () => import('./features/staff/booking/booking.page').then(m => m.BookingPage),
+      },
+      {
         path: 'reservations',
         loadComponent: () => import('./features/staff/reservations/reservations.page').then(m => m.ReservationsPage),
       },
@@ -251,6 +255,10 @@ export const routes: Routes = [
       {
         path: 'mes-reservations',
         loadComponent: () => import('./features/client/mes-reservations/mes-reservations.page').then(m => m.MesReservationsPage),
+      },
+      {
+        path: 'new-reservation/:voyageId',
+        loadComponent: () => import('./features/client/new-reservation/new-reservation.page').then(m => m.NewReservationPage),
       },
       {
         path: 'profile',
