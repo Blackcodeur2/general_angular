@@ -97,6 +97,7 @@ export class AgencyLayoutComponent implements OnInit {
         { label: 'Voyages', icon: 'event_note', route: '/chef_agence/voyages' },
         { label: 'Nouvelle Réservation', icon: 'add_shopping_cart', route: '/chef_agence/booking' },
         { label: 'Réservations', icon: 'history', route: '/chef_agence/reservations' },
+        { label: 'Gestion Colis', icon: 'local_mall', route: '/chef_agence/colis' },
         { label: 'Validation', icon: 'qr_code_scanner', route: '/chef_agence/validate' },
         { label: 'Mon profil', icon: 'person', route: '/chef_agence/profile' }
     ];

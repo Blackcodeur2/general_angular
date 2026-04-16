@@ -121,6 +121,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/staff/reservations/reservations.page').then(m => m.ReservationsPage),
       },
       {
+        path: 'colis',
+        loadComponent: () => import('./features/staff/colis/colis.page').then(m => m.ColisManagementPage),
+      },
+      {
         path: 'validate',
         loadComponent: () => import('./features/staff/validate/validate.page').then(m => m.ValidatePage),
       },
@@ -149,6 +153,10 @@ export const routes: Routes = [
       {
         path: 'reservations',
         loadComponent: () => import('./features/staff/reservations/reservations.page').then(m => m.ReservationsPage),
+      },
+      {
+        path: 'colis',
+        loadComponent: () => import('./features/staff/colis/colis.page').then(m => m.ColisManagementPage),
       },
       {
         path: 'validate',
