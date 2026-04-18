@@ -1,3 +1,5 @@
+import { Route } from './route';
+
 export interface Voyage {
   id: number;
   num_voyage: string;
@@ -7,9 +9,12 @@ export interface Voyage {
   chauffeur_id?: number;
   prix: number;
   places_disponibles?: number;
-  statut: 'en attente' | 'en cours' | 'annule' | 'en voyage';
+  statut: 'en attente' | 'en cours' | 'annule' | 'en voyage' | 'termine';
   date_depart: string;
+  date_arrivee?: string;
+  duree_heure?: number;
   heure_depart?: string | null;
+
 
   // Relations and computed fields from API
   chauffeur?: {
@@ -27,33 +32,9 @@ export interface Voyage {
     nb_places: number;
     classe_bus: string;
   };
-  trajet?: {
-    id: number;
-    depart_id: number;
-    arrivee_id: number;
-    prix?: number;
-    depart?: {
-      id: number;
-      nom: string;
-      ville: string;
-    };
-    arrivee?: {
-      id: number;
-      nom: string;
-      ville: string;
-    };
-    gare_depart?: {
-      id: number;
-      nom: string;
-      ville: string;
-    };
-    gare_arrivee?: {
-      id: number;
-      nom: string;
-      ville: string;
-    };
-  };
+  trajet?: Route;
   gare?: {
+
     id: number;
     nom: string;
     ville: string;

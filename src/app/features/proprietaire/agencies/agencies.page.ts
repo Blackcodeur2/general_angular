@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
+import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
 import { Agence } from '../../../models/agence';
 import { Gare } from '../../../models/gare';
+import { Ville } from '../../../models/ville';
 import Swal from 'sweetalert2';
 
 type FormMode = 'none' | 'agence' | 'gare';
@@ -18,9 +20,12 @@ type FormMode = 'none' | 'agence' | 'gare';
 })
 export class AgenciesPage implements OnInit {
   private proprietaireService = inject(ProprietaireService);
+  private agencyService = inject(AgencyOpsService);
   private fb = inject(FormBuilder);
 
   agencies = signal<Agence[]>([]);
+  villes = signal<Ville[]>([]);
+
   isLoading = signal(true);
   isSubmitting = signal(false);
   formMode = signal<FormMode>('none');
@@ -41,10 +46,11 @@ export class AgenciesPage implements OnInit {
 
   gareForm = this.fb.nonNullable.group({
     agence_id: [0, Validators.required],
-    ville:     ['', Validators.required],
+    ville_id: [0, Validators.required],
     quartier:  ['', Validators.required],
     telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
   });
+
 
   // Computed : agence sélectionnée pour ajouter une gare
   agenceForGare = computed(() =>
@@ -53,7 +59,16 @@ export class AgenciesPage implements OnInit {
 
   ngOnInit() {
     this.loadAgencies();
+    this.loadVilles();
   }
+
+  loadVilles() {
+    this.agencyService.getVilles().subscribe({
+      next: (data) => this.villes.set(data),
+      error: () => this.villes.set([])
+    });
+  }
+
 
   loadAgencies() {
     this.isLoading.set(true);

@@ -75,7 +75,8 @@ export class AgencyVoyagesPage implements OnInit {
 
   voyageForm = this.fb.group({
     date_depart: ['', Validators.required],
-    duree_heure: ['', Validators.required,],
+    date_arrivee: [''],
+    duree_heure: [null as number | null],
     trajet_id: [null as number | null, Validators.required],
     bus_id: [null as number | null, Validators.required],
     prix: [0, Validators.required],
@@ -83,6 +84,7 @@ export class AgencyVoyagesPage implements OnInit {
     statut: ['en attente'],
     gare_id: [null as number | null],
   });
+
 
   ngOnInit() {
     this.loadVoyages();
@@ -162,6 +164,8 @@ export class AgencyVoyagesPage implements OnInit {
         this.buses.set(data);
         this.voyageForm.patchValue({
             date_depart: voyage.date_depart,
+            date_arrivee: voyage.date_arrivee,
+            duree_heure: voyage.duree_heure,
             trajet_id: voyage.trajet_id ?? voyage.trajet?.id,
             bus_id: voyage.bus_id ?? voyage.bus?.id,
             prix: voyage.prix,
@@ -169,6 +173,7 @@ export class AgencyVoyagesPage implements OnInit {
             statut: voyage.statut,
             gare_id: voyage.gare_id
         });
+
         this.showForm.set(true);
     });
   }
@@ -243,4 +248,26 @@ export class AgencyVoyagesPage implements OnInit {
       }
     });
   }
+
+  markAsTerminated(voyage: Voyage) {
+    Swal.fire({
+      title: 'Terminer le voyage ?',
+      text: 'Le voyage sera marqué comme terminé.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, terminer',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.agencyService.updateVoyage({ ...voyage, statut: 'termine' }).subscribe({
+          next: () => {
+            this.loadVoyages();
+            Swal.fire('Succès', 'Voyage terminé', 'success');
+          },
+          error: () => Swal.fire('Erreur', 'Impossible de terminer le voyage', 'error')
+        });
+      }
+    });
+  }
 }
+

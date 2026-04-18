@@ -1,36 +1,41 @@
 <main class="auth">
+  <div class="auth__overlay"></div>
   <section class="auth__card" aria-label="Inscription">
     <header class="auth__header">
-      <h1 class="auth__title">Inscription</h1>
-      <p class="auth__subtitle">Rejoignez <strong>{{ 'appName' }}</strong> pour vos voyages</p>
+      <div class="auth__logo">
+        <span class="logo-icon">🚍</span>
+      </div>
+      <h1 class="auth__title">Créer un compte</h1>
+      <p class="auth__subtitle">Rejoignez <strong>{{ 'CamerTrip' }}</strong> aujourd'hui</p>
     </header>
 
     <form class="auth__form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       
-      <!-- LIGNE 1 : Role & CNI -->
-      <div class="field">
-        <label class="field__label">Type de Compte</label>
-        <div class="input-container">
-          <span class="input-icon">👤</span>
-          <select formControlName="role_user" class="field__control field__control--select">
-            <option value="CLIENT">Client (Voyageur)</option>
-            <option value="PROPRIETAIRE">Propriétaire (Entreprise)</option>
-          </select>
+      <!-- Type de Compte (Pleine largeur) -->
+      <div class="field field--full mb-2">
+        <label class="field__label">Type de profil</label>
+        <div class="role-selector">
+          <label class="role-option" [class.role-option--active]="registerForm.get('role_user')?.value === 'CLIENT'">
+            <input type="radio" formControlName="role_user" value="CLIENT" class="role-radio">
+            <div class="role-icon-wrapper client-icon"><span class="role-icon">🧳</span></div>
+            <div class="role-info">
+              <span class="role-name">Voyageur</span>
+              <span class="role-desc">Pour réserver des billets</span>
+            </div>
+          </label>
+          
+          <label class="role-option" [class.role-option--active]="registerForm.get('role_user')?.value === 'PROPRIETAIRE'">
+            <input type="radio" formControlName="role_user" value="PROPRIETAIRE" class="role-radio">
+            <div class="role-icon-wrapper prop-icon"><span class="role-icon">🏢</span></div>
+            <div class="role-info">
+              <span class="role-name">Propriétaire</span>
+              <span class="role-desc">Gérer une agence de voyage</span>
+            </div>
+          </label>
         </div>
       </div>
 
-      <div class="field">
-        <label class="field__label" for="num_cni">Numero de CNI</label>
-        <div class="input-container">
-          <span class="input-icon">🆔</span>
-          <input id="num_cni" class="field__control" type="text" formControlName="num_cni" placeholder="Ex: 123456789" />
-        </div>
-        @if (shouldShowError('num_cni')) {
-        <div class="field__error">{{ errorMessage('num_cni') }}</div>
-        }
-      </div>
-
-      <!-- LIGNE 2 : Prénom & Nom -->
+      <!-- Prénom & Nom -->
       <div class="field">
         <label class="field__label" for="prenom">Prénom</label>
         <div class="input-container">
@@ -53,13 +58,12 @@
         }
       </div>
 
-      <!-- LIGNE 3 : Email & Téléphone -->
+      <!-- Email & Téléphone -->
       <div class="field">
         <label class="field__label" for="email">Email</label>
         <div class="input-container">
           <span class="input-icon">✉️</span>
-          <input id="email" class="field__control" type="email" formControlName="email" inputmode="email"
-            autocomplete="email" placeholder="votre@email.com" />
+          <input id="email" class="field__control" type="email" formControlName="email" inputmode="email" autocomplete="email" placeholder="votre@email.com" />
         </div>
         @if (shouldShowError('email')) {
         <div class="field__error">{{ errorMessage('email') }}</div>
@@ -77,7 +81,19 @@
         }
       </div>
 
-      <!-- LIGNE 4 : Date de Naissance & Sexe -->
+      <!-- CNI (Pleine largeur) -->
+      <div class="field field--full">
+        <label class="field__label" for="num_cni">Numero de CNI / Passeport</label>
+        <div class="input-container">
+          <span class="input-icon">🆔</span>
+          <input id="num_cni" class="field__control" type="text" formControlName="num_cni" placeholder="Entrez le numéro d'identification" />
+        </div>
+        @if (shouldShowError('num_cni')) {
+        <div class="field__error">{{ errorMessage('num_cni') }}</div>
+        }
+      </div>
+
+      <!-- Date de Naissance & Sexe -->
       <div class="field">
         <label class="field__label" for="date_naissance">Date de naissance</label>
         <div class="input-container">
@@ -103,13 +119,12 @@
         }
       </div>
 
-      <!-- LIGNE 5 : Password & Confirmation -->
+      <!-- Password & Confirmation -->
       <div class="field">
         <label class="field__label" for="password">Mot de passe</label>
         <div class="input-container">
           <span class="input-icon">🔒</span>
-          <input id="password" class="field__control" type="password" formControlName="password"
-            autocomplete="new-password" placeholder="••••••••" />
+          <input id="password" class="field__control" type="password" formControlName="password" autocomplete="new-password" placeholder="••••••••" />
         </div>
         @if (shouldShowError('password')) {
         <div class="field__error">{{ errorMessage('password') }}</div>
@@ -117,11 +132,10 @@
       </div>
 
       <div class="field">
-        <label class="field__label" for="password_confirmation">Confirmation</label>
+        <label class="field__label" for="password_confirmation">Confirmer le mot de passe</label>
         <div class="input-container">
           <span class="input-icon">✅</span>
-          <input id="password_confirmation" class="field__control" type="password" formControlName="password_confirmation"
-            autocomplete="new-password" placeholder="••••••••" />
+          <input id="password_confirmation" class="field__control" type="password" formControlName="password_confirmation" autocomplete="new-password" placeholder="••••••••" />
         </div>
         @if (shouldShowError('password_confirmation')) {
         <div class="field__error">{{ errorMessage('password_confirmation') }}</div>
@@ -129,12 +143,24 @@
       </div>
 
       <div class="auth__actions">
-        <gev-button type="submit" variant="auth__primary" [loading]="isLoading()" loadingText="Inscription en cours...">
-          S'inscrire
-        </gev-button>
+        <button type="submit" class="auth__primary" [disabled]="registerForm.invalid || isLoading()">
+          @if (!isLoading()) {
+          <span class="btn-content">
+            Créer mon compte <span class="arrow">→</span>
+          </span>
+          }
+          @if (isLoading()) {
+          <span class="btn-spinner"></span>
+          }
+        </button>
+
+
+        <div class="auth__divider">
+          <span>OU</span>
+        </div>
 
         <div class="auth__footer">
-          Vous avez déjà un compte ? <a routerLink="/auth/login">Se connecter</a>
+          Vous avez déjà un compte ? <a routerLink="/auth/login" class="login-link">Connectez-vous</a>
         </div>
       </div>
 

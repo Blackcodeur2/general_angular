@@ -4,7 +4,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
 import { Route } from '../../../models/route';
-import { Gare } from '../../../models/gare';
+import { Ville } from '../../../models/ville';
+
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import Swal from 'sweetalert2';
@@ -23,7 +24,7 @@ export class AgencyRoutesPage implements OnInit {
   private authService = inject(AuthService);
 
   routesList = signal<Route[]>([]);
-  gares = signal<Gare[]>([]);
+  villes = signal<Ville[]>([]);
   showForm = signal(false);
   isSubmitting = signal(false);
   isEditing = signal(false);
@@ -45,12 +46,13 @@ export class AgencyRoutesPage implements OnInit {
   totalClassique = computed(() => this.routesList().filter(r => r.type_trajet === 'classique').length);
 
   routeForm = this.fb.group({
-    depart: ['', Validators.required],
-    arrivee: ['', Validators.required],
+    ville_depart: [null as number | null, Validators.required],
+    ville_arrive: [null as number | null, Validators.required],
     prix: [0, [Validators.required, Validators.min(100)]],
     type_trajet: ['', [Validators.required]],
     gare_id: [null as number | null | undefined, [Validators.required]]
   });
+
 
   ngOnInit() {
     const user = this.authService.currentUser();
@@ -58,17 +60,18 @@ export class AgencyRoutesPage implements OnInit {
       this.routeForm.patchValue({ gare_id: user.gare_id });
     }
     this.loadRoutes();
-    this.loadGares();
+    this.loadVilles();
   }
 
-  loadGares() {
-    this.agencyService.getGares().subscribe({
-      next: (data: Gare[]) => {
-        this.gares.set(data || []);
+  loadVilles() {
+    this.agencyService.getVilles().subscribe({
+      next: (data: Ville[]) => {
+        this.villes.set(data || []);
       },
-      error: () => this.gares.set([])
+      error: () => this.villes.set([])
     });
   }
+
 
   loadRoutes() {
     this.agencyService.getRoutes().subscribe({
@@ -92,14 +95,15 @@ export class AgencyRoutesPage implements OnInit {
     this.isEditing.set(true);
     this.editId.set(route.id || null);
     this.routeForm.patchValue({
-      depart: route.depart_id as any,
-      arrivee: route.arrivee_id as any,
+      ville_depart: route.ville_depart_id ?? (route as any).ville_depart?.id,
+      ville_arrive: route.ville_arrive_id ?? (route as any).ville_arrive?.id,
       prix: route.prix,
       type_trajet: route.type_trajet,
       gare_id: route.gare_id
     });
     this.showForm.set(true);
   }
+
 
   onSubmit() {
     if (this.routeForm.invalid) return;

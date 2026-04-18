@@ -20,9 +20,14 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label>Ville</label>
-            <input type="text" formControlName="ville" placeholder="Ville" required />
-          </div>
+        <label>Ville</label>
+        <select formControlName="ville_id" class="form-control">
+          <option value="0">-- Sélectionner une ville --</option>
+          @for (ville of villes(); track ville.id) {
+            <option [value]="ville.id">{{ ville.nom }} ({{ ville.region }})</option>
+          }
+        </select>
+      </div>
           <div class="form-group">
             <label>Quartier</label>
             <input type="text" formControlName="quartier" placeholder="Quartier" required />
@@ -60,7 +65,8 @@
       @for (gare of gares(); track gare.id) {
         <div class="gare-card">
           <div class="card-header">
-            <h3>{{ gare.ville }}</h3>
+            <h3>{{ gare.ville?.nom || '...' }}</h3>
+
             <div class="card-actions">
               <button class="icon-btn" (click)="openForm(gare)" title="Modifier">
                 <mat-icon>edit</mat-icon>

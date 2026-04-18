@@ -28,10 +28,11 @@ export interface CreateGerantPayload {
 
 export interface CreateGarePayload {
   agence_id: number;
-  ville: string;
+  ville_id: number;
   quartier: string;
   telephone: string;
 }
+
 
 @Injectable({ providedIn: 'root' })
 export class ProprietaireService {

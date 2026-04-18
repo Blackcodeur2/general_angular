@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ProprietaireService } from '../../../services/proprietaire/proprietaire.service';
+import { AgencyOpsService } from '../../../services/agency/agency-ops.service';
 import { Gare } from '../../../models/gare';
+import { Ville } from '../../../models/ville';
 import Swal from 'sweetalert2';
 
 type FormMode = 'none' | 'form';
@@ -17,9 +19,14 @@ type FormMode = 'none' | 'form';
 })
 export class GaresPage implements OnInit {
   private proprietaireService = inject(ProprietaireService);
+  private agencyService = inject(AgencyOpsService);
   private fb = inject(FormBuilder);
 
   gares = signal<Gare[]>([]);
+  villes = signal<Ville[]>([]);
+  // Ville list for the form select
+
+
   isLoading = signal(true);
   isSubmitting = signal(false);
   formMode = signal<FormMode>('none');
@@ -27,14 +34,24 @@ export class GaresPage implements OnInit {
 
   gareForm = this.fb.nonNullable.group({
     agence_id: [0, Validators.required],
-    ville: ['', Validators.required],
+    ville_id: [0, Validators.required],
     quartier: ['', Validators.required],
     telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{9,15}$/)]],
   });
 
+
   ngOnInit() {
     this.loadGares();
+    this.loadVilles();
   }
+
+  loadVilles() {
+    this.agencyService.getVilles().subscribe({
+      next: (data) => this.villes.set(data),
+      error: () => this.villes.set([])
+    });
+  }
+
 
   loadGares() {
     this.isLoading.set(true);
@@ -57,10 +74,11 @@ export class GaresPage implements OnInit {
       this.editingGare.set(gare);
       this.gareForm.patchValue({
         agence_id: gare.agence_id,
-        ville: gare.ville,
+        ville_id: gare.ville_id,
         quartier: gare.quartier,
         telephone: gare.telephone,
       });
+
     } else {
       this.editingGare.set(null);
       this.gareForm.reset();

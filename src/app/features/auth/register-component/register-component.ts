@@ -1,5 +1,7 @@
 import { inject, ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
@@ -7,7 +9,8 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 
 @Component({
   selector: 'app-register-component',
-  imports: [ReactiveFormsModule, ButtonComponent, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+
   templateUrl: './register-component.html',
   styleUrl: './register-component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

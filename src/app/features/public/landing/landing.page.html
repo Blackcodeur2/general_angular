@@ -1,17 +1,25 @@
 <!-- ═══════════════════════════════════════════════════════ -->
 <!--  NAVBAR                                                 -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<nav class="navbar" id="top">
-  <a routerLink="/" class="navbar__brand">
-    <span class="brand-icon">🚍</span>
-    <span>GEV <strong>Connect</strong></span>
-  </a>
-  <div class="navbar__links">
-    <a href="#fonctionnement" class="navbar__link">Comment ça marche</a>
-    <a href="#agences" class="navbar__link">Agences</a>
-    <a href="#pour-proprietaires" class="navbar__link">Ouvrir une agence</a>
-    <a routerLink="/auth/login" class="btn-login">Connexion</a>
-    <a routerLink="/auth/register" class="btn-register">S'inscrire</a>
+<nav class="navbar" id="top" [class.scrolled]="isScrolled">
+  <div class="navbar__container">
+    <a routerLink="/" class="navbar__brand">
+      <div class="brand-logo-wrap">
+        <span class="brand-icon">🚍</span>
+      </div>
+      <span class="brand-name">Camer<strong>Trip</strong></span>
+    </a>
+    
+    <div class="navbar__center">
+      <a href="#fonctionnement" class="navbar__link">Fonctionnement</a>
+      <a href="#agences" class="navbar__link">Partenaires</a>
+      <a href="#pour-proprietaires" class="navbar__link">Pour Agences</a>
+    </div>
+
+    <div class="navbar__actions">
+      <a routerLink="/auth/login" class="btn-ghost">Connexion</a>
+      <a routerLink="/auth/register" class="btn-primary">Créer un compte</a>
+    </div>
   </div>
 </nav>
 
@@ -19,199 +27,199 @@
 <!--  HERO                                                   -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <header class="hero">
-  <div class="hero__overlay"></div>
-  <div class="hero__content">
-    <div class="hero__badge">🇨🇲 La plateforme #1 du transport au Cameroun</div>
-    <h1 class="hero__title">
-      Voyagez partout au Cameroun,<br>
-      en toute <span class="hero__accent">confiance</span>
-    </h1>
-    <p class="hero__subtitle">
-      GEV Connect connecte des dizaines d'agences de transport à travers le Cameroun.
-      Trouvez votre trajet, choisissez votre agence et réservez en quelques secondes.
-    </p>
+  <!-- Dynamic Orbs Background -->
+  <div class="hero-bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
 
-    <!-- Search Bar -->
-    <div class="search-bar">
-      <div class="search-field">
-        <span class="search-icon">📍</span>
-        <div class="search-input-group">
-          <label>Départ</label>
-          <input type="text" placeholder="Yaoundé, Douala...">
-        </div>
+  <div class="hero__container">
+    <div class="hero__content">
+      <div class="hero__badge">
+        <span class="badge-dot"></span>
+        Plateforme #1 du transport routier au Cameroun
       </div>
-      <div class="search-divider"></div>
-      <div class="search-field">
-        <span class="search-icon">🏁</span>
-        <div class="search-input-group">
-          <label>Destination</label>
-          <input type="text" placeholder="Bafoussam, Bamenda...">
-        </div>
-      </div>
-      <div class="search-divider"></div>
-      <div class="search-field">
-        <span class="search-icon">📅</span>
-        <div class="search-input-group">
-          <label>Date</label>
-          <input type="date">
-        </div>
-      </div>
-      <a routerLink="/auth/register" class="search-btn">Trouver un voyage</a>
-    </div>
+      <h1 class="hero__title">
+        Voyagez à travers le pays <br>
+        avec une <span class="hero__accent">simplicité absolue</span>
+      </h1>
+      <p class="hero__subtitle">
+        CamerTrip connecte des dizaines d'agences de transport de la place. Trouvez votre trajet, comparez les prix, et réservez instantanément en payant avec Mobile Money.
+      </p>
 
-    <!-- Stats row -->
-    <div class="hero__stats">
-      <div class="stat">
-        <span class="stat__value">50+</span>
-        <span class="stat__label">Agences partenaires</span>
-      </div>
-      <div class="stat__sep"></div>
-      <div class="stat">
-        <span class="stat__value">200+</span>
-        <span class="stat__label">Destinations</span>
-      </div>
-      <div class="stat__sep"></div>
-      <div class="stat">
-        <span class="stat__value">10K+</span>
-        <span class="stat__label">Voyageurs / mois</span>
-      </div>
-      <div class="stat__sep"></div>
-      <div class="stat">
-        <span class="stat__value">10 Régions</span>
-        <span class="stat__label">Couverture nationale</span>
+      <div class="hero__stats">
+        <div class="stat-item">
+          <strong>50+</strong>
+          <span>Agences partenaires</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <strong>200+</strong>
+          <span>Villes desservies</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <strong>10k+</strong>
+          <span>Voyageurs mensuels</span>
+        </div>
       </div>
     </div>
   </div>
 </header>
 
 <!-- ═══════════════════════════════════════════════════════ -->
+<!--  SEARCH FLOATING WIDGET                                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="search-widget-wrapper">
+  <div class="search-bar">
+    <div class="search-field group">
+      <div class="search-icon">📍</div>
+      <div class="search-input-group">
+        <label>Ville de Départ</label>
+        <input type="text" placeholder="Ex: Yaoundé, Douala...">
+      </div>
+    </div>
+    
+    <div class="search-divider"></div>
+    
+    <div class="search-field group">
+      <div class="search-icon">🏁</div>
+      <div class="search-input-group">
+        <label>Destination</label>
+        <input type="text" placeholder="Ex: Bafoussam, Bamenda...">
+      </div>
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field group">
+      <div class="search-icon">📅</div>
+      <div class="search-input-group">
+        <label>Date de départ</label>
+        <input type="date">
+      </div>
+    </div>
+
+    <a routerLink="/auth/register" class="search-btn">
+      <span class="btn-text">Rechercher</span>
+      <span class="btn-icon">→</span>
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
 <!--  COMMENT ÇA MARCHE                                      -->
 <!-- ═══════════════════════════════════════════════════════ -->
 <section id="fonctionnement" class="how-it-works">
   <div class="container">
-    <div class="section-label">Simple & Rapide</div>
-    <h2 class="section-title">Réservez en 3 étapes</h2>
-    <p class="section-subtitle">Pas besoin de vous déplacer en gare. Tout se passe ici.</p>
+    <div class="section-header">
+      <div class="section-label">Simplicité d'utilisation</div>
+      <h2 class="section-title">Comment ça marche ?</h2>
+      <p class="section-subtitle">Oubliez les longues files d'attente en gare. Votre billet s'achète désormais directement depuis votre smartphone.</p>
+    </div>
 
     <div class="steps-grid">
       <div class="step-card">
-        <div class="step-number">01</div>
-        <div class="step-icon">🔍</div>
-        <h3>Cherchez votre trajet</h3>
-        <p>Entrez votre ville de départ, votre destination et la date de voyage. Nous vous montrons toutes les agences disponibles.</p>
+        <div class="step-icon-wrap">
+          <span class="step-icon">🔍</span>
+          <div class="step-number">01</div>
+        </div>
+        <h3>Recherchez le trajet</h3>
+        <p>Sélectionnez votre ville de départ et votre destination pour afficher instantanément toutes les agences et horaires disponibles.</p>
       </div>
-      <div class="step-connector">→</div>
+      
+      <div class="step-connector"></div>
+      
       <div class="step-card">
-        <div class="step-number">02</div>
-        <div class="step-icon">💳</div>
-        <h3>Choisissez & Payez</h3>
-        <p>Comparez les agences, les horaires et les prix. Payez en ligne via Orange Money, MTN Mobile Money ou carte bancaire.</p>
+        <div class="step-icon-wrap">
+          <span class="step-icon">💳</span>
+          <div class="step-number">02</div>
+        </div>
+        <h3>Réservez & Payez</h3>
+        <p>Comparez les offres, choisissez le bus qui vous convient et payez de façon sécurisée via Orange Money ou MTN MoMo.</p>
       </div>
-      <div class="step-connector">→</div>
+
+      <div class="step-connector"></div>
+
       <div class="step-card">
-        <div class="step-number">03</div>
-        <div class="step-icon">🎫</div>
-        <h3>Montez à bord</h3>
-        <p>Recevez votre billet électronique et présentez-le à l'agent. Aucune impression nécessaire.</p>
+        <div class="step-icon-wrap">
+          <span class="step-icon">🎫</span>
+          <div class="step-number">03</div>
+        </div>
+        <h3>Montez à bord !</h3>
+        <p>Recevez votre billet électronique par SMS et mail. Présentez-le lors de l'embarquement pour monter à bord.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════ -->
-<!--  AGENCES PARTENAIRES                                    -->
+<!--  APP FEATURES SHOWCASE                                  -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<section id="agences" class="agencies-section">
+<section id="features" class="features-showcase">
   <div class="container">
-    <div class="section-label">Réseau National</div>
-    <h2 class="section-title">Des dizaines d'agences à votre service</h2>
-    <p class="section-subtitle">Des acteurs reconnus du transport routier au Cameroun, tous vérifiés sur notre plateforme.</p>
-
-    <div class="agencies-grid">
-      <div class="agency-card">
-        <div class="agency-logo">🚌</div>
-        <h4>Express Voyages</h4>
-        <p>Yaoundé · Douala · Bafoussam</p>
-        <span class="agency-tag">Vérifié ✓</span>
-      </div>
-      <div class="agency-card">
-        <div class="agency-logo">🚌</div>
-        <h4>Touristique Express</h4>
-        <p>Grand Nord · Adamaoua</p>
-        <span class="agency-tag">Vérifié ✓</span>
-      </div>
-      <div class="agency-card">
-        <div class="agency-logo">🚌</div>
-        <h4>United Express</h4>
-        <p>Bamenda · Buea · Limbe</p>
-        <span class="agency-tag">Vérifié ✓</span>
-      </div>
-      <div class="agency-card agency-card--more">
-        <div class="agency-logo">🏢</div>
-        <h4>+ 47 agences</h4>
-        <p>À travers tout le pays</p>
-        <a routerLink="/auth/register" class="agency-cta">Voir toutes →</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════ -->
-<!--  POURQUOI CHOISIR GEV                                   -->
-<!-- ═══════════════════════════════════════════════════════ -->
-<section id="features" class="features-section">
-  <div class="container">
-    <div class="features-layout">
-      <div class="features-text">
-        <div class="section-label">Nos Engagements</div>
-        <h2 class="section-title">Pourquoi voyager avec GEV Connect ?</h2>
+    <div class="showcase-content">
+      <div class="showcase-text">
+        <div class="section-label">Fonctionnalités Clés</div>
+        <h2 class="section-title">Tout pour faciliter vos déplacements</h2>
+        
         <div class="feature-list">
           <div class="feature-item">
             <div class="feature-icon">🛡️</div>
-            <div>
-              <h4>Agences certifiées</h4>
-              <p>Toutes les agences sur notre plateforme passent par un processus de vérification rigoureux avant d'être publiées.</p>
+            <div class="feature-details">
+              <h4>Agences Vérifiées & Certifiées</h4>
+              <p>Chaque agence présente sur CamerTrip fait l'objet d'un contrôle rigoureux de ses assurances et autorisations.</p>
             </div>
           </div>
+          
           <div class="feature-item">
-            <div class="feature-icon">📱</div>
-            <div>
-              <h4>Paiement mobile</h4>
-              <p>Orange Money, MTN MoMo, cartes bancaires. Payez comme vous le souhaitez, depuis votre téléphone.</p>
+            <div class="feature-icon">⚡</div>
+            <div class="feature-details">
+              <h4>Billets Électroniques Immédiats</h4>
+              <p>Ne prenez plus le risque de perdre votre billet papier. Tout est sécurisé dans votre compte et disponible hors connexion.</p>
             </div>
           </div>
+
           <div class="feature-item">
             <div class="feature-icon">🔔</div>
-            <div>
-              <h4>Alertes & Notifications</h4>
-              <p>Soyez informés de l'heure de départ, des retards éventuels et de vos confirmations de places.</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🗺️</div>
-            <div>
-              <h4>Couverture nationale</h4>
-              <p>Yaoundé, Douala, Bafoussam, Bamenda, Garoua, Maroua, Bertoua... Tous les trajets inter-régionaux.</p>
+            <div class="feature-details">
+              <h4>Notifications en temps réel</h4>
+              <p>Recevez une alerte en cas de retard, modification d'horaire ou pour vous rappeler votre l'heure de départ.</p>
             </div>
           </div>
         </div>
       </div>
-      <div class="features-visual">
-        <div class="visual-card">
-          <div class="visual-route">
-            <div class="route-stop"><span class="stop-dot stop-dot--start"></span>Yaoundé</div>
-            <div class="route-line"></div>
-            <div class="route-stop"><span class="stop-dot stop-dot--mid"></span>Bafoussam</div>
-            <div class="route-line"></div>
-            <div class="route-stop"><span class="stop-dot stop-dot--end"></span>Bamenda</div>
+
+      <div class="showcase-visual">
+        <div class="floating-ticket glow-effect">
+          <div class="ticket-header">
+            <span class="ticket-agency">Touristique Express</span>
+            <span class="ticket-date">12 Aout 2026</span>
           </div>
-          <div class="visual-info">
-            <div class="visual-info-row"><span>Agence</span><strong>Express Voyages</strong></div>
-            <div class="visual-info-row"><span>Départ</span><strong>06:30</strong></div>
-            <div class="visual-info-row"><span>Durée</span><strong>~5h30</strong></div>
-            <div class="visual-info-row"><span>Prix</span><strong class="price">5 000 XAF</strong></div>
+          <div class="ticket-route">
+            <div class="city">
+              <span class="city-name">Yaoundé</span>
+              <span class="time">06:30</span>
+            </div>
+            <div class="route-line-visual">
+              <span class="bus-icon-small">🚌</span>
+            </div>
+            <div class="city right">
+              <span class="city-name">Douala</span>
+              <span class="time">10:45</span>
+            </div>
           </div>
-          <a routerLink="/auth/register" class="visual-btn">Réserver cette place →</a>
+          <div class="ticket-footer">
+            <div class="ticket-info">
+              <span class="label">Siège</span>
+              <span class="value accent">24A</span>
+            </div>
+            <div class="ticket-info right">
+              <span class="label">Statut</span>
+              <span class="badge badge-success">Confirmé</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -219,50 +227,29 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════ -->
-<!--  CTA PROPRIETAIRE                                       -->
+<!--  POUR LES AGENCES                                       -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<section id="pour-proprietaires" class="owner-section">
-  <div class="container">
-    <div class="owner-layout">
+<section id="pour-proprietaires" class="owner-cta">
+  <div class="container relative">
+    <div class="owner-card glow-effect">
+      <div class="owner-bg-pattern"></div>
+      
       <div class="owner-content">
-        <div class="section-label owner-label">Vous êtes propriétaire d'agence ?</div>
-        <h2 class="section-title owner-title">Développez votre activité avec GEV Connect</h2>
-        <p>Rejoignez notre réseau et donnez à votre agence une visibilité nationale. Gérez vos lignes, vos bus, votre personnel et vos réservations depuis un seul tableau de bord.</p>
-
-        <ul class="owner-benefits">
-          <li>✅ Gestion multi-agences depuis un seul compte</li>
-          <li>✅ Publication illimitée de voyages et lignes</li>
-          <li>✅ Paiements en ligne intégrés</li>
-          <li>✅ Suivi en temps réel des réservations</li>
-          <li>✅ Gestion des gérants et du personnel</li>
-        </ul>
-
+        <h2 class="owner-title">Vous gérez une agence de transport ?</h2>
+        <p class="owner-desc">
+          CamerTrip vous offre un système de gestion complet pour vos lignes, vos bus, votre personnel et vos billets avec paiements intégrés. Rejoignez le réseau national le plus performant.
+        </p>
+        
+        <div class="owner-grid">
+          <div class="owner-perk">✔️ Tableaux de bord & Statistiques</div>
+          <div class="owner-perk">✔️ Gestion Multi-Gares intégrée</div>
+          <div class="owner-perk">✔️ Module de gestion des Colis</div>
+          <div class="owner-perk">✔️ Export automatique PDF</div>
+        </div>
+        
         <div class="owner-actions">
-          <a routerLink="/auth/register" class="btn-owner-primary">Créer mon compte propriétaire</a>
-          <a href="#contact" class="btn-owner-secondary">En savoir plus</a>
-        </div>
-      </div>
-      <div class="owner-steps">
-        <div class="owner-step">
-          <div class="owner-step__num">1</div>
-          <div>
-            <strong>Inscription gratuite</strong>
-            <p>Créez votre compte en moins de 2 minutes en choisissant le rôle "Propriétaire".</p>
-          </div>
-        </div>
-        <div class="owner-step">
-          <div class="owner-step__num">2</div>
-          <div>
-            <strong>Vérification KYC</strong>
-            <p>Soumettez vos documents d'identité pour valider votre compte.</p>
-          </div>
-        </div>
-        <div class="owner-step">
-          <div class="owner-step__num">3</div>
-          <div>
-            <strong>Ajoutez vos agences</strong>
-            <p>Configurez vos agences, vos lignes, vos bus et commencez à recevoir des réservations.</p>
-          </div>
+          <a routerLink="/auth/register" class="btn-owner">Devenir Partenaire</a>
+          <a href="#" class="btn-owner-ghost">Parler à notre équipe</a>
         </div>
       </div>
     </div>
@@ -272,48 +259,54 @@
 <!-- ═══════════════════════════════════════════════════════ -->
 <!--  FOOTER                                                 -->
 <!-- ═══════════════════════════════════════════════════════ -->
-<footer class="footer" id="contact">
-  <div class="footer__content">
-    <div class="footer__brand">
-      <div class="footer__logo"><span>🚍</span> GEV Connect</div>
-      <p>La plateforme de référence du transport routier inter-régional au Cameroun.</p>
-      <div class="footer__socials">
-        <a href="#" aria-label="Facebook">📘</a>
-        <a href="#" aria-label="Twitter">🐦</a>
-        <a href="#" aria-label="WhatsApp">📲</a>
+<footer class="modern-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand-logo">🚍 CamerTrip</div>
+        <p>L'application qui modernise le transport inter-régional au Cameroun. Voyages plus sûrs, réservations plus rapides.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">FB</a>
+          <a href="#" class="social-btn">TW</a>
+          <a href="#" class="social-btn">IG</a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <h4>Voyageurs</h4>
+        <ul>
+          <li><a routerLink="/auth/register">Créer un compte</a></li>
+          <li><a href="#">Trouver un trajet</a></li>
+          <li><a href="#">Support Voyageur</a></li>
+          <li><a href="#">FAQ & Aide</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Partenaires</h4>
+        <ul>
+          <li><a href="#pour-proprietaires">Ouvrir une agence</a></li>
+          <li><a routerLink="/auth/register">Espace Partenaire</a></li>
+          <li><a href="#">Documentation API</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Nous contacter</h4>
+        <ul>
+          <li><strong>📍</strong> Yaoundé, Cameroun</li>
+          <li><strong>📞</strong> +237 600 00 00 00</li>
+          <li><strong>✉️</strong> infos@camertrip.cm</li>
+        </ul>
       </div>
     </div>
-
-    <div class="footer__links">
-      <h4>Voyageurs</h4>
-      <ul>
-        <li><a routerLink="/auth/register">Créer un compte</a></li>
-        <li><a routerLink="/auth/login">Se connecter</a></li>
-        <li><a href="#">Suivre une réservation</a></li>
-        <li><a href="#">FAQ</a></li>
-      </ul>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2026 CamerTrip. Tous droits réservés.</p>
+      <div class="footer-legal">
+        <a href="#">Conditions & Termes</a>
+        <a href="#">Mentions Légales</a>
+      </div>
     </div>
-
-    <div class="footer__links">
-      <h4>Agences</h4>
-      <ul>
-        <li><a routerLink="/auth/register">Rejoindre le réseau</a></li>
-        <li><a href="#pour-proprietaires">Comment ça marche</a></li>
-        <li><a href="#">Support partenaires</a></li>
-      </ul>
-    </div>
-
-    <div class="footer__links">
-      <h4>Contact</h4>
-      <ul>
-        <li>📍 Yaoundé, Cameroun</li>
-        <li>📞 +237 6xx xxx xxx</li>
-        <li>✉️ contact&#64;gev.cm</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="footer__bottom">
-    <p>&copy; 2026 GEV Connect — Plateforme de transport routier au Cameroun. Tous droits réservés.</p>
   </div>
 </footer>

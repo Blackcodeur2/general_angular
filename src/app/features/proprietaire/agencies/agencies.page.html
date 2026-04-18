@@ -95,10 +95,15 @@
           <label for="gare-ville">Ville *</label>
           <div class="input-wrap">
             <mat-icon>location_city</mat-icon>
-            <input id="gare-ville" type="text" formControlName="ville" placeholder="Ex: Yaoundé">
+            <select id="gare-ville" formControlName="ville_id" class="form-control">
+              <option value="0">-- Sélectionner une ville --</option>
+              @for (ville of villes(); track ville.id) {
+                <option [value]="ville.id">{{ ville.nom }} ({{ ville.region }})</option>
+              }
+            </select>
           </div>
-          @if (shouldShowError('gare', 'ville')) {
-            <span class="field-error">{{ errorMessage('gare', 'ville') }}</span>
+          @if (shouldShowError('gare', 'ville_id')) {
+            <span class="field-error">{{ errorMessage('gare', 'ville_id') }}</span>
           }
         </div>
 
@@ -208,7 +213,8 @@
                 <div class="gare-item">
                   <mat-icon>location_on</mat-icon>
                   <div>
-                    <strong>{{ gare.ville }}</strong> — {{ gare.adresse }}
+                    <strong>{{ gare.ville?.nom || '...' }}</strong> — {{ gare.adresse }}
+
                     <span class="gare-tel">{{ gare.telephone }}</span>
                   </div>
                 </div>

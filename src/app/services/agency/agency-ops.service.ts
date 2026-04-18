@@ -7,6 +7,7 @@ import { Voyage } from '../../models/voyage';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../models/user';
 import { Gare } from '../../models/gare';
+import { Ville } from '../../models/ville';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -55,6 +56,18 @@ export class AgencyOpsService {
         return this.http.get<{ statut: boolean; data: Gare[] }>(`${this.API}/chef-agence/gares`)
             .pipe(map((response: { statut: boolean; data: Gare[] }) => response.data));
     }
+
+    // Villes
+    getVilles(): Observable<Ville[]> {
+        return this.http.get<{ statut: boolean; data: Ville[] }>(`${this.API}/villes`)
+            .pipe(map(response => response.data));
+    }
+
+    createVille(ville: Partial<Ville>): Observable<Ville> {
+        return this.http.post<{ statut: boolean; data: Ville }>(`${this.API}/villes`, ville)
+            .pipe(map(response => response.data));
+    }
+
 
     // Staff
     getStaff(): Observable<User[]> {

@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../Laravel/transport_net_backend"
+		}
+	],
+	"settings": {}
+}
