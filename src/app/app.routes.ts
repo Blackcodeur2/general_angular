@@ -79,6 +79,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/kyc/admin-kyc.page').then(m => m.AdminKycPage),
       },
       {
+        path: 'villes',
+        loadComponent: () => import('./features/admin/villes/admin-ville.page').then(m => m.AdminVillesPage),
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./features/profile/profile.page').then(m => m.ProfilePage),
       },

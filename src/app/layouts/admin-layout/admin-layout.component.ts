@@ -21,6 +21,7 @@ export class AdminLayoutComponent implements OnInit {
     menuItems = [
         { label: 'Tableau de bord', icon: 'dashboard', route: '/admin/dashboard' },
         { label: 'Vérifications KYC', icon: 'verified_user', route: '/admin/kyc' },
+        { label: 'Villes', icon: 'location_city', route: '/admin/villes' },
         { label: 'Agences', icon: 'business', route: '/admin/agencies' },
         { label: 'Utilisateurs', icon: 'people', route: '/admin/users' },
         { label: 'Mon profil', icon: 'person', route: '/admin/profile' },

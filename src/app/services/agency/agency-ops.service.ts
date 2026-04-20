@@ -64,8 +64,17 @@ export class AgencyOpsService {
     }
 
     createVille(ville: Partial<Ville>): Observable<Ville> {
-        return this.http.post<{ statut: boolean; data: Ville }>(`${this.API}/villes`, ville)
+        return this.http.post<{ statut: boolean; data: Ville }>(`${this.API}/admin/villes`, ville)
             .pipe(map(response => response.data));
+    }
+
+    updateVille(ville: Partial<Ville>): Observable<Ville> {
+        return this.http.put<{ statut: boolean; data: Ville }>(`${this.API}/admin/villes/${ville.id}`, ville)
+            .pipe(map(response => response.data));
+    }
+
+    deleteVille(id: number): Observable<any> {
+        return this.http.delete<any>(`${this.API}/admin/villes/${id}`);
     }
 
 
