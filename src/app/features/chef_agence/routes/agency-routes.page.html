@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="stats-bar animate-fade-in">
+    <!--<div class="stats-bar animate-fade-in">
         <div class="stat-card">
             <div class="icon vip"><mat-icon>star</mat-icon></div>
             <div class="info">
@@ -38,7 +38,7 @@
                 <span class="value">{{ routesList().length }}</span>
             </div>
         </div>
-    </div>
+    </div>-->
 
     @if (showForm()) {
     <div class="card form-card animate-fade-in">
@@ -68,6 +68,10 @@
                 <div class="form-group">
                     <label>Prix (XAF)</label>
                     <input type="number" formControlName="prix" class="form-control" placeholder="Ex: 5000" />
+                </div>
+                <div class="form-group">
+                    <label>Distance (Km)</label>
+                    <input type="number" formControlName="distance_km" class="form-control" placeholder="Ex: 30" />
                 </div>
                 <div class="form-group">
                     <label>Type de Trajet</label>
@@ -107,7 +111,7 @@
                             <div class="route-display">
                                 <div class="city from">
                                     <span class="label">Départ</span>
-                                    <span class="name">{{ route.ville_depart?.nom || route.depart?.nom || '...' }}</span>
+                                    <span class="name">{{ route.depart || '...' }}</span>
                                 </div>
                                 <div class="path-visual">
                                     <div class="line"></div>
@@ -115,13 +119,13 @@
                                 </div>
                                 <div class="city to">
                                     <span class="label">Arrivée</span>
-                                    <span class="name">{{ route.ville_arrivee?.nom || route.arrivee?.nom || '...' }}</span>
+                                    <span class="name">{{ route.arrivee || '...' }}</span>
                                 </div>
                             </div>
                         </td>
                         <td>
                             <div class="distance-info">
-                                <mat-icon>more_horiz</mat-icon>
+                                <mat-icon>route</mat-icon>
                                 <span>{{ route.distance_km || '--' }} Km</span>
                             </div>
                         </td>

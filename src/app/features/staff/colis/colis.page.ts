@@ -75,7 +75,8 @@ import Swal from 'sweetalert2';
                             <span class="trip-id" style="font-size: 0.8rem; color: #64748b;">
                                 Voyage #{{ colis.voyage.num_voyage || colis.voyage.id }}<br/>
                                 <span style="color: #1e293b; font-weight: 600;">
-                                    {{ colis.gareProvenance?.ville }} &rarr; {{ colis.gareDestination?.ville }}
+                                    {{ colis.gareProvenance?.ville?.nom || colis.gareProvenance?.nom || '...' }} &rarr; 
+                                    {{ colis.gareDestination?.ville?.nom || colis.gareDestination?.nom || '...' }}
                                 </span>
                             </span>
                         </div>
@@ -178,8 +179,10 @@ import Swal from 'sweetalert2';
                         <select formControlName="voyage_id" (change)="onVoyageChange()">
                             <option value="">Sélectionnez le voyage prévu</option>
                             <option *ngFor="let m of availableVoyages()" [value]="m.id">
-                                Voyage #{{ m.num_voyage || m.id }} : {{ m.trajet?.gareDepart?.ville }} &rarr; {{ m.trajet?.gareArrivee?.ville }}
-                                ({{ m.date_depart | date:'dd/MM HH:mm' }}) - Bus: {{ m.bus?.immatriculation || 'Non spécifié' }}
+                                Voyage #{{ m.num_voyage || m.id }} : 
+                                {{ m.trajet?.ville_depart_nom || m.trajet?.villeDepart?.nom || '...' }} &rarr; 
+                                {{ m.trajet?.ville_arrive_nom || m.trajet?.villeArrivee?.nom || '...' }}
+                                ({{ m.date_depart | date:'dd/MM HH:mm' }})
                             </option>
                         </select>
                     </div>
@@ -389,9 +392,14 @@ export class ColisManagementPage implements OnInit {
     const selectedVoyage = this.availableVoyages().find(v => v.id == voyageId);
     
     if (selectedVoyage) {
-        // Derive destination gare ID from the voyage's trajet's arrival gare
-        // Some APIs return trajet.arrivee_id, others trajet.gareArrivee.id
-        const destinationId = selectedVoyage.trajet?.arrivee_id || selectedVoyage.trajet?.gareArrivee?.id;
+        // Le backend retourne souvent gare_id dans le trajet ou l'ID de la gare d'arrivée directement
+        // Dans notre cas, nous avons besoin de la gare d'arrivée pour la destination du colis.
+        // Si le trajet est de A -> B, la destination du colis est la gare de B.
+        // Note: Dans ce système, la destination est liée à la gare de destination du trajet.
+        const destinationId = selectedVoyage.trajet?.gare_id; // À vérifier si c'est bien la gare de destination
+        
+        // Si le trajet n'a pas explicitement d'ID de gare d'arrivée, on peut avoir besoin d'une autre logique
+        // Pour l'instant, on suppose que le trajet sélectionné définit la destination.
         if (destinationId) {
             this.colisForm.patchValue({ destination: destinationId });
         }

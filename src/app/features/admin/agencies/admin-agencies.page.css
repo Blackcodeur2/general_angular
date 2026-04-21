@@ -1,6 +1,6 @@
 .page-container {
     padding: 1rem 0;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'monospace', system-ui, sans-serif;
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -26,23 +26,23 @@
 .page-title {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #111827;
+    color: #f8fafc;
     margin: 0 0 0.25rem 0;
     letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-    color: #6B7280;
+    color: #64748b;
     font-size: 0.95rem;
     margin: 0;
 }
 
 .card {
-    background: white;
+    background: #1e293b;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     overflow: hidden;
-    border: 1px solid #F3F4F6;
+    border: 1px solid #334155;
 }
 
 .table-responsive {
@@ -57,22 +57,22 @@
 }
 
 .data-table th {
-    background-color: #F9FAFB;
+    background-color: #334155;
     padding: 1.25rem 1.5rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #6B7280;
+    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid #334155;
 }
 
 .data-table td {
     padding: 1.25rem 1.5rem;
     vertical-align: middle;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 1px solid #334155;
     font-size: 0.925rem;
-    color: #374151;
+    color: #f8fafc;
 }
 
 .data-table tbody tr {
@@ -80,7 +80,7 @@
 }
 
 .data-table tbody tr:hover {
-    background-color: #F9FAFB;
+    background-color: #334155;
 }
 
 .data-table tbody tr:last-child td {
@@ -98,7 +98,7 @@
     height: 42px;
     border-radius: 10px;
     background-color: #EEF2FF;
-    color: #3B82F6;
+    color: #60a5fa;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,7 +106,7 @@
 
 .agence-name {
     font-weight: 600;
-    color: #111827;
+    color: #f8fafc;
     font-size: 1rem;
 }
 
@@ -120,24 +120,24 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    background-color: #F3F4F6;
+    background-color: #f8fafc;
     color: #4B5563;
     padding: 0.35rem 0.75rem;
     border-radius: 8px;
     font-size: 0.8rem;
     font-weight: 500;
-    border: 1px solid #E5E7EB;
+    border: 1px solid #334155;
 }
 
 .gare-badge mat-icon {
     font-size: 1rem;
     width: 1rem;
     height: 1rem;
-    color: #9CA3AF;
+    color: #94a3b8;
 }
 
 .text-gray {
-    color: #6B7280;
+    color: #64748b;
 }
 
 .italic {
@@ -155,7 +155,7 @@
 .action-btn {
     background: none;
     border: none;
-    color: #9CA3AF;
+    color: #94a3b8;
     cursor: pointer;
     padding: 0.4rem;
     border-radius: 6px;
@@ -174,7 +174,7 @@
 .state-container {
     padding: 5rem 2rem;
     text-align: center;
-    color: #6B7280;
+    color: #64748b;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -196,7 +196,7 @@
 }
 
 .btn-retry {
-    background-color: #3B82F6;
+    background-color: #60a5fa;
     color: white;
     border: none;
     border-radius: 6px;
@@ -207,7 +207,7 @@
 }
 
 .btn-retry:hover {
-    background-color: #2563EB;
+    background-color: #60a5fa;
 }
 
 .spinner {
@@ -233,7 +233,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #2563EB;
+    background-color: #60a5fa;
     color: white;
     border: none;
     border-radius: 8px;
@@ -281,12 +281,12 @@
 .form-header h2 {
     margin: 0 0 0.25rem 0;
     font-size: 1.25rem;
-    color: #111827;
+    color: #f8fafc;
 }
 
 .form-header p {
     margin: 0;
-    color: #6B7280;
+    color: #64748b;
     font-size: 0.9rem;
 }
 
@@ -294,7 +294,7 @@
     display: flex;
     gap: 1rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid #334155;
     padding-bottom: 0.5rem;
 }
 
@@ -304,15 +304,15 @@
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #6B7280;
+    color: #64748b;
     cursor: pointer;
     border-radius: 6px;
     transition: all 0.2s;
 }
 
 .form-tabs button:hover {
-    background-color: #F3F4F6;
-    color: #374151;
+    background-color: #f8fafc;
+    color: #f8fafc;
 }
 
 .form-tabs button.active {
@@ -340,12 +340,12 @@
 .form-group label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #374151;
+    color: #f8fafc;
 }
 
 .form-control {
     padding: 0.7rem 1rem;
-    border: 1px solid #D1D5DB;
+    border: 1px solid #94a2b6;
     border-radius: 6px;
     font-size: 0.95rem;
     transition: border-color 0.2s;
@@ -356,7 +356,7 @@
 
 .form-control:focus {
     outline: none;
-    border-color: #3B82F6;
+    border-color: #60a5fa;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -370,7 +370,7 @@
 }
 
 .btn-secondary {
-    background-color: white;
+    background-color: #f8fafc;
     color: #4B5563;
     border: 1px solid #D1D5DB;
     border-radius: 6px;
@@ -381,7 +381,7 @@
 }
 
 .btn-secondary:hover {
-    background-color: #F9FAFB;
+    background-color: #334155;
 }
 
 /* ─── Accordéon Agences ─── */
@@ -391,11 +391,11 @@
 }
 
 .agency-row:hover {
-    background-color: #EFF6FF !important;
+    background-color: #334155 !important;
 }
 
 .agency-row.expanded {
-    background-color: #EFF6FF;
+    background-color: #334155;
     border-bottom: none;
 }
 
@@ -405,7 +405,7 @@
 }
 
 .expand-icon {
-    color: #9CA3AF;
+    color: #94a3b8;
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
@@ -415,7 +415,7 @@
 
 .expand-icon.rotated {
     transform: rotate(180deg);
-    color: #2563EB;
+    color: #60a5fa;
 }
 
 /* Badge comptage gares */
@@ -423,30 +423,30 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    background: #F3F4F6;
-    color: #6B7280;
+    background: #0f172a;
+    color: #64748b;
     padding: 0.3rem 0.75rem;
     border-radius: 99px;
     font-size: 0.8rem;
     font-weight: 600;
-    border: 1px solid #E5E7EB;
+    border: 1px solid #334155;
 }
 
 .gares-count-badge mat-icon {
     font-size: 0.9rem;
     width: 0.9rem;
     height: 0.9rem;
-    color: #9CA3AF;
+    color: #94a3b8;
 }
 
 .gares-count-badge.has-gares {
     background: #DBEAFE;
     color: #1E40AF;
-    border-color: #BFDBFE;
+    border-color: #1e3a8a;
 }
 
 .gares-count-badge.has-gares mat-icon {
-    color: #2563EB;
+    color: #60a5fa;
 }
 
 /* Badge statut */
@@ -470,8 +470,8 @@
 }
 
 .statut-inconnu {
-    background: #F3F4F6;
-    color: #6B7280;
+    background: #0f172a;
+    color: #64748b;
 }
 
 /* Panneau accordéon */
@@ -481,7 +481,7 @@
 }
 
 .gares-panel {
-    background: #F8FAFF;
+    background: #334155;
     padding: 1.5rem 2rem;
     animation: slideDown 0.25s ease-out;
 }
@@ -497,12 +497,12 @@
     gap: 0.5rem;
     font-size: 0.9rem;
     font-weight: 700;
-    color: #1E40AF;
+    color: #FFFFFF;
     margin-bottom: 1.25rem;
 }
 
 .gares-panel-header mat-icon {
-    color: #2563EB;
+    color: #60a5fa;
 }
 
 /* Grille des cards gare */
@@ -516,7 +516,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: white;
+    background: #1e293b;
     border: 1px solid #DBEAFE;
     border-radius: 10px;
     padding: 0.85rem 1rem;
@@ -532,7 +532,7 @@
     width: 38px;
     height: 38px;
     border-radius: 8px;
-    background: #EFF6FF;
+    background: #1e3a8a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -540,7 +540,7 @@
 }
 
 .gare-card-icon mat-icon {
-    color: #2563EB;
+    color: #60a5fa;
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
@@ -556,7 +556,7 @@
 .gare-ville {
     font-weight: 700;
     font-size: 0.9rem;
-    color: #111827;
+    color: #f8fafc;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -564,7 +564,7 @@
 
 .gare-quartier {
     font-size: 0.78rem;
-    color: #6B7280;
+    color: #64748b;
 }
 
 .gare-tel {
@@ -572,7 +572,7 @@
     align-items: center;
     gap: 0.2rem;
     font-size: 0.75rem;
-    color: #9CA3AF;
+    color: #94a3b8;
 }
 
 .gare-tel mat-icon {
@@ -588,7 +588,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 2rem;
-    color: #9CA3AF;
+    color: #94a3b8;
     text-align: center;
 }
 
@@ -601,4 +601,4 @@
 .gares-empty p {
     margin: 0;
     font-size: 0.875rem;
-}
+}

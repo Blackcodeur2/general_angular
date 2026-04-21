@@ -48,8 +48,9 @@ export class AgencyRoutesPage implements OnInit {
   routeForm = this.fb.group({
     ville_depart: [null as number | null, Validators.required],
     ville_arrive: [null as number | null, Validators.required],
-    prix: [0, [Validators.required, Validators.min(100)]],
-    type_trajet: ['', [Validators.required]],
+    distance_km: [0, Validators.required],
+    prix: [5000, [Validators.required, Validators.min(100)]],
+    type_trajet: ['classique', [Validators.required]],
     gare_id: [null as number | null | undefined, [Validators.required]]
   });
 
@@ -95,9 +96,10 @@ export class AgencyRoutesPage implements OnInit {
     this.isEditing.set(true);
     this.editId.set(route.id || null);
     this.routeForm.patchValue({
-      ville_depart: route.ville_depart_id ?? (route as any).ville_depart?.id,
-      ville_arrive: route.ville_arrive_id ?? (route as any).ville_arrive?.id,
+      ville_depart: route.ville_depart,
+      ville_arrive: route.ville_arrive,
       prix: route.prix,
+      distance_km: route.distance_km,
       type_trajet: route.type_trajet,
       gare_id: route.gare_id
     });
@@ -160,8 +162,9 @@ export class AgencyRoutesPage implements OnInit {
         this.isExporting.set(false);
         Swal.fire({ icon: 'success', title: 'Succès', text: 'Téléchargement réussi', timer: 2000, showConfirmButton: false });
       },
-      error: () => {
+      error: (error) => {
         this.isExporting.set(false);
+        if (error.status === 200) return;
         Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de télécharger le document PDF' });
       }
     });

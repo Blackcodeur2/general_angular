@@ -161,8 +161,9 @@ export class AgencyBusesPage implements OnInit {
         this.isExporting.set(false);
         Swal.fire({ icon: 'success', title: 'Succès', text: 'Téléchargement réussi', timer: 2000, showConfirmButton: false });
       },
-      error: () => {
+      error: (error) => {
         this.isExporting.set(false);
+        if (error.status === 200) return;
         Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de télécharger le document PDF' });
       }
     });

@@ -61,7 +61,7 @@
                         <option value=""> -- Sélectionnez un Trajet --</option>
                         @for (trajet of routesList(); track trajet.id) {
                         <option [value]="trajet.id">
-                            {{ trajet.ville_depart?.nom || trajet.depart?.nom }} -> {{ trajet.ville_arrivee?.nom || trajet.arrivee?.nom }} ({{ trajet.type_trajet }})
+                            {{ trajet.depart }} -> {{ trajet.arrivee}} ({{ trajet.type_trajet }})
                         </option>
                         }
 
@@ -156,9 +156,9 @@
                             <div class="voyage-info">
                                 <span class="num">{{ voyage.num_voyage }}</span>
                                 <div class="path">
-                                    {{ voyage.ville_depart || voyage.trajet?.ville_depart?.nom || voyage.trajet?.depart?.nom }} 
+                                    {{ voyage.ville_depart || voyage.trajet?.ville_depart || voyage.trajet?.depart }} 
                                     <mat-icon>arrow_forward</mat-icon> 
-                                    {{ voyage.ville_arrivee || voyage.trajet?.ville_arrivee?.nom || voyage.trajet?.arrivee?.nom }}
+                                    {{ voyage.ville_arrivee || voyage.trajet?.ville_arrivee || voyage.trajet?.arrivee }}
                                 </div>
 
                             </div>
@@ -179,7 +179,7 @@
                         <td>
                             <div class="bus-info">
                                 <span class="immat">{{ voyage.vehicule_immatriculation || voyage.bus?.immatriculation }}</span>
-                                <span class="code">{{ voyage.bus?.code_bus || '--' }}</span>
+                                <span class="code">{{ voyage.code_bus }}</span>
                             </div>
                         </td>
                         <td>
@@ -230,4 +230,4 @@
         </div>
     </div>
     }
-</div>
+</div>

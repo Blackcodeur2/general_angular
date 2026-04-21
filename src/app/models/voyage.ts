@@ -7,6 +7,7 @@ export interface Voyage {
   trajet_id?: number;
   bus_id?: number;
   chauffeur_id?: number;
+  code_bus: string;
   prix: number;
   places_disponibles?: number;
   statut: 'en attente' | 'en cours' | 'annule' | 'en voyage' | 'termine';

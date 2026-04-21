@@ -93,7 +93,7 @@ export class AgencyLayoutComponent implements OnInit {
         { label: 'Tableau de bord', icon: 'dashboard', route: '/chef_agence/dashboard' },
         { label: 'Bus', icon: 'directions_bus', route: '/chef_agence/buses' },
         { label: 'Personnel', icon: 'groups', route: '/chef_agence/staff' },
-        { label: 'Lignes', icon: 'map', route: '/chef_agence/routes' },
+        { label: 'Trajets', icon: 'map', route: '/chef_agence/routes' },
         { label: 'Voyages', icon: 'event_note', route: '/chef_agence/voyages' },
         { label: 'Nouvelle Réservation', icon: 'add_shopping_cart', route: '/chef_agence/booking' },
         { label: 'Réservations', icon: 'history', route: '/chef_agence/reservations' },

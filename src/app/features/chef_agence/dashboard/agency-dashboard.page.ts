@@ -39,7 +39,7 @@ export class AgencyDashboardPage implements OnInit {
     if (this.isLoading()) {
       return 'Chargement des données de l’agence…';
     }
-    return `${this.totalBuses()} bus · ${this.totalRoutes()} lignes · ${this.totalStaff()} membres actifs`; 
+    return `${this.totalBuses()} bus · ${this.totalRoutes()} trajets · ${this.totalStaff()} membres actifs`; 
   });
 
   totalBuses = computed(() => this.dashboardData()?.stats?.total_buses ?? 0);

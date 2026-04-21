@@ -57,7 +57,7 @@
                   <option value="">Sélectionnez un trajet</option>
                   @for (route of routes(); track route.id) {
                     <option [value]="route.id">
-                      {{ route.ville_depart?.nom || route.gare_depart?.ville || 'Inconnu' }} → {{ route.ville_arrivee?.nom || route.gare_arrivee?.ville || 'Inconnu' }} ({{ route.type_trajet || 'Classique' }})
+                      {{ route.ville_depart || 'Inconnu' }} → {{ route.ville_arrivee || 'Inconnu' }} ({{ route.type_trajet || 'Classique' }})
                     </option>
                   }
                 </select>
@@ -90,7 +90,7 @@
           <div class="title-area">
             <mat-icon>directions_bus</mat-icon>
             <h2>Voyages disponibles</h2>
-            <p>{{ selectedRoute()?.ville_depart?.nom || selectedRoute()?.gare_depart?.ville || '...' }} → {{ selectedRoute()?.ville_arrivee?.nom || selectedRoute()?.gare_arrivee?.ville || '...' }} le {{ tripForm.get('date')?.value | date:'dd MMMM yyyy' }}</p>
+            <p>{{ selectedRoute()?.ville_depart || '...' }} → {{ selectedRoute()?.ville_arrivee?.nom  || '...' }} le {{ tripForm.get('date')?.value | date:'dd MMMM yyyy' }}</p>
           </div>
           <button class="btn-text" (click)="prevStep()"><mat-icon>edit</mat-icon> Modifier</button>
         </div>
@@ -299,7 +299,7 @@
           </div>
           <div class="summary-item">
             <span class="label">Trajet</span>
-            <span class="val">{{ selectedRoute()?.ville_depart?.nom || selectedRoute()?.gare_depart?.ville || '...' }} → {{ selectedRoute()?.ville_arrivee?.nom || selectedRoute()?.gare_arrivee?.ville || '...' }}</span>
+            <span class="val">{{ selectedRoute()?.ville_depart || '...' }} → {{ selectedRoute()?.ville_arrivee?.nom || '...' }}</span>
             <span class="sub">{{ tripForm.get('date')?.value | date:'dd/MM/yyyy' }} à {{ selectedVoyage()?.heure_depart }}</span>
           </div>
           <div class="summary-item">

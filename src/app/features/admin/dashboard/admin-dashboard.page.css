@@ -1,4 +1,5 @@
 .dashboard-page {
+    font-family: 'monospace', system-ui, sans-serif;
     padding: 2rem;
     animation: fadeIn 0.5s ease-out;
 }
@@ -18,17 +19,17 @@
 h1 {
     font-size: 1.875rem;
     font-weight: 800;
-    color: #111827;
+    color: #f8fafc;
     margin: 0;
     letter-spacing: -0.025em;
 }
 
 .date-filter {
-    background: white;
+    background: #1e293b;
     padding: 0.625rem 1.25rem;
     border-radius: 10px;
-    border: 1px solid #E5E7EB;
-    color: #374151;
+    border: 1px solid #334155;
+    color: #f8fafc;
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
@@ -38,7 +39,7 @@ h1 {
 
 .date-filter:hover {
     border-color: #D1D5DB;
-    background: #F9FAFB;
+    background: #334155;
 }
 
 .stats-grid {
@@ -49,14 +50,14 @@ h1 {
 }
 
 .stat-card {
-    background: white;
+    background: #1e293b;
     padding: 1.25rem;
     border-radius: 14px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     gap: 1rem;
-    border: 1px solid #F3F4F6;
+    border: 1px solid #334155;
     transition: transform 0.2s;
 }
 
@@ -74,16 +75,16 @@ h1 {
     font-size: 1.35rem;
 }
 
-.bg-blue { background: #EFF6FF; color: #3B82F6; }
-.bg-green { background: #ECFDF5; color: #10B981; }
-.bg-purple { background: #F5F3FF; color: #8B5CF6; }
-.bg-orange { background: #FFF7ED; color: #F59E0B; }
+.bg-blue { background: #1e3a8a; color: #60a5fa; }
+.bg-green { background: #064e3b; color: #34d399; }
+.bg-purple { background: #4c1d95; color: #a78bfa; }
+.bg-orange { background: #7c2d12; color: #fbbf24; }
 
 .stat-info { display: flex; flex-direction: column; }
 
 .label {
     font-size: 0.75rem;
-    color: #6B7280;
+    color: #64748b;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.025em;
@@ -92,13 +93,13 @@ h1 {
 .value {
     font-size: 1.35rem;
     font-weight: 800;
-    color: #111827;
+    color: #f8fafc;
     margin: 0.15rem 0;
 }
 
-.trend { font-size: 0.8125rem; color: #6B7280; }
+.trend { font-size: 0.8125rem; color: #64748b; }
 .trend.up { color: #059669; font-weight: 600; }
-.trend.down { color: #DC2626; font-weight: 600; }
+.trend.down { color: #f87171; font-weight: 600; }
 
 .dashboard-content {
     display: grid;
@@ -108,29 +109,29 @@ h1 {
 
 .chart-card,
 .activity-card {
-    background: white;
+    background: #1e293b;
     border-radius: 20px;
     padding: 1.75rem;
-    border: 1px solid #F3F4F6;
+    border: 1px solid #334155;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 h3 {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #111827;
+    color: #f8fafc;
     margin: 0 0 1.5rem 0;
 }
 
 .chart-placeholder {
     height: 300px;
-    background: #F9FAFB;
+    background: #334155;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #9CA3AF;
+    color: #94a3b8;
     border-radius: 12px;
-    border: 2px dashed #E5E7EB;
+    border: 2px dashed #334155;
     font-weight: 500;
 }
 
@@ -142,7 +143,7 @@ h3 {
     align-items: flex-start;
     padding-bottom: 1.5rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 1px solid #334155;
     position: relative;
 }
 
@@ -167,7 +168,7 @@ h3 {
 .time {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #9CA3AF;
+    color: #94a3b8;
     margin-left: auto;
     white-space: nowrap;
 }
@@ -178,7 +179,7 @@ h3 {
     align-items: center;
     justify-content: center;
     padding: 120px 0;
-    color: #6B7280;
+    color: #64748b;
     gap: 1.5rem;
 }
 

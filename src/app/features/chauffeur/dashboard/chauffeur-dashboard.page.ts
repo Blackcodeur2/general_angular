@@ -4,104 +4,238 @@ import { MatIconModule } from '@angular/material/icon';
 import { VoyageService } from '../../../services/chauffeur/voyage.service';
 import { Voyage } from '../../../models/voyage';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-chauffeur-dashboard',
   standalone: true,
   imports: [CommonModule, MatIconModule],
   template: `
-    <div class="dashboard">
-      <header class="welcome">
-        <h2>Mon Programme</h2>
-        <p>Aujourd'hui, {{ today | date:'dd MMMM yyyy' }}</p>
-      </header>
-
-      <div class="loading-state" *ngIf="isLoading()">
-        <div class="spinner"></div>
-        <p>Chargement de votre programme...</p>
+    <div class="dashboard-container">
+      <!-- Loading State -->
+      <div class="loading-overlay" *ngIf="isLoading()">
+        <div class="loader"></div>
+        <p>Calcul de votre itinéraire...</p>
       </div>
 
-      <div class="empty-state" *ngIf="!isLoading() && !nextTrip && upcomingVoyages.length === 0">
-        <mat-icon class="large-icon">event_busy</mat-icon>
-        <p>Aucun voyage prévu pour le moment.</p>
-      </div>
+      <ng-container *ngIf="!isLoading()">
+        <!-- Welcome Header -->
+        <header class="page-header animate-fade-in">
+          <div class="header-top">
+            <div class="date-chip">
+              <mat-icon>calendar_today</mat-icon>
+              {{ today | date:'EEEE dd MMMM' }}
+            </div>
+            <button class="logout-btn" (click)="onLogout()">
+              <mat-icon>logout</mat-icon>
+            </button>
+          </div>
+          <h2 class="title">Votre Programme</h2>
+        </header>
 
-      <div class="next-trip animate-fade-in" *ngIf="!isLoading() && nextTrip">
-        <div class="card-header">
-          <span class="badge">PROCHAIN DÉPART</span>
-          <span class="time">{{ nextTrip.heure_depart }}</span>
-        </div>
-        <div class="route">
-          <div class="city">
-            <span class="label">Départ</span>
-            <span class="name">{{ nextTrip.ville_depart }}</span>
+        <!-- Empty State -->
+        <div class="empty-card animate-scale-in" *ngIf="!nextTrip && upcomingVoyages.length === 0">
+          <div class="empty-icon">
+            <mat-icon>event_busy</mat-icon>
           </div>
-          <mat-icon>trending_flat</mat-icon>
-          <div class="city">
-            <span class="label">Arrivée</span>
-            <span class="name">{{ nextTrip.ville_arrivee }}</span>
-          </div>
+          <h3>Aucun voyage prévu</h3>
+          <p>Profitez de votre repos ou contactez l'agence pour plus d'infos.</p>
         </div>
-        <div class="trip-footer">
-          <span><mat-icon>directions_bus</mat-icon> {{ nextTrip.vehicule_immatriculation }}</span>
-          <button class="btn-start" (click)="demarrerVoyage(nextTrip.id)" [disabled]="isProcessing()">
-            {{ isProcessing() ? 'Traitement...' : 'Démarrer le voyage' }}
+
+        <!-- Next Trip / Current Trip (The Hero) -->
+        <div class="next-trip-hero animate-scale-in" *ngIf="nextTrip">
+          <div class="hero-label">
+            <span class="pulse-dot"></span>
+            PROCHAIN DÉPART
+          </div>
+          
+          <div class="route-display">
+            <div class="city-group">
+              <span class="city-name">{{ nextTrip.ville_depart }}</span>
+              <span class="time">{{ nextTrip.heure_depart }}</span>
+            </div>
+            <div class="route-line">
+              <mat-icon>directions_bus</mat-icon>
+              <div class="line"></div>
+              <mat-icon>location_on</mat-icon>
+            </div>
+            <div class="city-group align-right">
+              <span class="city-name">{{ nextTrip.ville_arrivee }}</span>
+              <span class="info">Arrivée prévue</span>
+            </div>
+          </div>
+
+          <div class="bus-info">
+            <div class="info-item">
+              <mat-icon>local_shipping</mat-icon>
+              <span>{{ nextTrip.vehicule_immatriculation }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>confirmation_number</mat-icon>
+              <span>{{ nextTrip.num_voyage }}</span>
+            </div>
+          </div>
+
+          <button class="action-btn" (click)="demarrerVoyage(nextTrip.id)" [disabled]="isProcessing()">
+            <mat-icon>play_circle_filled</mat-icon>
+            {{ isProcessing() ? 'Chargement...' : 'DÉMARRER LE VOYAGE' }}
           </button>
         </div>
-      </div>
 
-      <section class="upcoming" *ngIf="!isLoading() && upcomingVoyages.length > 0">
-        <h3>Voyages à venir</h3>
-        <div class="trip-list">
-          <div class="trip-item animate-in" *ngFor="let voyage of upcomingVoyages">
-            <div class="trip-info">
-              <span class="trip-time">{{ voyage.heure_depart }} ({{ voyage.date_depart | date:'dd/MM' }})</span>
-              <span class="trip-route">{{ voyage.ville_depart }} -> {{ voyage.ville_arrivee }}</span>
-            </div>
-            <mat-icon>chevron_right</mat-icon>
+        <!-- Quick Actions Grid -->
+        <section class="quick-actions animate-fade-in">
+          <h3 class="section-title">Outils Rapides</h3>
+          <div class="actions-grid">
+            <button class="tool-card report" routerLink="/chauffeur/report-incident">
+              <div class="tool-icon"><mat-icon>report_problem</mat-icon></div>
+              <span>Incident</span>
+            </button>
+            <button class="tool-card history" routerLink="/chauffeur/history">
+              <div class="tool-icon"><mat-icon>history</mat-icon></div>
+              <span>Historique</span>
+            </button>
+            <button class="tool-card support" (click)="contactAgency()">
+              <div class="tool-icon"><mat-icon>headset_mic</mat-icon></div>
+              <span>Support</span>
+            </button>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <!-- Upcoming Trips List -->
+        <section class="upcoming-list animate-fade-in" *ngIf="upcomingVoyages.length > 0">
+          <div class="section-header">
+            <h3 class="section-title">Planning à venir</h3>
+            <span class="count">{{ upcomingVoyages.length }} voyage(s)</span>
+          </div>
+          
+          <div class="trips-stack">
+            <div class="trip-item-card" *ngFor="let voyage of upcomingVoyages">
+              <div class="trip-time-box">
+                <span class="day">{{ voyage.date_depart | date:'dd' }}</span>
+                <span class="month">{{ voyage.date_depart | date:'MMM' }}</span>
+              </div>
+              <div class="trip-details">
+                <div class="trip-path">{{ voyage.ville_depart }} <mat-icon>arrow_forward</mat-icon> {{ voyage.ville_arrivee }}</div>
+                <div class="trip-meta">
+                  <span><mat-icon>schedule</mat-icon> {{ voyage.heure_depart }}</span>
+                  <span><mat-icon>directions_bus</mat-icon> {{ voyage.vehicule_immatriculation }}</span>
+                </div>
+              </div>
+              <mat-icon class="arrow">chevron_right</mat-icon>
+            </div>
+          </div>
+        </section>
+      </ng-container>
     </div>
   `,
   styles: [`
-    .dashboard { display: flex; flex-direction: column; gap: 1.5rem; }
-    .welcome h2 { font-size: 1.5rem; color: #1E293B; font-weight: 800; margin-bottom: 0.25rem; }
-    .welcome p { color: #64748B; font-size: 0.9rem; }
+    :host { --p: #3B82F6; --s: #1E293B; --w: #FFFFFF; --g: #F1F5F9; --t: #64748B; }
 
-    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; color: #64748B; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3B82F6; border-radius: 50%; animate: spin 1s linear infinite; margin-bottom: 1rem; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .dashboard-container { display: flex; flex-direction: column; gap: 1.5rem; }
 
-    .next-trip { background: #1E293B; color: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .badge { background: #3B82F6; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
-    .time { font-size: 1.25rem; font-weight: 700; }
+    /* Loading Overlay */
+    .loading-overlay { height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--t); }
+    .loader { width: 48px; height: 48px; border: 5px solid #E2E8F0; border-bottom-color: var(--p); border-radius: 50%; animation: rotation 1s linear infinite; margin-bottom: 1rem; }
+    @keyframes rotation { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }
+
+    /* Header */
+    .page-header { margin-bottom: 0.5rem; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .date-chip { 
+      background: white; border: 1px solid #E2E8F0; padding: 6px 12px; border-radius: 100px;
+      display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 600; color: var(--t);
+    }
+    .logout-btn { background: #FEE2E2; color: #EF4444; border: none; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .logout-btn mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    .date-chip mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    .title { font-size: 1.5rem; font-weight: 800; color: var(--s); }
+
+    /* Empty State */
+    .empty-card { background: white; padding: 3rem 2rem; border-radius: 24px; text-align: center; border: 1px solid #E2E8F0; }
+    .empty-icon { width: 64px; height: 64px; background: #F1F5F9; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--t); }
+    .empty-icon mat-icon { font-size: 32px; width: 32px; height: 32px; }
+    .empty-card h3 { font-weight: 700; color: var(--s); margin-bottom: 0.5rem; }
+    .empty-card p { color: var(--t); font-size: 0.9rem; line-height: 1.5; }
+
+    /* Hero Card (Next Trip) */
+    .next-trip-hero { 
+      background: linear-gradient(135deg, #1E293B, #0F172A); color: white; border-radius: 28px; padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.2); position: relative; overflow: hidden;
+    }
+    .hero-label { 
+      font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; color: #94A3B8; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pulse-dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+    .route-display { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .city-group { display: flex; flex-direction: column; gap: 4px; }
+    .city-name { font-size: 1.25rem; font-weight: 700; }
+    .time { font-size: 1.1rem; color: #3B82F6; font-weight: 700; }
+    .align-right { text-align: right; }
+    .info { font-size: 0.7rem; color: #64748B; }
+
+    .route-line { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 1rem; opacity: 0.5; }
+    .route-line .line { width: 100%; height: 2px; background: rgba(255,255,255,0.1); position: relative; }
+    .route-line mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+    .bus-info { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .info-item { background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 600; color: #CBD5E1; }
+    .info-item mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+    .action-btn { 
+      width: 100%; background: #FFFFFF; color: #0F172A; border: none; padding: 1rem; border-radius: 16px;
+      font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; transition: all 0.2s; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    }
+    .action-btn:active { transform: scale(0.98); background: #F1F5F9; }
+
+    /* Quick Actions */
+    .section-title { font-size: 1.1rem; font-weight: 700; color: var(--s); margin-bottom: 1rem; }
+    .actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .tool-card { 
+      background: white; border: 1px solid #E2E8F0; padding: 1.25rem 0.5rem; border-radius: 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;
+    }
+    .tool-icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .tool-card span { font-size: 0.7rem; font-weight: 700; color: var(--s); }
+
+    .report .tool-icon { background: #FFF1F2; color: #E11D48; }
+    .history .tool-icon { background: #F0F9FF; color: #0EA5E9; }
+    .support .tool-icon { background: #F5F3FF; color: #8B5CF6; }
+    .tool-card:active { transform: scale(0.95); background: #F8FAFC; }
+
+    /* Upcoming List */
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .count { font-size: 0.75rem; font-weight: 700; color: var(--t); background: #E2E8F0; padding: 2px 8px; border-radius: 100px; }
+    .trips-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+    .trip-item-card { background: white; padding: 1rem; border-radius: 20px; border: 1px solid #E2E8F0; display: flex; align-items: center; gap: 1rem; }
     
-    .route { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
-    .city { display: flex; flex-direction: column; }
-    .label { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; }
-    .name { font-size: 1.1rem; font-weight: 600; }
-    
-    .trip-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
-    .trip-footer span { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #CBD5E1; }
-    .btn-start { background: #10B981; color: white; border: none; padding: 0.8rem 1.2rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-    .btn-start:hover { background: #059669; transform: scale(1.02); }
-    .btn-start:disabled { background: #64748B; opacity: 0.7; cursor: not-allowed; }
+    .trip-time-box { background: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 14px; width: 50px; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .trip-time-box .day { font-weight: 800; color: var(--s); font-size: 1.1rem; line-height: 1; }
+    .trip-time-box .month { font-size: 0.6rem; font-weight: 800; color: var(--t); text-transform: uppercase; }
 
-    .upcoming h3 { font-size: 1.1rem; color: #1E293B; margin-bottom: 1rem; }
-    .trip-list { display: flex; flex-direction: column; gap: 0.75rem; }
-    .trip-item { background: white; padding: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #E2E8F0; }
-    .trip-info { display: flex; flex-direction: column; gap: 2px; }
-    .trip-time { font-weight: 700; color: #1E293B; }
-    .trip-route { color: #64748B; font-size: 0.85rem; }
+    .trip-details { flex: 1; }
+    .trip-path { font-weight: 700; color: var(--s); font-size: 0.9rem; display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+    .trip-path mat-icon { font-size: 14px; width: 14px; height: 14px; color: var(--t); }
+    .trip-meta { display: flex; gap: 12px; font-size: 0.75rem; color: var(--t); font-weight: 500; }
+    .trip-meta span { display: flex; align-items: center; gap: 4px; }
+    .trip-meta mat-icon { font-size: 12px; width: 12px; height: 12px; }
+    .trip-item-card .arrow { color: #CBD5E1; }
 
-    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+    /* Animations */
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   `]
 })
 export class ChauffeurDashboardPage implements OnInit {
   private voyageService = inject(VoyageService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
   today = new Date();
   
   isLoading = signal(true);
@@ -151,6 +285,40 @@ export class ChauffeurDashboardPage implements OnInit {
             this.isProcessing.set(false);
             Swal.fire('Erreur', err.error?.message || 'Action impossible', 'error');
           }
+        });
+      }
+    });
+  }
+
+  contactAgency() {
+    Swal.fire({
+      title: 'Contacter l\'agence',
+      text: 'Voulez-vous appeler le support de l\'agence ?',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Appeler',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = 'tel:670000000'; // Simulation numéro
+      }
+    });
+  }
+  
+  onLogout() {
+    Swal.fire({
+      title: 'Se déconnecter ?',
+      text: 'Êtes-vous sûr de vouloir quitter votre cockpit ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, déconnexion',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#EF4444'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.authService.logout().subscribe({
+          next: () => this.router.navigate(['/auth/login']),
+          error: () => this.router.navigate(['/auth/login'])
         });
       }
     });

@@ -75,7 +75,7 @@ export class GaresPage implements OnInit {
       this.gareForm.patchValue({
         agence_id: gare.agence_id,
         ville_id: gare.ville_id,
-        quartier: gare.quartier,
+        quartier: gare.adresse,
         telephone: gare.telephone,
       });
 
