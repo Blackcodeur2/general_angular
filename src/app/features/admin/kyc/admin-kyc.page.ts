@@ -60,7 +60,31 @@ export class AdminKycPage implements OnInit {
       groups[userId].documents.push(doc);
     });
 
-    return Object.values(groups);
+    return Object.values(groups).map(group => ({
+      ...group,
+      isBusiness: group.documents.some(doc => ['rccm', 'dfe', 'statuts', 'rib'].includes(doc.type))
+    }));
+  }
+
+  getDocLabel(type: string): string {
+    const labels: Record<string, string> = {
+      'cni_recto': 'CNI (Recto)',
+      'cni_verso': 'CNI (Verso)',
+      'selfie': 'Selfie',
+      'passport_recto': 'Passeport (Page 1)',
+      'passport_verso': 'Passeport (Page 2)',
+      'residence_permit_recto': 'Permis Séjour (Recto)',
+      'residence_permit_verso': 'Permis Séjour (Verso)',
+      'rccm': 'Registre Commerce (RCCM)',
+      'dfe': 'Décl. Existence (DFE)',
+      'statuts': 'Statuts Société',
+      'pv_nomination': 'PV Nomination',
+      'rib': 'RIB Entreprise',
+      'gerant_id_recto': 'ID Gérant (Recto)',
+      'gerant_id_verso': 'ID Gérant (Verso)',
+      'gerant_selfie': 'Selfie Gérant'
+    };
+    return labels[type] || type.replace(/_/g, ' ').toUpperCase();
   }
 
   viewDocument(doc: KycDocument) {

@@ -36,16 +36,29 @@ export class KycPage implements OnInit {
   step = signal(1);
   userStatut = computed(() => this.authService.currentUser()?.statut);
 
+  // Type de compte
+  accountType = signal<'particulier' | 'entreprise'>('particulier');
+
   // Documents existants
   kycDocuments = signal<KycDocument[]>([]);
 
-  // Fichiers uploadés
+  // Fichiers uploadés (Particulier)
   fileFront = signal<UploadedFile | null>(null);
   fileBack = signal<UploadedFile | null>(null);
   fileSelfie = signal<UploadedFile | null>(null);
 
+  // Fichiers uploadés (Entreprise)
+  fileRccm = signal<UploadedFile | null>(null);
+  fileDfe = signal<UploadedFile | null>(null);
+  fileStatuts = signal<UploadedFile | null>(null);
+  filePvNomination = signal<UploadedFile | null>(null);
+  fileRib = signal<UploadedFile | null>(null);
+  fileGerantFront = signal<UploadedFile | null>(null);
+  fileGerantBack = signal<UploadedFile | null>(null);
+  fileGerantSelfie = signal<UploadedFile | null>(null);
+
   // Erreurs de fichiers
-  fileErrors = signal<{ front?: string; back?: string; selfie?: string }>({});
+  fileErrors = signal<Record<string, string | undefined>>({});
 
   // Formulaire étape 1
   infoForm = this.fb.nonNullable.group({
@@ -90,9 +103,19 @@ export class KycPage implements OnInit {
     return selected > today ? null : { pastDate: true };
   }
 
-  // L'étape 2 est valide si les 3 fichiers requis sont présents
+  // L'étape 2 est valide si les fichiers requis sont présents
   canProceedStep2 = computed(() => {
-    return this.fileFront() !== null && this.fileBack() !== null && this.fileSelfie() !== null;
+    if (this.accountType() === 'particulier') {
+      return this.fileFront() !== null && this.fileBack() !== null && this.fileSelfie() !== null;
+    } else {
+      return this.fileRccm() !== null && 
+             this.fileDfe() !== null && 
+             this.fileStatuts() !== null && 
+             this.fileRib() !== null && 
+             this.fileGerantFront() !== null && 
+             this.fileGerantBack() !== null && 
+             this.fileGerantSelfie() !== null;
+    }
   });
 
   nextStep() {
@@ -112,13 +135,14 @@ export class KycPage implements OnInit {
   }
 
   // Types autorisés par le backend (mimes)
-  private readonly ALLOWED_DOC_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']; // recto & verso
-  private readonly ALLOWED_SELFIE_TYPES = ['image/jpeg', 'image/png', 'image/webp']; // selfie: pas de PDF
+  private readonly ALLOWED_DOC_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']; // documents
+  private readonly ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp']; // selfies: pas de PDF
   private readonly MAX_SIZE = 10 * 1024 * 1024; // 10 Mo (backend: max:10240 Ko)
 
-  private isValidFile(file: File, field: 'front' | 'back' | 'selfie'): string | null {
-    const allowed = field === 'selfie' ? this.ALLOWED_SELFIE_TYPES : this.ALLOWED_DOC_TYPES;
-    const label = field === 'selfie' ? 'JPG, PNG ou WEBP' : 'JPG, PNG, WEBP ou PDF';
+  private isValidFile(file: File, field: string): string | null {
+    const isPhoto = field === 'selfie' || field === 'gerant_selfie';
+    const allowed = isPhoto ? this.ALLOWED_PHOTO_TYPES : this.ALLOWED_DOC_TYPES;
+    const label = isPhoto ? 'JPG, PNG ou WEBP' : 'JPG, PNG, WEBP ou PDF';
 
     if (!allowed.includes(file.type)) {
       return `Format non supporté. Utilisez ${label}.`;
@@ -152,7 +176,7 @@ export class KycPage implements OnInit {
     });
   }
 
-  async onFileSelect(event: Event, field: 'front' | 'back' | 'selfie') {
+  async onFileSelect(event: Event, field: string) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
@@ -168,15 +192,35 @@ export class KycPage implements OnInit {
 
     const uploaded = await this.createUploadedFile(file);
 
-    if (field === 'front') this.fileFront.set(uploaded);
-    else if (field === 'back') this.fileBack.set(uploaded);
-    else this.fileSelfie.set(uploaded);
+    switch(field) {
+      case 'front': this.fileFront.set(uploaded); break;
+      case 'back': this.fileBack.set(uploaded); break;
+      case 'selfie': this.fileSelfie.set(uploaded); break;
+      case 'rccm': this.fileRccm.set(uploaded); break;
+      case 'dfe': this.fileDfe.set(uploaded); break;
+      case 'statuts': this.fileStatuts.set(uploaded); break;
+      case 'pv_nomination': this.filePvNomination.set(uploaded); break;
+      case 'rib': this.fileRib.set(uploaded); break;
+      case 'gerant_front': this.fileGerantFront.set(uploaded); break;
+      case 'gerant_back': this.fileGerantBack.set(uploaded); break;
+      case 'gerant_selfie': this.fileGerantSelfie.set(uploaded); break;
+    }
   }
 
-  removeFile(field: 'front' | 'back' | 'selfie') {
-    if (field === 'front') this.fileFront.set(null);
-    else if (field === 'back') this.fileBack.set(null);
-    else this.fileSelfie.set(null);
+  removeFile(field: string) {
+    switch(field) {
+      case 'front': this.fileFront.set(null); break;
+      case 'back': this.fileBack.set(null); break;
+      case 'selfie': this.fileSelfie.set(null); break;
+      case 'rccm': this.fileRccm.set(null); break;
+      case 'dfe': this.fileDfe.set(null); break;
+      case 'statuts': this.fileStatuts.set(null); break;
+      case 'pv_nomination': this.filePvNomination.set(null); break;
+      case 'rib': this.fileRib.set(null); break;
+      case 'gerant_front': this.fileGerantFront.set(null); break;
+      case 'gerant_back': this.fileGerantBack.set(null); break;
+      case 'gerant_selfie': this.fileGerantSelfie.set(null); break;
+    }
   }
 
   onSubmit() {
@@ -186,16 +230,34 @@ export class KycPage implements OnInit {
 
     const formData = new FormData();
     const info = this.infoForm.getRawValue();
-    formData.append('document_type', info.document_type);
-    formData.append('document_number', info.document_number);
-    formData.append('expiry_date', info.expiry_date);
-    formData.append('file_front', this.fileFront()!.file);
-    formData.append('file_back', this.fileBack()!.file);
-    if (this.fileSelfie()) {
-      formData.append('file_selfie', this.fileSelfie()!.file);
+
+    if (this.accountType() === 'particulier') {
+      formData.append('document_type', info.document_type);
+      formData.append('document_number', info.document_number);
+      formData.append('expiry_date', info.expiry_date);
+      formData.append('file_front', this.fileFront()!.file);
+      formData.append('file_back', this.fileBack()!.file);
+      if (this.fileSelfie()) {
+        formData.append('file_selfie', this.fileSelfie()!.file);
+      }
+    } else {
+      formData.append('rccm', this.fileRccm()!.file);
+      formData.append('dfe', this.fileDfe()!.file);
+      formData.append('statuts', this.fileStatuts()!.file);
+      if (this.filePvNomination()) {
+        formData.append('pv_nomination', this.filePvNomination()!.file);
+      }
+      formData.append('rib', this.fileRib()!.file);
+      formData.append('gerant_id_front', this.fileGerantFront()!.file);
+      formData.append('gerant_id_back', this.fileGerantBack()!.file);
+      formData.append('gerant_selfie', this.fileGerantSelfie()!.file);
     }
 
-    this.proprietaireService.submitKyc(formData).subscribe({
+    const submitObs = this.accountType() === 'particulier' 
+      ? this.proprietaireService.submitKyc(formData)
+      : this.proprietaireService.submitEntrepriseKyc(formData);
+
+    submitObs.subscribe({
       next: (event: HttpEvent<any>) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
           this.uploadProgress.set(Math.round((event.loaded / event.total) * 100));

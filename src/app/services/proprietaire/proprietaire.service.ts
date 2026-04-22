@@ -137,4 +137,11 @@ export class ProprietaireService {
       observe: 'events'
     });
   }
+
+  submitEntrepriseKyc(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.API}/proprietaire/kyc/entreprise/submit`, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
+  }
 }

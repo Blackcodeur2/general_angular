@@ -33,6 +33,9 @@
                 <span class="user-meta">{{ sub.user.email }} • {{ sub.user.telephone }}</span>
               </div>
             </div>
+            <div class="account-type-badge" [class.business]="sub.isBusiness">
+              {{ sub.isBusiness ? 'Entreprise' : 'Particulier' }}
+            </div>
             <div class="badge-pending">En attente</div>
           </div>
 
@@ -43,7 +46,7 @@
                   <mat-icon>{{ doc.chemin_fichier.toLowerCase().endsWith('.pdf') ? 'picture_as_pdf' : 'image' }}</mat-icon>
                 </div>
                 <div class="doc-details">
-                  <span class="doc-type">{{ doc.type | uppercase }}</span>
+                  <span class="doc-type">{{ getDocLabel(doc.type) }}</span>
                   @if (doc.commentaire) {
                     <span class="doc-comment">{{ doc.commentaire }}</span>
                   }
@@ -74,7 +77,7 @@
     <div class="modal-overlay" (click)="closePreview()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Document : {{ previewDocument()!.type | uppercase }}</h3>
+          <h3>Document : {{ getDocLabel(previewDocument()!.type) }}</h3>
           <div class="modal-actions">
             <a [href]="previewDocument()!.rawUrl" target="_blank" class="icon-btn" title="Ouvrir dans un nouvel onglet" style="margin-right: 8px;">
               <mat-icon>open_in_new</mat-icon>

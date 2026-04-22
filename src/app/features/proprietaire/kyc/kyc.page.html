@@ -39,11 +39,29 @@
   @if (step() === 1) {
     <div class="kyc-card animate-in">
       <h2 class="card-title">
-        <mat-icon>badge</mat-icon>
-        Informations du document
+        <mat-icon>verified_user</mat-icon>
+        Type de compte & Informations
       </h2>
 
-      <form [formGroup]="infoForm" class="info-form" (ngSubmit)="nextStep()">
+      <div class="account-type-selector">
+        <div class="type-option" [class.active]="accountType() === 'particulier'" (click)="accountType.set('particulier')">
+          <mat-icon>person</mat-icon>
+          <div class="type-info">
+            <span class="type-name">Particulier</span>
+            <span class="type-desc">Compte personnel</span>
+          </div>
+        </div>
+        <div class="type-option" [class.active]="accountType() === 'entreprise'" (click)="accountType.set('entreprise')">
+          <mat-icon>business</mat-icon>
+          <div class="type-info">
+            <span class="type-name">Entreprise</span>
+            <span class="type-desc">Société, GIE, etc.</span>
+          </div>
+        </div>
+      </div>
+
+      @if (accountType() === 'particulier') {
+        <form [formGroup]="infoForm" class="info-form" (ngSubmit)="nextStep()">
         <div class="field">
           <label for="doc-type">Type de document *</label>
           <div class="select-wrapper">
@@ -82,6 +100,15 @@
           Continuer <mat-icon>arrow_forward</mat-icon>
         </button>
       </form>
+      } @else {
+        <div class="business-info-notice">
+          <mat-icon>info_outline</mat-icon>
+          <p>Pour un compte entreprise, vous devrez fournir les documents officiels de la société (RCCM, DFE, Statuts, RIB) ainsi que les pièces d'identité du gérant.</p>
+        </div>
+        <button class="btn-primary" (click)="nextStep()">
+          Continuer vers l'upload <mat-icon>arrow_forward</mat-icon>
+        </button>
+      }
     </div>
   }
 
@@ -95,124 +122,237 @@
 
       <div class="upload-hint">
         <mat-icon>photo_camera</mat-icon>
-        <p>Chargez des photos nettes de votre document. Formats acceptés : <strong>JPG, PNG, WEBP, PDF</strong>. Taille max : <strong>5 Mo</strong> par fichier.</p>
+        <p>Chargez des photos nettes de vos documents. Formats acceptés : <strong>JPG, PNG, WEBP, PDF</strong>. Taille max : <strong>10 Mo</strong> par fichier.</p>
       </div>
 
       <div class="upload-grid">
-
-        <!-- Recto -->
-        <div class="upload-slot">
-          <div class="upload-label">
-            <span class="required-badge">Requis</span>
-            <span>Recto du document</span>
-          </div>
-          @if (fileFront()) {
-            <div class="file-preview">
-              @if (fileFront()!.preview) {
-                <img [src]="fileFront()!.preview" alt="Recto" class="preview-img">
-              } @else {
-                <div class="pdf-preview">
-                  <mat-icon>picture_as_pdf</mat-icon>
-                  <span>PDF</span>
+        @if (accountType() === 'particulier') {
+          <!-- Recto -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Recto du document</span>
+            </div>
+            @if (fileFront()) {
+              <div class="file-preview">
+                @if (fileFront()!.preview) {
+                  <img [src]="fileFront()!.preview" alt="Recto" class="preview-img">
+                } @else {
+                  <div class="pdf-preview">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    <span>PDF</span>
+                  </div>
+                }
+                <div class="file-meta">
+                  <span class="file-name">{{ fileFront()!.name }}</span>
+                  <span class="file-size">{{ fileFront()!.size }}</span>
                 </div>
-              }
-              <div class="file-meta">
-                <span class="file-name">{{ fileFront()!.name }}</span>
-                <span class="file-size">{{ fileFront()!.size }}</span>
+                <button class="file-remove" (click)="removeFile('front')" type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
-              <button class="file-remove" (click)="removeFile('front')" type="button">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          } @else {
-            <label class="drop-zone" for="input-front" [class.error]="fileErrors()['front']">
-              <input id="input-front" type="file" hidden
-                accept="image/jpeg,image/png,image/webp,application/pdf"
-                (change)="onFileSelect($event, 'front')">
-              <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
-              <span class="drop-text">Cliquer pour uploader</span>
-              <span class="drop-sub">ou glisser-déposer ici</span>
-            </label>
-          }
-          @if (fileErrors()['front']) {
-            <span class="field-error">{{ fileErrors()['front'] }}</span>
-          }
-        </div>
-
-        <!-- Verso -->
-        <div class="upload-slot">
-          <div class="upload-label">
-            <span class="required-badge">Requis</span>
-            <span>Verso du document</span>
+            } @else {
+              <label class="drop-zone" for="input-front" [class.error]="fileErrors()['front']">
+                <input id="input-front" type="file" hidden
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  (change)="onFileSelect($event, 'front')">
+                <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
+                <span class="drop-text">Cliquer pour uploader</span>
+                <span class="drop-sub">ou glisser-déposer ici</span>
+              </label>
+            }
+            @if (fileErrors()['front']) {
+              <span class="field-error">{{ fileErrors()['front'] }}</span>
+            }
           </div>
-          @if (fileBack()) {
-            <div class="file-preview">
-              @if (fileBack()!.preview) {
-                <img [src]="fileBack()!.preview" alt="Verso" class="preview-img">
-              } @else {
-                <div class="pdf-preview">
-                  <mat-icon>picture_as_pdf</mat-icon>
-                  <span>PDF</span>
+
+          <!-- Verso -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Verso du document</span>
+            </div>
+            @if (fileBack()) {
+              <div class="file-preview">
+                @if (fileBack()!.preview) {
+                  <img [src]="fileBack()!.preview" alt="Verso" class="preview-img">
+                } @else {
+                  <div class="pdf-preview">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    <span>PDF</span>
+                  </div>
+                }
+                <div class="file-meta">
+                  <span class="file-name">{{ fileBack()!.name }}</span>
+                  <span class="file-size">{{ fileBack()!.size }}</span>
                 </div>
-              }
-              <div class="file-meta">
-                <span class="file-name">{{ fileBack()!.name }}</span>
-                <span class="file-size">{{ fileBack()!.size }}</span>
+                <button class="file-remove" (click)="removeFile('back')" type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
-              <button class="file-remove" (click)="removeFile('back')" type="button">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          } @else {
-            <label class="drop-zone" for="input-back" [class.error]="fileErrors()['back']">
-              <input id="input-back" type="file" hidden
-                accept="image/jpeg,image/png,image/webp,application/pdf"
-                (change)="onFileSelect($event, 'back')">
-              <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
-              <span class="drop-text">Cliquer pour uploader</span>
-              <span class="drop-sub">ou glisser-déposer ici</span>
-            </label>
-          }
-          @if (fileErrors()['back']) {
-            <span class="field-error">{{ fileErrors()['back'] }}</span>
-          }
-        </div>
-
-        <!-- Selfie -->
-        <div class="upload-slot upload-slot--full">
-          <div class="upload-label">
-            <span class="required-badge">Requis</span>
-            <span>Selfie avec le document</span>
+            } @else {
+              <label class="drop-zone" for="input-back" [class.error]="fileErrors()['back']">
+                <input id="input-back" type="file" hidden
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  (change)="onFileSelect($event, 'back')">
+                <mat-icon class="drop-icon">add_photo_alternate</mat-icon>
+                <span class="drop-text">Cliquer pour uploader</span>
+                <span class="drop-sub">ou glisser-déposer ici</span>
+              </label>
+            }
+            @if (fileErrors()['back']) {
+              <span class="field-error">{{ fileErrors()['back'] }}</span>
+            }
           </div>
-          <p class="upload-slot__desc">Prenez une photo de vous en tenant votre document bien visible à côté de votre visage.</p>
-          @if (fileSelfie()) {
-            <div class="file-preview">
-              @if (fileSelfie()!.preview) {
-                <img [src]="fileSelfie()!.preview" alt="Selfie" class="preview-img preview-img--wide">
-              }
-              <div class="file-meta">
-                <span class="file-name">{{ fileSelfie()!.name }}</span>
-                <span class="file-size">{{ fileSelfie()!.size }}</span>
-              </div>
-              <button class="file-remove" (click)="removeFile('selfie')" type="button">
-                <mat-icon>close</mat-icon>
-              </button>
+
+          <!-- Selfie -->
+          <div class="upload-slot upload-slot--full">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Selfie avec le document</span>
             </div>
-          } @else {
-            <label class="drop-zone drop-zone--wide" for="input-selfie" [class.error]="fileErrors()['selfie']">
-              <input id="input-selfie" type="file" hidden
-                accept="image/jpeg,image/png,image/webp"
-                (change)="onFileSelect($event, 'selfie')">
-              <mat-icon class="drop-icon">face</mat-icon>
-              <span class="drop-text">Cliquer pour uploader votre selfie</span>
-              <span class="drop-sub">JPG, PNG ou WEBP uniquement</span>
-            </label>
-          }
-          @if (fileErrors()['selfie']) {
-            <span class="field-error">{{ fileErrors()['selfie'] }}</span>
-          }
-        </div>
+            <p class="upload-slot__desc">Prenez une photo de vous en tenant votre document bien visible à côté de votre visage.</p>
+            @if (fileSelfie()) {
+              <div class="file-preview">
+                @if (fileSelfie()!.preview) {
+                  <img [src]="fileSelfie()!.preview" alt="Selfie" class="preview-img preview-img--wide">
+                }
+                <div class="file-meta">
+                  <span class="file-name">{{ fileSelfie()!.name }}</span>
+                  <span class="file-size">{{ fileSelfie()!.size }}</span>
+                </div>
+                <button class="file-remove" (click)="removeFile('selfie')" type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            } @else {
+              <label class="drop-zone drop-zone--wide" for="input-selfie" [class.error]="fileErrors()['selfie']">
+                <input id="input-selfie" type="file" hidden
+                  accept="image/jpeg,image/png,image/webp"
+                  (change)="onFileSelect($event, 'selfie')">
+                <mat-icon class="drop-icon">face</mat-icon>
+                <span class="drop-text">Cliquer pour uploader votre selfie</span>
+                <span class="drop-sub">JPG, PNG ou WEBP uniquement</span>
+              </label>
+            }
+            @if (fileErrors()['selfie']) {
+              <span class="field-error">{{ fileErrors()['selfie'] }}</span>
+            }
+          </div>
+        } @else {
+          <!-- SECTION ENTREPRISE -->
+          <h3 class="section-title">Documents de l'entreprise</h3>
+          
+          <!-- RCCM -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Registre de Commerce (RCCM)</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'rccm', signal: fileRccm }"></ng-container>
+          </div>
+
+          <!-- DFE -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Déclaration d'Existence (DFE)</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'dfe', signal: fileDfe }"></ng-container>
+          </div>
+
+          <!-- Statuts -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Statuts de la société</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'statuts', signal: fileStatuts }"></ng-container>
+          </div>
+
+          <!-- RIB -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>RIB de l'entreprise</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'rib', signal: fileRib }"></ng-container>
+          </div>
+
+          <!-- PV Nomination (Optional) -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span>PV de nomination du gérant</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'pv_nomination', signal: filePvNomination }"></ng-container>
+          </div>
+
+          <div class="divider"></div>
+          <h3 class="section-title">Documents du gérant</h3>
+
+          <!-- Gérant ID Front -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>ID Gérant (Recto)</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'gerant_front', signal: fileGerantFront }"></ng-container>
+          </div>
+
+          <!-- Gérant ID Back -->
+          <div class="upload-slot">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>ID Gérant (Verso)</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'gerant_back', signal: fileGerantBack }"></ng-container>
+          </div>
+
+          <!-- Gérant Selfie -->
+          <div class="upload-slot upload-slot--full">
+            <div class="upload-label">
+              <span class="required-badge">Requis</span>
+              <span>Selfie du gérant</span>
+            </div>
+            <ng-container *ngTemplateOutlet="uploadZone; context: { field: 'gerant_selfie', signal: fileGerantSelfie, wide: true, isPhoto: true }"></ng-container>
+          </div>
+        }
       </div>
+
+      <!-- TEMPLATE POUR ZONE D'UPLOAD REUTILISABLE -->
+      <ng-template #uploadZone let-field="field" let-signal="signal" let-wide="wide" let-isPhoto="isPhoto">
+        @if (signal()) {
+          <div class="file-preview">
+            @if (signal()!.preview) {
+              <img [src]="signal()!.preview" [alt]="field" class="preview-img" [class.preview-img--wide]="wide">
+            } @else {
+              <div class="pdf-preview">
+                <mat-icon>picture_as_pdf</mat-icon>
+                <span>PDF</span>
+              </div>
+            }
+            <div class="file-meta">
+              <span class="file-name">{{ signal()!.name }}</span>
+              <span class="file-size">{{ signal()!.size }}</span>
+            </div>
+            <button class="file-remove" (click)="removeFile(field)" type="button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        } @else {
+          <label class="drop-zone" [class.drop-zone--wide]="wide" [for]="'input-' + field" [class.error]="fileErrors()[field]">
+            <input [id]="'input-' + field" type="file" hidden
+              [accept]="isPhoto ? 'image/jpeg,image/png,image/webp' : 'image/jpeg,image/png,image/webp,application/pdf'"
+              (change)="onFileSelect($event, field)">
+            <mat-icon class="drop-icon">{{ isPhoto ? 'face' : 'add_photo_alternate' }}</mat-icon>
+            <span class="drop-text">Cliquer pour uploader</span>
+            <span class="drop-sub">{{ isPhoto ? 'JPG, PNG ou WEBP' : 'JPG, PNG, WEBP ou PDF' }}</span>
+          </label>
+        }
+        @if (fileErrors()[field]) {
+          <span class="field-error">{{ fileErrors()[field] }}</span>
+        }
+      </ng-template>
 
       <!-- Progress bar (pendant l'envoi) -->
       @if (isSubmitting()) {

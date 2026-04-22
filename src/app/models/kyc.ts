@@ -1,6 +1,7 @@
 import { User } from './user';
 
-export type KycDocType = 'cni_recto' | 'cni_verso' | 'selfie' | 'patente' | 'carte_grise';
+export type KycDocType = 'cni_recto' | 'cni_verso' | 'selfie' | 'patente' | 'carte_grise' | 
+  'rccm' | 'dfe' | 'statuts' | 'pv_nomination' | 'rib' | 'gerant_id_recto' | 'gerant_id_verso' | 'gerant_selfie';
 
 export type KycStatus = 'en attente' | 'approuve' | 'rejete';
 
@@ -21,4 +22,5 @@ export interface KycGroupedByUser {
   user: User;
   documents: KycDocument[];
   statutGlobal: KycStatus;
+  isBusiness?: boolean;
 }
