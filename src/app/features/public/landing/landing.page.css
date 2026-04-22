@@ -98,7 +98,7 @@ h1, h2, h3, h4, .brand-name {
 .brand-logo-wrap {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: #2563eb;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -149,7 +149,7 @@ h1, h2, h3, h4, .brand-name {
 .btn-ghost:hover { background: #f1f5f9; color: #2563eb;}
 
 .btn-primary {
-  background: linear-gradient(135deg, #10b981, #059669); /* Beautiful emerald CTA */
+  background: #10b981; /* Solid emerald CTA */
   color: white !important;
   text-decoration: none;
   font-weight: 700;
@@ -178,37 +178,7 @@ h1, h2, h3, h4, .brand-name {
   overflow: hidden;
 }
 
-.hero-bg-orbs {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-  opacity: 0.6;
-}
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-}
-.orb-1 {
-  width: 500px; height: 500px;
-  background: #2563eb;
-  top: -100px; right: -100px;
-  animation: float 20s ease-in-out infinite alternate;
-}
-.orb-2 {
-  width: 400px; height: 400px;
-  background: #8b5cf6;
-  bottom: -100px; left: -50px;
-  animation: float 25s ease-in-out infinite alternate-reverse;
-}
-.orb-3 {
-  width: 300px; height: 300px;
-  background: #10b981;
-  top: 40%; left: 30%;
-  animation: float 22s ease-in-out infinite alternate;
-}
+/* --- Orbs Removed --- */
 
 @keyframes float {
   0% { transform: translate(0, 0) scale(1); }
@@ -269,9 +239,7 @@ h1, h2, h3, h4, .brand-name {
 }
 
 .hero__accent {
-  background: linear-gradient(135deg, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #60a5fa;
 }
 
 .hero__subtitle {
@@ -395,7 +363,7 @@ h1, h2, h3, h4, .brand-name {
 .search-divider { width: 1px; height: 50px; background: #e2e8f0; margin: 0 0.5rem; }
 
 .search-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2563eb;
   color: white;
   text-decoration: none;
   display: flex;
@@ -462,7 +430,7 @@ h1, h2, h3, h4, .brand-name {
 
 .step-icon {
   font-size: 2.5rem;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  background: #eff6ff;
   width: 70px; height: 70px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 20px;
@@ -557,15 +525,7 @@ h1, h2, h3, h4, .brand-name {
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.glow-effect::before {
-  content: '';
-  position: absolute;
-  top: -20px; left: -20px; right: -20px; bottom: -20px;
-  background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(167,139,250,0.2));
-  filter: blur(40px);
-  z-index: -1;
-  border-radius: inherit;
-}
+/* --- Glow Effect Removed --- */
 
 .floating-ticket:hover {
   transform: rotate(0) scale(1.02);
@@ -632,7 +592,7 @@ h1, h2, h3, h4, .brand-name {
 }
 
 .owner-card {
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  background: #0f172a;
   border-radius: 32px;
   padding: 5rem;
   color: white;
@@ -641,13 +601,7 @@ h1, h2, h3, h4, .brand-name {
   text-align: center;
 }
 
-.owner-bg-pattern {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.1) 2px, transparent 2px);
-  background-size: 40px 40px;
-  opacity: 0.5;
-}
+/* --- Pattern Removed --- */
 
 .owner-content {
   position: relative; z-index: 1;

@@ -24,8 +24,8 @@
           <div class="card-header">
             <div class="voyage-info">
               <h3>
-                {{ voyage.trajet?.depart?.ville || 'N/A' }} → 
-                {{ voyage.trajet?.arrivee?.ville || 'N/A' }}
+                {{ voyage.ville_depart || 'N/A' }} → 
+                {{ voyage.ville_arrivee || 'N/A' }}
               </h3>
               <p class="voyage-date">
                 <mat-icon>calendar_today</mat-icon>
@@ -67,7 +67,7 @@
                 <mat-icon>monetization_on</mat-icon>
                 <div>
                   <span class="label">Tarif</span>
-                  <span class="value">{{ voyage.trajet?.prix || '- ' }} FC</span>
+                  <span class="value">{{ voyage.prix || '- ' }} FCFA</span>
                 </div>
               </div>
             </div>

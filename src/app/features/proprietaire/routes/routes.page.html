@@ -25,7 +25,7 @@
             <div class="location depart">
               <mat-icon>location_on</mat-icon>
               <div>
-                <span class="city">{{ route.depart_id || 'N/A' }}</span>
+                <span class="city">{{ route.depart || 'N/A' }}</span>
                 <span class="detail">Départ</span>
               </div>
             </div>
@@ -35,7 +35,7 @@
             <div class="location arrivee">
               <mat-icon>location_on</mat-icon>
               <div>
-                <span class="city">{{ route.arrivee_id || 'N/A' }}</span>
+                <span class="city">{{ route.arrivee || 'N/A' }}</span>
                 <span class="detail">Arrivée</span>
               </div>
             </div>
@@ -50,17 +50,10 @@
               </div>
             </div>
             <div class="info-item">
-              <mat-icon>schedule</mat-icon>
-              <div>
-                <span class="label">Durée</span>
-                <span class="value">{{ route.duree || '- ' }} heures</span>
-              </div>
-            </div>
-            <div class="info-item">
               <mat-icon>local_taxi</mat-icon>
               <div>
                 <span class="label">Tarif</span>
-                <span class="value">{{ route.prix || '- ' }} FC</span>
+                <span class="value">{{ route.prix || '- ' }} FCFA</span>
               </div>
             </div>
           </div>

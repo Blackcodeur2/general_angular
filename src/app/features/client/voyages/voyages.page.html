@@ -73,16 +73,16 @@
 
             <div class="trip-visual">
               <div class="town-node">
-                <span class="code">{{ voyage.ville_depart?.substring(0,3)?.toUpperCase() }}</span>
-                <span class="city">{{ voyage.ville_depart }}</span>
+                <span class="code">{{ voyage.ville_depart?.nom?.substring(0,3)?.toUpperCase() }}</span>
+                <span class="city">{{ voyage.ville_depart?.nom }}</span>
               </div>
               <div class="path-visual">
                 <div class="line"></div>
                 <mat-icon>chevron_right</mat-icon>
               </div>
               <div class="town-node">
-                <span class="code">{{ voyage.ville_arrivee?.substring(0,3)?.toUpperCase() }}</span>
-                <span class="city">{{ voyage.ville_arrivee }}</span>
+                <span class="code">{{ voyage.ville_arrivee?.nom?.substring(0,3)?.toUpperCase() }}</span>
+                <span class="city">{{ voyage.ville_arrivee?.nom }}</span>
               </div>
             </div>
 

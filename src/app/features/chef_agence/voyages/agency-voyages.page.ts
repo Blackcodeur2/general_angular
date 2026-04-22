@@ -59,8 +59,8 @@ export class AgencyVoyagesPage implements OnInit {
     
     return this.voyages().filter(v => 
       v.num_voyage?.toLowerCase().includes(term) ||
-      v.ville_depart?.toLowerCase().includes(term) ||
-      v.ville_arrivee?.toLowerCase().includes(term) ||
+      v.ville_depart?.nom?.toLowerCase().includes(term) ||
+      v.ville_arrivee?.nom?.toLowerCase().includes(term) ||
       v.chauffeur?.nom?.toLowerCase().includes(term) ||
       v.chauffeur?.prenom?.toLowerCase().includes(term) ||
       v.vehicule_immatriculation?.toLowerCase().includes(term)

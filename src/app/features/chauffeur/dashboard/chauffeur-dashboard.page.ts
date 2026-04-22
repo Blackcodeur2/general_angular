@@ -52,7 +52,7 @@ import { AuthService } from '../../../core/services/auth.service';
           
           <div class="route-display">
             <div class="city-group">
-              <span class="city-name">{{ nextTrip.ville_depart }}</span>
+              <span class="city-name">{{ nextTrip.ville_depart?.nom }}</span>
               <span class="time">{{ nextTrip.heure_depart }}</span>
             </div>
             <div class="route-line">
@@ -61,7 +61,7 @@ import { AuthService } from '../../../core/services/auth.service';
               <mat-icon>location_on</mat-icon>
             </div>
             <div class="city-group align-right">
-              <span class="city-name">{{ nextTrip.ville_arrivee }}</span>
+              <span class="city-name">{{ nextTrip.ville_arrivee?.nom }}</span>
               <span class="info">Arrivée prévue</span>
             </div>
           </div>
@@ -116,7 +116,7 @@ import { AuthService } from '../../../core/services/auth.service';
                 <span class="month">{{ voyage.date_depart | date:'MMM' }}</span>
               </div>
               <div class="trip-details">
-                <div class="trip-path">{{ voyage.ville_depart }} <mat-icon>arrow_forward</mat-icon> {{ voyage.ville_arrivee }}</div>
+                <div class="trip-path">{{ voyage.ville_depart?.nom }} <mat-icon>arrow_forward</mat-icon> {{ voyage.ville_arrivee?.nom }}</div>
                 <div class="trip-meta">
                   <span><mat-icon>schedule</mat-icon> {{ voyage.heure_depart }}</span>
                   <span><mat-icon>directions_bus</mat-icon> {{ voyage.vehicule_immatriculation }}</span>

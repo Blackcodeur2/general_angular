@@ -1,4 +1,5 @@
 import { Route } from './route';
+import { Ville } from './ville';
 
 export interface Voyage {
   id: number;
@@ -43,8 +44,8 @@ export interface Voyage {
   
   // Custom mapping from AgenceController
   vehicule_immatriculation?: string;
-  ville_depart?: string;
-  ville_arrivee?: string;
+  ville_depart?: Ville;
+  ville_arrivee?: Ville;
 
   created_at?: string;
   updated_at?: string;

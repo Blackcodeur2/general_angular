@@ -156,9 +156,9 @@
                             <div class="voyage-info">
                                 <span class="num">{{ voyage.num_voyage }}</span>
                                 <div class="path">
-                                    {{ voyage.ville_depart || voyage.trajet?.ville_depart || voyage.trajet?.depart }} 
+                                    {{ voyage?.ville_depart?.nom}} 
                                     <mat-icon>arrow_forward</mat-icon> 
-                                    {{ voyage.ville_arrivee || voyage.trajet?.ville_arrivee || voyage.trajet?.arrivee }}
+                                    {{ voyage.ville_arrivee?.nom }}
                                 </div>
 
                             </div>
