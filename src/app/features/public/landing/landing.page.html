@@ -11,9 +11,9 @@
     </a>
     
     <div class="navbar__center">
-      <a href="#fonctionnement" class="navbar__link">Fonctionnement</a>
-      <a href="#agences" class="navbar__link">Partenaires</a>
-      <a href="#pour-proprietaires" class="navbar__link">Pour Agences</a>
+      <a routerLink="/landing" fragment="fonctionnement" class="navbar__link">Fonctionnement</a>
+      <a routerLink="/landing" fragment="features" class="navbar__link">Partenaires</a>
+      <a routerLink="/landing" fragment="pour-proprietaires" class="navbar__link">Pour Agences</a>
     </div>
 
     <div class="navbar__actions">
@@ -277,7 +277,7 @@
       <div class="footer-links">
         <h4>Partenaires</h4>
         <ul>
-          <li><a href="#pour-proprietaires">Ouvrir une agence</a></li>
+          <li><a routerLink="/landing" fragment="pour-proprietaires">Ouvrir une agence</a></li>
           <li><a routerLink="/auth/register">Espace Partenaire</a></li>
           <li><a href="#">Documentation API</a></li>
         </ul>
