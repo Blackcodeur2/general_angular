@@ -13,8 +13,8 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="logo-wrapper">
           <span class="logo-icon">🚍</span>
         </div>
-        <h1 class="brand-title">General Express Voyages</h1>
-        <p class="brand-subtitle">Le plaisir de voyager</p>
+        <h1 class="brand-title">CamerTrip</h1>
+        <p class="brand-subtitle">Voyagez en toute simplicité</p>
       </div>
 
       <div class="loader-section">
@@ -25,7 +25,7 @@ import { AuthService } from '../../core/services/auth.service';
       </div>
 
       <div class="footer-info">
-        <span>&copy; 2026 GEV - Tous droits réservés</span>
+        <span>&copy; 2026 CamerTrip - Tous droits réservés</span>
         <span class="version">v1.0.0</span>
       </div>
     </div>
@@ -155,7 +155,7 @@ export class SplashPage implements OnInit {
       }, 2000);
     } else {
       // Si non connecté, rediriger vers la landing après la durée du splash
-      this.loadingMessage = 'Bienvenue chez GEV...';
+      this.loadingMessage = 'Bienvenue sur CamerTrip...';
       setTimeout(() => {
         this.router.navigate(['/landing']);
       }, 3000);
