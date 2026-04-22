@@ -114,15 +114,35 @@
   margin-top: 2px;
 }
 
-.badge-pending {
+.doc-type {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.doc-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.doc-status.en-attente { color: #d97706; }
+.doc-status.approuve { color: #059669; }
+.doc-status.rejete { color: #dc2626; }
+
+.status-badge {
   padding: 4px 12px;
-  background: #fef3c7;
-  color: #92400e;
   border-radius: 99px;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
 }
+
+.status-badge.en-attente { background: #fef3c7; color: #92400e; }
+.status-badge.approuve { background: #dcfce7; color: #166534; }
+.status-badge.rejete { background: #fee2e2; color: #991b1b; }
 
 .account-type-badge {
   padding: 4px 12px;
@@ -205,10 +225,30 @@
   font-weight: 600;
   color: #60a5fa;
   opacity: 0.6;
-  transition: opacity 0.2s;
-  padding: 4px 10px;
-  border-radius: 6px;
+  transition: all 0.2s;
+  padding: 6px 12px;
+  border-radius: 8px;
   background: #1e3a8a;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.doc-action-btn:hover {
+  background: #334155;
+  opacity: 1;
+}
+
+.doc-action-btn.download {
+  color: #34d399;
+}
+
+.doc-action-btn.download:hover {
+  background: #064e3b;
+}
+
+.doc-actions-inline {
+  display: flex;
+  gap: 8px;
 }
 
 .document-item:hover .doc-action-btn {
@@ -314,7 +354,7 @@
 
 .icon-btn:hover {
   background: #f1f5f9;
-  color: #ef4444;
+  color: #1e293b;
 }
 
 .modal-body {

@@ -36,7 +36,9 @@
             <div class="account-type-badge" [class.business]="sub.isBusiness">
               {{ sub.isBusiness ? 'Entreprise' : 'Particulier' }}
             </div>
-            <div class="badge-pending">En attente</div>
+            <div class="status-badge" [class]="sub.statutGlobal.replace(' ', '-')">
+              {{ sub.statutGlobal | uppercase }}
+            </div>
           </div>
 
           <div class="documents-grid">
@@ -47,26 +49,35 @@
                 </div>
                 <div class="doc-details">
                   <span class="doc-type">{{ getDocLabel(doc.type) }}</span>
+                  <span class="doc-status" [class]="doc.statut.replace(' ', '-')">{{ doc.statut }}</span>
                   @if (doc.commentaire) {
                     <span class="doc-comment">{{ doc.commentaire }}</span>
                   }
                 </div>
-                <div class="doc-action-btn">
-                  <mat-icon>visibility</mat-icon>
-                  <span>Aperçu</span>
+                <div class="doc-actions-inline">
+                  <div class="doc-action-btn" (click)="viewDocument(doc); $event.stopPropagation()">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Aperçu</span>
+                  </div>
+                  <a [href]="getDocUrl(doc)" download class="doc-action-btn download" (click)="$event.stopPropagation()">
+                    <mat-icon>download</mat-icon>
+                    <span>Télécharger</span>
+                  </a>
                 </div>
               </div>
             }
           </div>
 
-          <div class="card-actions">
-            <button class="btn-reject" (click)="reject(sub)" [disabled]="isProcessing()">
-              <mat-icon>close</mat-icon> Rejeter
-            </button>
-            <button class="btn-approve" (click)="approve(sub)" [disabled]="isProcessing()">
-              <mat-icon>check</mat-icon> Approuver
-            </button>
-          </div>
+          @if (sub.statutGlobal === 'en attente') {
+            <div class="card-actions">
+              <button class="btn-reject" (click)="reject(sub)" [disabled]="isProcessing()">
+                <mat-icon>close</mat-icon> Rejeter
+              </button>
+              <button class="btn-approve" (click)="approve(sub)" [disabled]="isProcessing()">
+                <mat-icon>check</mat-icon> Approuver
+              </button>
+            </div>
+          }
         </div>
       }
     </div>
@@ -79,8 +90,11 @@
         <div class="modal-header">
           <h3>Document : {{ getDocLabel(previewDocument()!.type) }}</h3>
           <div class="modal-actions">
-            <a [href]="previewDocument()!.rawUrl" target="_blank" class="icon-btn" title="Ouvrir dans un nouvel onglet" style="margin-right: 8px;">
+            <a [href]="previewDocument()!.rawUrl" target="_blank" class="icon-btn" title="Ouvrir dans un nouvel onglet">
               <mat-icon>open_in_new</mat-icon>
+            </a>
+            <a [href]="previewDocument()!.rawUrl" download class="icon-btn" title="Télécharger" style="margin-left: 8px; margin-right: 8px;">
+              <mat-icon>download</mat-icon>
             </a>
             <button class="icon-btn" (click)="closePreview()"><mat-icon>close</mat-icon></button>
           </div>

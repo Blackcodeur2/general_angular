@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminKycService } from '../../../services/admin/kyc.service';
-import { KycDocument, KycGroupedByUser } from '../../../models/kyc';
+import { KycDocument, KycGroupedByUser, KycStatus } from '../../../models/kyc';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
@@ -60,10 +60,29 @@ export class AdminKycPage implements OnInit {
       groups[userId].documents.push(doc);
     });
 
-    return Object.values(groups).map(group => ({
-      ...group,
-      isBusiness: group.documents.some(doc => ['rccm', 'dfe', 'statuts', 'rib'].includes(doc.type))
-    }));
+    return Object.values(groups).map(group => {
+      const hasPending = group.documents.some(d => d.statut === 'en attente');
+      const hasRejected = group.documents.some(d => d.statut === 'rejete');
+      const allApproved = group.documents.every(d => d.statut === 'approuve');
+
+      let status: KycStatus = 'en attente';
+      if (allApproved) status = 'approuve';
+      else if (hasRejected && !hasPending) status = 'rejete';
+      else if (hasPending) status = 'en attente';
+
+      return {
+        ...group,
+        statutGlobal: status,
+        isBusiness: group.documents.some(doc => ['rccm', 'dfe', 'statuts', 'rib'].includes(doc.type))
+      };
+    });
+  }
+
+  getDocUrl(doc: KycDocument): string {
+    const storageUrl = environment.storageUrl || 'http://localhost:8000/storage';
+    return doc.chemin_fichier.startsWith('http') 
+      ? doc.chemin_fichier 
+      : `${storageUrl}/${doc.chemin_fichier}`;
   }
 
   getDocLabel(type: string): string {
