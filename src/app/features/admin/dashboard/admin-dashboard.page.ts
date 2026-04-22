@@ -19,7 +19,7 @@ export class AdminDashboardPage implements OnInit {
   totalAgencies = signal(0);
   totalGares = signal(0);
   totalTrips = signal(0);
-  totalRevenue = signal(0);
+  totalBuses = signal(0);
   
   isLoading = signal(true);
 
@@ -53,10 +53,9 @@ export class AdminDashboardPage implements OnInit {
         this.totalGares.set(garesCount);
         
         // Statistiques simulées basées sur les entités réelles
-        // À remplacer par un vrai endpoint de stats globales une fois disponible
         const baseTrips = agenciesList.length * 15;
         this.totalTrips.set(baseTrips > 0 ? baseTrips + 3 : 0); 
-        this.totalRevenue.set(this.totalTrips() * 5000); 
+        this.totalBuses.set(agenciesList.length * 8); 
         
         this.isLoading.set(false);
       },
